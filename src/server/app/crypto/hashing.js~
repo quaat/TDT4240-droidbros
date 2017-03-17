@@ -1,0 +1,30 @@
+var Bcrypt = require('bcrypt');
+
+var createHash = function(cleartext) {
+    var saltRounds = 10;
+
+    Bcrypt.genSalt(saltRounds, function(err, salt) {
+        if(err) {
+            return console.error(err);
+        }
+	
+        Bcrypt.hash(pass, salt, function(err, hash) {
+            if(err) {
+                return console.error(err);
+            }
+	    
+            console.log(hash);
+	    
+            Bcrypt.compare(pass, hash, function(err, isMatch) {
+                if(err) {
+                    return console.error(err);
+                }
+		
+                console.log('do they match?', isMatch);
+            });
+	    
+        });
+    });
+};
+
+module.exports = createHash;
