@@ -1,9 +1,18 @@
-Client:
+Server: (skal ordne databasen)
 
-Inne i eclipse:
-Høyreklikke på game folder og refreshe gradle build
-
-Gå inn på properties i myGame-android -> java build path -> order and export -> huke av external dependncies
+npm install
+node server.js
 
 
+Klient:
+lag fil "local.properties" i "../client/game" foldern med innhold: 
 
+# Location of YOUR android SDK (Eksempel på min)
+sdk.dir=C:/Users/Leppis/AppData/Local/Android/sdk
+
+
+run android:
+>>> gradlew android:installDebug android:run
+
+
+de andre gir feilmelding, dno why
