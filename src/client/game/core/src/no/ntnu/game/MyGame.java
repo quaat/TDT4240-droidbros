@@ -12,7 +12,7 @@ public class MyGame extends Game{
 	@Override
 	public void create () {
 		Gdx.app.log("ANDYPANDY", "game init");
-		mySocket = new MySocket();
+		//mySocket = new MySocket();
 		setScreen(new LoginScreen(this));
 	}
 
@@ -28,13 +28,11 @@ public class MyGame extends Game{
 		getScreen().dispose();
 	}
 	
-	public void login(String username) {
-		mySocket.login(username);
+	public void login(String username, String password) {
+		//mySocket.login(username);
 	}
 	
 	public void sendMessage() {
-		mySocket.sendMessage("CLICK CLICK");
+		//mySocket.sendMessage("CLICK CLICK");
 	}
-	
-	
 }

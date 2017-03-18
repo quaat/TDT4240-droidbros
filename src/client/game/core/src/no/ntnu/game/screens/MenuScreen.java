@@ -16,21 +16,9 @@ public class MenuScreen extends MyScreen {
 	void build() {
 		// Button
 		final TextButton playButton = new TextButton("PLAY", skin);
-		playButton.setPosition(400, 1500);
-		playButton.setSize(600, 200);
-		stage.addActor(playButton);
-		
-		// Button
 		final TextButton settingsButton = new TextButton("OPTIONS", skin);
-		settingsButton.setPosition(400, 1200);
-		settingsButton.setSize(600, 200);
-		stage.addActor(settingsButton);
-		
-		// Button
 		final TextButton creditsButton = new TextButton("CREDITS", skin);
-		creditsButton.setPosition(400, 900);
-		creditsButton.setSize(600, 200);
-		stage.addActor(creditsButton);
+
 		
 		// Listeners
 		playButton.addListener(new ChangeListener() {
@@ -50,6 +38,10 @@ public class MenuScreen extends MyScreen {
 				
 			}
 		});
+
+		table.add(playButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
+		table.add(settingsButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
+		table.add(creditsButton).width(objectWidth).height(objectHeight);
 		
 	}
 }

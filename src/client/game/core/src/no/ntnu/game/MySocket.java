@@ -11,7 +11,7 @@ import io.socket.emitter.Emitter;
 
 public class MySocket {
 	private Socket mySocket;
-	private String url = "http://aqueous-bayou-80568.herokuapp.com";
+	private String url = "https://fast-crag-60223.herokuapp.com/";
 	private String id;
 	private String username;
 	

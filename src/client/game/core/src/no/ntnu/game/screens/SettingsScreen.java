@@ -15,39 +15,20 @@ public class SettingsScreen extends MyScreen {
 	@Override
 	void build() {
 		// Button
-		final TextButton musicButton = new TextButton("MUSIC ON", skin);
-		musicButton.setPosition(400, 1500);
-		musicButton.setSize(600, 200);
-		stage.addActor(musicButton);
-		
-		// Button
-		final TextButton vibrationButton = new TextButton("VIBRATION ON", skin);
-		vibrationButton.setPosition(400, 1200);
-		vibrationButton.setSize(600, 200);
-		stage.addActor(vibrationButton);
-		
-		// Button
+		final TextButton musicButton = new TextButton("MUSIC", skin);
+		final TextButton vibrationButton = new TextButton("VIBRATION", skin);
 		final TextButton backButton = new TextButton("BACK", skin);
-		backButton.setPosition(400, 900);
-		backButton.setSize(600, 200);	
-		stage.addActor(backButton);
 		
 		// Listeners
 		musicButton.addListener(new ChangeListener() {
-			int i = 0;
 			public void changed (ChangeEvent event, Actor actor) {
-				String text = (i%2==0) ? "MUSIC ON" : "MUSIC OFF";
-				musicButton.setText(text);
-				i++;
+
 			}
 		});
 		
 		vibrationButton.addListener(new ChangeListener() {
-			int i = 0;
 			public void changed (ChangeEvent event, Actor actor) {
-				String text = (i%2==0) ? "VIBRATION ON" : "VIBRATION OFF";
-				vibrationButton.setText(text);
-				i++;
+				
 			}
 		});
 		
@@ -57,7 +38,8 @@ public class SettingsScreen extends MyScreen {
 			}
 		});
 
+		table.add(musicButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
+		table.add(vibrationButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
+		table.add(backButton).width(objectWidth).height(objectHeight);
 	}
-
-
 }
