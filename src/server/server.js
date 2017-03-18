@@ -24,105 +24,99 @@ app.use(morgan('dev'));
 // -- Routes
 
 app.get('/', function(req,res){
-    res.send('The API is at http://localhost:' + port + '/api');
+  res.send('The API is at http://localhost:' + port + '/api');
 });
 
 app.get('/admin', function(req,res){
-    try {
-	var passwordHash = crypto.hash('password');
-    } catch (err) {
-	console.log('error ' + err);
-    }
-    console.log('=> using crypto hash: ' + passwordHash);
-    var nick = new User({
-	userid: 'nick',
-	name: 'Nick Cerminara',
-	email: 'nick@night.com',
-	hash: passwordHash,
-	admin: true
-    });
-    nick.save(function(err){
-	if (err) throw err;
-	console.log('User saved successfully');
-	res.json({success:true});
-    });
+  try {
+    var passwordHash = crypto.hash('password');
+  } catch (err) {
+	  console.log('error ' + err);
+  }
+  console.log('=> using crypto hash: ' + passwordHash);
+  var nick = new User({
+  	userid: 'nick',
+  	name: 'Nick Cerminara',
+  	email: 'nick@night.com',
+  	hash: passwordHash,
+  	admin: true
+  });
+  nick.save(function(err){
+	  if (err) throw err;
+	  console.log('User saved successfully');
+	  res.json({success:true});
+  });
 });
 
 // -- API
 var apiRoutes = express.Router();
 
 apiRoutes.post('/authenticate', function(req, res) {
-
   // find the user
-  User.findOne({
+  User.findOne({ 
     userid: req.body.userid
   }, function(err, user) {
-
     if (err) throw err;
 
     if (!user) {
       res.json({ success: false, message: 'Authentication failed. User not found.' });
     } else if (user) {
-
       // check if password matches
-	if (crypto.checkPassword(req.body.password, user.hash)) {
+      if (crypto.checkPassword(req.body.password, user.hash)) {
         res.json({ success: false, message: 'Authentication failed. Wrong password.' });
       } else {
-
         // if user is found and password is right
         // create a token
         var token = jwt.sign(user, app.get('superSecret'), {
-            expiresIn: 60*60*24 // expires in 24 hours
+          expiresIn: 60*60*24 // expires in 24 hours
         });
-
         // return the information including token as JSON
         res.json({
           success: true,
           message: 'Enjoy your token!',
           token: token
         });
-      }   
-
+      }
     }
-
   });
 });
 
 // -- define middleware
 // -- everything that needs an authenticated token follows below
 apiRoutes.use(function(req, res, next){
-    var token = req.body.token || req.query.token || req.headers['x-access-token'];
-    if (token) {
-	jwt.verify(token, app.get('superSecret'), function(err, decoded) {
-	    if (err) {
-		return res.json({success: false,
-				 message: 'Failed to authenticate token.'
-				});
-	    } else  {
-		req.decoded = decoded;
-		next();
-	    }
-	});
-    } else {
-	return res.status(403).send({
-	    success: false,
-	    message: 'No token provided.'
-	});
-    }
+  var token = req.body.token || req.query.token || req.headers['x-access-token'];
+  if (token) {
+    jwt.verify(token, app.get('superSecret'), function(err, decoded) {
+      if (err) {
+        return res.json({
+          success: false,
+          message: 'Failed to authenticate token.'
+	      });
+      } else {
+      req.decoded = decoded;
+      next();
+      }
+    });
+  } else {
+    return res.status(403).send({
+      success: false,
+      message: 'No token provided.'
+    });
+  }
 });
 
 apiRoutes.get('/', function(req, res){
-    res.json({message: 'API'});
+  res.json({message: 'API'});
 });
 
 apiRoutes.get('/users', function(req, res){
-    User.find({}, function(err, users) {
-	res.json(users);
-    });
+  User.find({}, function(err, users) {
+    res.json(users);
+  });
 });
 
 app.use('/api', apiRoutes);
-// Start the server
 
+// Start the server
 app.listen(port);
 console.log('Server started. http://localhost:' + port);

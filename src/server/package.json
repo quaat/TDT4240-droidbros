@@ -1,12 +1,35 @@
 {
-  "name": "node-token-jwt",
+  "name": "gameserver",
+  "version": "0.0.1",
+  "description": "A gameserver",
+  "engines": {
+    "node": "5.9.1"
+  },
   "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
+    "body-parser": "^1.16.1",
+    "cookie-parser": "^1.4.3",
+    "express": "4.13.3",
+    "express-session": "^1.15.1",
+    "http": "0.0.0",
+    "socket.io": "^1.7.3",
     "bcrypt": "^1.0.2",
-    "body-parser": "^1.17.1",
-    "express": "^4.15.2",
     "jsonwebtoken": "^7.3.0",
+    "mongodb": "^2.2.25",
     "mongoose": "^4.8.6",
     "morgan": "^1.8.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git.heroku.com/fast-crag-60223.git"
+  },
+  "keywords": [
+    "node",
+    "heroku",
+    "express"
+  ],
+  "license": "MIT"
 }
