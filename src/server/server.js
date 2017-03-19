@@ -30,11 +30,11 @@ app.get('/', function(req,res){
 
 app.get('/admin', function(req,res){
   try {
-    var passwordHash = crypto.hash(password);
+    var passwordHash = crypto.hash('password');
   } catch (err) {
 	  console.log('error ' + err);
   }
-  console.log('=> using crypto hash: ' + "password");
+  console.log('=> using crypto hash: ' + passwordHash);
   var nick = new User({
   	userid: "nick",
   	name: 'Nick Cerminara',
