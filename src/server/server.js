@@ -8,6 +8,7 @@ var morgan     = require('morgan');
 var mongoose   = require('mongoose');
 
 var jwt        = require('jsonwebtoken');
+var socketioJwt= require('socketio-jwt');
 var config     = require('./config');
 var User       = require('./app/models/user');
 var crypto     = require('./app/crypto/hashing');
@@ -29,13 +30,13 @@ app.get('/', function(req,res){
 
 app.get('/admin', function(req,res){
   try {
-    var passwordHash = crypto.hash('password');
+    var passwordHash = crypto.hash(password);
   } catch (err) {
 	  console.log('error ' + err);
   }
-  console.log('=> using crypto hash: ' + passwordHash);
+  console.log('=> using crypto hash: ' + "password");
   var nick = new User({
-  	userid: 'nick',
+  	userid: "nick",
   	name: 'Nick Cerminara',
   	email: 'nick@night.com',
   	hash: passwordHash,
@@ -118,5 +119,21 @@ apiRoutes.get('/users', function(req, res){
 app.use('/api', apiRoutes);
 
 // Start the server
-app.listen(port);
+//app.listen(port);
+var server = require('http').createServer(app).listen(port)
+
+// sockets
+
+var io = require('socket.io').listen(server);
+
+io.set('authorization', socketioJwt.authorize({
+  secret: app.get('superSecret'),
+  handshake: true
+}));
+
+io.sockets
+  .on('connection', function(socket){
+    console.log('id: ' + socket.handshake.decoded_token.userid);
+});
+
 console.log('Server started. http://localhost:' + port);
