@@ -1,6 +1,7 @@
-package no.ntnu.game.screens;
+package no.ntnu.game.views;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
@@ -19,6 +20,8 @@ public class MenuScreen extends MyScreen {
 		final TextButton settingsButton = new TextButton("OPTIONS", skin);
 		final TextButton creditsButton = new TextButton("CREDITS", skin);
 
+		// Label
+		final Label statusLabel = new Label(game.getToken(), skin);
 		
 		// Listeners
 		playButton.addListener(new ChangeListener() {
@@ -38,7 +41,7 @@ public class MenuScreen extends MyScreen {
 				
 			}
 		});
-
+		table.add(statusLabel).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(playButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(settingsButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(creditsButton).width(objectWidth).height(objectHeight);

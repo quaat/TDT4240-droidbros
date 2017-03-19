@@ -2,24 +2,24 @@ package no.ntnu.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 
-import no.ntnu.game.screens.LoginScreen;
+import no.ntnu.game.models.User;
+import no.ntnu.game.network.MyNetwork;
+import no.ntnu.game.views.LoginScreen;
+
 
 public class MyGame extends Game{
-	private MySocket mySocket;
+	MyNetwork myNetwork;
 	
 	@Override
 	public void create () {
 		Gdx.app.log("ANDYPANDY", "game init");
-		//mySocket = new MySocket();
+		myNetwork = new MyNetwork(this);
 		setScreen(new LoginScreen(this));
 	}
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		super.render();
 	}
 	
@@ -29,10 +29,23 @@ public class MyGame extends Game{
 	}
 	
 	public void login(String username, String password) {
-		//mySocket.login(username);
+		myNetwork.login(username, password);
+	}
+
+	public void register(String username, String password) {
+		myNetwork.register(username, password);
+	}
+	
+	// delete
+	public String getToken() {
+		return myNetwork.getToken();
+	}
+	
+	public User getUser() {
+		return myNetwork.getUser();
 	}
 	
 	public void sendMessage() {
-		//mySocket.sendMessage("CLICK CLICK");
+		
 	}
 }

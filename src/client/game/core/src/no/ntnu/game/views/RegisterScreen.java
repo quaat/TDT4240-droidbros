@@ -1,4 +1,4 @@
-package no.ntnu.game.screens;
+package no.ntnu.game.views;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -18,20 +18,20 @@ public class RegisterScreen extends MyScreen {
 	@Override
 	void build() {
 		// Textfield
-		final TextField emailField = new TextField("Email", skin);
+		final TextField emailField = new TextField("dummy@delete.me", skin);
 		final TextField usernameField = new TextField("Username", skin);
 		final TextField passwordField = new TextField("Password", skin);
+		emailField.setAlignment(1);
 		usernameField.setAlignment(1);
+		passwordField.setAlignment(1);
 		
 		// Button
 		final TextButton registerButton = new TextButton("REGISTER", skin);
-
 		
 		// Listeners
 		registerButton.addListener(new ChangeListener() {
 			public void changed (ChangeEvent event, Actor actor) {
-				//game.register(data);
-				game.setScreen(new MenuScreen(game));
+				game.register(passwordField.getText(), passwordField.getText());
 			}
 		});
 		

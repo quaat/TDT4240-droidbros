@@ -1,7 +1,8 @@
-package no.ntnu.game.screens;
+package no.ntnu.game.views;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -17,9 +18,15 @@ public class LoginScreen extends MyScreen {
 
 	@Override
 	void build() {
+		String userid = "nick";
+		String password = "password";
+		if (game.getUser() != null) {
+			userid = game.getUser().userid;
+			password = game.getUser().password;
+		}
 		// Textfield
-		final TextField usernameField = new TextField("Username", skin);
-		final TextField passwordField = new TextField("Password", skin);
+		final TextField usernameField = new TextField(userid, skin);
+		final TextField passwordField = new TextField(password, skin);
 		usernameField.setAlignment(1); // center
 		passwordField.setAlignment(1); // center
 		
@@ -27,40 +34,40 @@ public class LoginScreen extends MyScreen {
 		final TextButton loginButton = new TextButton("LOGIN", skin);
 		final TextButton registerButton = new TextButton("REGISTER", skin);
 		
+		// Label
+		final Label statusLabel = new Label("", skin);
+		
 		// Listeners
 		loginButton.addListener(new ChangeListener() {
 			public void changed (ChangeEvent event, Actor actor) {
-				//game.login(usernameField.getText(), passwordField.getText());
-				game.setScreen(new MenuScreen(game));
+				game.login(usernameField.getText(), passwordField.getText());
+				statusLabel.setText("Logging in...");
+				// add some sort of waiting animation
 			}
 		});
 
 		registerButton.addListener(new ChangeListener() {
 			public void changed (ChangeEvent event, Actor actor) {
-				//game.login(usernameField.getText(), passwordField.getText());
 				game.setScreen(new RegisterScreen(game));
 			}
 		});
-
+		
 		usernameField.addListener(new ClickListener() {
 			public void clicked(InputEvent e, float x, float y) {
-				if (usernameField.getText().equals("Username")) {
-					usernameField.setText("");
-				}
+				usernameField.setText("");
 			}
 		});
 
 		passwordField.addListener(new ClickListener() {
 			public void clicked(InputEvent e, float x, float y) {
-				if (passwordField.getText().equals("Password")) {
-					usernameField.setText("");
-				}
+				passwordField.setText("");
 			}
 		});
-
+		
 		table.add(usernameField).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(passwordField).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(loginButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
-		table.add(registerButton).width(objectWidth).height(objectHeight);
+		table.add(registerButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
+		table.add(statusLabel).width(objectWidth).height(objectHeight);
 	}
 }

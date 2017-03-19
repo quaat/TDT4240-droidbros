@@ -1,4 +1,4 @@
-package no.ntnu.game.screens;
+package no.ntnu.game.views;
 
 import no.ntnu.game.MyGame;
 
