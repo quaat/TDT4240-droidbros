@@ -1,18 +1,17 @@
-Server: (skal ordne databasen)
-
-npm install
-node server.js
-
-
-Klient:
-lag fil "local.properties" i "../client/game" foldern med innhold: 
-
-# Location of YOUR android SDK (Eksempel på min)
-sdk.dir=C:/Users/Leppis/AppData/Local/Android/sdk
-
-
-run android:
->>> gradlew android:installDebug android:run
-
-
-de andre gir feilmelding, dno why
+## Server
+* Server is running at https://fast-crag-60223.herokuapp.com/
+* For local:
+```
+$> cd ../src/server
+$> npm install
+$> node server.js
+```
+## Client
+* Create file: `"local.properties"` in `"../src/client/game"` foldern med innhold:
+    ```
+    sdk.dir=C:/Users/Leppis/AppData/Local/Android/sdk
+    ```
+* Connect android phone to computer and run:
+    ```
+    $> gradlew android:installDebug android:run
+    ```
