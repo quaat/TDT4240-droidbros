@@ -126,14 +126,17 @@ var server = require('http').createServer(app).listen(port)
 
 var io = require('socket.io').listen(server);
 
-io.set('authorization', socketioJwt.authorize({
-  secret: app.get('superSecret'),
-  handshake: true
-}));
+//io.set('authorization', socketioJwt.authorize({
+//  secret: app.get('superSecret'),
+//  handshake: true
+//}));
+
+var users = 0;
 
 io.sockets
   .on('connection', function(socket){
-    console.log('id: ' + socket.handshake.decoded_token.userid);
+    console.log('id: ' + socket.handshake.query);
+    users++;
 });
 
 console.log('Server started. http://localhost:' + port);
