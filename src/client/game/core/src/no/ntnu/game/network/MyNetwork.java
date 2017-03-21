@@ -18,7 +18,8 @@ import no.ntnu.game.views.RegisterScreen;
 
 public class MyNetwork {
 	private MyGame game;
-	private final String host = "https://fast-crag-60223.herokuapp.com";
+	//private final String host = "https://fast-crag-60223.herokuapp.com";
+	private final String host = "http://192.168.22.1:8081";
 	private User user;
 	private String token;
 
@@ -105,7 +106,7 @@ public class MyNetwork {
 	public void sendGetRequest(String route, Net.HttpResponseListener listener) {
 		HttpRequestBuilder requestBuilder = new HttpRequestBuilder();
 		String url = host + "/api" + route;
-		
+
 		Net.HttpRequest httpRequest = requestBuilder.newRequest().method(Net.HttpMethods.GET).url(url).build();
 		httpRequest.setHeader("Content-Type", "application/json");
 		NetJavaImpl net = new NetJavaImpl();

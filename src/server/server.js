@@ -53,10 +53,11 @@ app.get('/admin', function(req,res){
 var apiRoutes = express.Router();
 
 apiRoutes.post('/authenticate', function(req, res) {
-  // find the user
+    // find the user
   User.findOne({ 
     userid: req.body.userid
   }, function(err, user) {
+    console.log("/authenticate called");
     if (err) throw err;
 
     if (!user) {
