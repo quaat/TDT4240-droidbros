@@ -1,13 +1,17 @@
-package no.ntnu.game.views;
+/*
+package no.ntnu.game.oldFiles;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 import no.ntnu.game.MyGame;
+import no.ntnu.game.views.AbstractScreen;
+import no.ntnu.game.views.TestScreen;
 
-public class MenuScreen extends MyScreen {
+public class MenuScreen extends AbstractScreen {
 	
 	public MenuScreen(MyGame game) {
 		super(game);
@@ -21,18 +25,20 @@ public class MenuScreen extends MyScreen {
 		final TextButton creditsButton = new TextButton("CREDITS", skin);
 
 		// Label
-		final Label statusLabel = new Label(game.getToken(), skin);
+		final Label statusLabel = new Label("welcome user", skin);
 		
 		// Listeners
 		playButton.addListener(new ChangeListener() {
 			public void changed (ChangeEvent event, Actor actor) {
-				game.setScreen(new GameScreen(game));
+				//game.connect();
+				game.setScreen(new TestScreen(game));
+				Gdx.app.log("ANDYPANDY", "JOIN GAME");
 			}
 		});
 		
 		settingsButton.addListener(new ChangeListener() {
 			public void changed (ChangeEvent event, Actor actor) {
-				game.setScreen(new SettingsScreen(game));
+				game.setScreen(new no.ntnu.game.oldFiles.SettingsScreen(game));
 			}
 		});
 		
@@ -45,6 +51,11 @@ public class MenuScreen extends MyScreen {
 		table.add(playButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(settingsButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(creditsButton).width(objectWidth).height(objectHeight);
-		
+	}
+
+	@Override
+	public void onUpdate() {
+
 	}
 }
+*/

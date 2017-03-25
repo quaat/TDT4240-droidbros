@@ -1,4 +1,5 @@
-package no.ntnu.game.views;
+/*
+package no.ntnu.game.oldFiles;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -8,8 +9,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import no.ntnu.game.MyGame;
+import no.ntnu.game.views.AbstractScreen;
 
-public class RegisterScreen extends MyScreen {
+public class RegisterScreen extends AbstractScreen {
 	
 	public RegisterScreen(MyGame game) {
 		super(game);
@@ -31,7 +33,7 @@ public class RegisterScreen extends MyScreen {
 		// Listeners
 		registerButton.addListener(new ChangeListener() {
 			public void changed (ChangeEvent event, Actor actor) {
-				game.register(passwordField.getText(), passwordField.getText());
+				//game.register(passwordField.getText(), passwordField.getText());
 			}
 		});
 		
@@ -48,4 +50,10 @@ public class RegisterScreen extends MyScreen {
 		table.add(passwordField).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(registerButton).width(objectWidth).height(objectHeight);
 	}
+
+	@Override
+	public void onUpdate() {
+
+	}
 }
+*/
