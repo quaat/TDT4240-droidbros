@@ -10,6 +10,8 @@ import no.ntnu.game.network.MyNetwork;
 import no.ntnu.game.network.NetworkCommunication;
 import no.ntnu.game.util.NetworkObserver;
 import no.ntnu.game.views.LoginScreen;
+import no.ntnu.game.views.MenuScreen;
+import no.ntnu.game.views.RegisterScreen;
 
 
 public class MyGame extends Game implements NetworkObserver {
@@ -24,6 +26,7 @@ public class MyGame extends Game implements NetworkObserver {
 		Gdx.app.log("ANDYPANDY", "game init");
 		//myNetwork = new MyNetwork(this);
 		networkComm = new HttpCommunication(hostInfo);
+		networkComm.addObserver(this);
 		setScreen(new LoginScreen(this));
 	}
 
@@ -75,6 +78,7 @@ public class MyGame extends Game implements NetworkObserver {
 	public void onLogin(String response) {
 
 		this.token = response;
+		changeScreenHelper(0);
 	}
 
 	@Override
@@ -85,5 +89,22 @@ public class MyGame extends Game implements NetworkObserver {
 	@Override
 	public void onError(String error) {
 
+	}
+
+	public void changeScreenHelper(final int screen) {
+		final Game game = this;
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				Gdx.app.postRunnable(new Runnable() {
+					@Override
+					public void run() {
+						if (screen==0) game.setScreen(new MenuScreen((MyGame)game));
+						else if (screen==1) game.setScreen(new LoginScreen((MyGame)game));
+						else if (screen==2) game.setScreen(new RegisterScreen((MyGame)game));
+					}
+				});
+			}
+		}).start();
 	}
 }

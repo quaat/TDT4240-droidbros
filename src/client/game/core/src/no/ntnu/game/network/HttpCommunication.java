@@ -75,7 +75,8 @@ public class HttpCommunication extends NetworkCommunication {
         String url = getRouteUrl(apiPath+route).toString();
 
         Net.HttpRequest httpRequest = requestBuilder.newRequest().method(Net.HttpMethods.POST).url(url).build();
-        httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
+        //httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
+        httpRequest.setHeader("Content-Type", "application/json");
         httpRequest.setContent(data);
         NetJavaImpl net = new NetJavaImpl();
 

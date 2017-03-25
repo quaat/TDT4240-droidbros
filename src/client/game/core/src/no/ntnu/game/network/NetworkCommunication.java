@@ -21,6 +21,10 @@ public abstract class NetworkCommunication {
         super();
     }
 
+    public void addObserver(NetworkObserver observer) {
+        observers.add(observer);
+    }
+
     NetworkCommunication(HostInfo hostInfo){
         super();
         this.hostInfo = hostInfo;
