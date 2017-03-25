@@ -23,7 +23,7 @@ public class MyGame extends Game implements NetworkObserver {
 	public void create () {
 		Gdx.app.log("ANDYPANDY", "game init");
 		//myNetwork = new MyNetwork(this);
-		networkComm = new HttpCommunication();
+		networkComm = new HttpCommunication(hostInfo);
 		setScreen(new LoginScreen(this));
 	}
 
@@ -52,6 +52,7 @@ public class MyGame extends Game implements NetworkObserver {
 	
 	// delete
 	public String getToken() {
+
 		return this.token;
 	}
 	
@@ -72,6 +73,7 @@ public class MyGame extends Game implements NetworkObserver {
 
 	@Override
 	public void onLogin(String response) {
+
 		this.token = response;
 	}
 

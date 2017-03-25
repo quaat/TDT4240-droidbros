@@ -27,7 +27,7 @@ public class HttpCommunication extends NetworkCommunication {
     private final String protocol = "http";
     private List<NetworkObserver> observers = new ArrayList<NetworkObserver>();
 
-    public HttpCommunication() {
+    private HttpCommunication() {
         super();
     }
 
@@ -38,17 +38,22 @@ public class HttpCommunication extends NetworkCommunication {
     private URL getRouteUrl(String route) {
         URL url = null;
         try {
-            url = new URL(this.protocol, hostInfo().hostAddress(), hostInfo().port(), route);
+            String addr = hostInfo().hostAddress();
+            int port = hostInfo().port();
+            url = new URL(this.protocol, addr, port, route);
         } catch (MalformedURLException e) {
             e.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
+
         return url;
     }
 
     @Override
     public void login(User user) {
         // sends a login auth post call, if success
-        sendPostRequest("/authenticate", serializer.write(user), new Net.HttpResponseListener() {
+        sendPostRequest("authenticate", serializer.write(user), new Net.HttpResponseListener() {
             public void handleHttpResponse (Net.HttpResponse httpResponse) {
                 JsonValue response = (JsonValue)serializer.read(httpResponse.getResultAsString());
                 if (response.getBoolean("success")) {
@@ -70,7 +75,7 @@ public class HttpCommunication extends NetworkCommunication {
         String url = getRouteUrl(apiPath+route).toString();
 
         Net.HttpRequest httpRequest = requestBuilder.newRequest().method(Net.HttpMethods.POST).url(url).build();
-        httpRequest.setHeader("Content-Type", "application/json");
+        httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
         httpRequest.setContent(data);
         NetJavaImpl net = new NetJavaImpl();
 
