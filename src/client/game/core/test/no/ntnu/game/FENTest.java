@@ -26,7 +26,7 @@ public class FENTest {
             board.square(col, board.rows()-2).setPiece(new Piece(Piece.Type.PAWN, Piece.Color.BLACK));
         }
 
-        assertEquals(FEN.toFen(board), "8/pppppppp/8/8/8/8/PPPPPPPP/8 wKQkq - 0 1");
+        assertEquals(FEN.toFen(board), "8/pppppppp/8/8/8/8/PPPPPPPP/8 w KQkq - 0 1");
     }
 
 }

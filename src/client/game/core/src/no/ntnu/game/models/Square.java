@@ -4,6 +4,8 @@ package no.ntnu.game.models;
  * Created by thomash on 25.03.2017.
  */
 
+
+
 public class Square {
     final int col;
     final int row;

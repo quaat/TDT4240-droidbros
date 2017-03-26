@@ -56,6 +56,7 @@ public class FEN {
         } else {
             sb.append('b');
         }
+        sb.append(" ");
 
         // Castling availability
         if (board.castlingAvailability()[0]) sb.append('K');

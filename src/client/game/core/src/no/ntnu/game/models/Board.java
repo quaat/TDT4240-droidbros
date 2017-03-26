@@ -4,6 +4,7 @@ package no.ntnu.game.models;
  * Created by thomash on 25.03.2017.
  */
 
+
 public class Board {
     final private int rows;
     final private int cols;
