@@ -5,8 +5,7 @@ import java.util.List;
 
 public class Room {
     private String roomid;
-    private String users;
-    //private List<String> users = new ArrayList<String>();
+    private List<String> users = new ArrayList<String>();
     private List<Message> messages = new ArrayList<Message>();
 
     public Room(Room room) {
@@ -27,23 +26,22 @@ public class Room {
         messages.add(new Message());
     }
 
-    //public void addUser(String user) {
-    //    users.add(user);
-    //}
-
-    // TODO fikse json lista!
     public void addUser(String user) {
-        users = user;
+        users.add(user);
     }
 
-    public void addUsers() {
+    public void setUser(List<String> users) {
+        this.users = users;
+    }
+
+    public void setUsers() {
         // ADD MANY USERS!!
     }
     public String getRoomid() {
         return roomid;
     }
 
-    public String getUsers() {
+    public List<String> getUsers() {
         return users;
     }
 

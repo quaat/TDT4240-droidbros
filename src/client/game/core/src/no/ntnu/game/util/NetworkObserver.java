@@ -1,5 +1,7 @@
 package no.ntnu.game.util;
 
+import java.util.List;
+
 import no.ntnu.game.models.Message;
 import no.ntnu.game.models.Room;
 import no.ntnu.game.models.User;
@@ -15,6 +17,7 @@ public interface NetworkObserver {
     // socket
     public void onConnected(Room room);
     public void onMessage(Message message);
+    public void onUserJoined(List<String> users);
     public void onDisconnected();
 
     // error

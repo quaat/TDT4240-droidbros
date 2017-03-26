@@ -2,6 +2,8 @@ package no.ntnu.game.controllers;
 
 import com.badlogic.gdx.Gdx;
 
+import java.util.List;
+
 import no.ntnu.game.MyGame;
 import no.ntnu.game.models.GameModel;
 import no.ntnu.game.models.Message;
@@ -70,6 +72,12 @@ public class GameController implements NetworkObserver{
     public void onMessage(Message message) {
         Gdx.app.log("ANDYPANDY", "halla");
         model.addMessage(message);
+    }
+
+    @Override
+    public void onUserJoined(List<String> users) {
+        Gdx.app.log("ANDYPANDY", "halla");
+        model.getRoom().addUser("asd");
     }
 
     @Override

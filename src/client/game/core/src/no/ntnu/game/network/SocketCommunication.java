@@ -4,6 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -32,7 +35,7 @@ public class SocketCommunication extends NetworkCommunication {
             socket.on(Socket.EVENT_DISCONNECT, onDisconnect);
             socket.on("join", onJoin); //change name to something else: joinRoom etc?
             socket.on("message", onMessage);
-            // socket.on("userJoined", onUserJoined); // TODO
+            socket.on("userJoined", onUserJoined); // TODO
 
             socket.connect();
         } catch(Exception e){
@@ -82,12 +85,14 @@ public class SocketCommunication extends NetworkCommunication {
         public void call(Object... args) {
             JsonValue response = serializer.read(args[0].toString());
             String roomid = response.getString("roomid");
-            Gdx.app.log("ANDYPANDY", response.getChild("users").toString() );
-            String users = response.getChild("users").toString();
-            //String users = response.getString("users");
+            List<String> users = new ArrayList<String>();
+            JsonValue map = response.getChild("users");
+            for (JsonValue entry = map.child; entry != null; entry = entry.next) {
+                Gdx.app.log("ANDYPANDY", entry.name + " = " + entry.asString());
+                users.add(entry.name);
+            }
             Room room = new Room(roomid);
-            room.addUser(users);
-            Gdx.app.log("ANDYPANDY", "roomid: " + roomid+ ", users: " + users);
+            room.setUser(users);
             emitConnected(room);
         }
     };
@@ -98,6 +103,20 @@ public class SocketCommunication extends NetworkCommunication {
             JsonValue response = serializer.read(args[0].toString());
             Message message = new Message(response.getString("time"), response.getString("userid"), response.getString("text"));
             emitMessage(message);
+        }
+    };
+
+    private Emitter.Listener onUserJoined = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            JsonValue response = serializer.read(args[0].toString());
+            List<String> users = new ArrayList<String>();
+            JsonValue map = response.getChild("users");
+            for (JsonValue entry = map.child; entry != null; entry = entry.next) {
+                Gdx.app.log("ANDYPANDY", entry.name + " = " + entry.asString());
+                users.add(entry.name);
+            }
+            emitUserJoined(users);
         }
     };
 

@@ -77,5 +77,11 @@ public abstract class NetworkCommunication {
             observer.onMessage(message);
         }
     }
+
+    protected void emitUserJoined(List<String> users){
+        for (NetworkObserver observer : observers) {
+            observer.onUserJoined(users);
+        }
+    }
 }
 
