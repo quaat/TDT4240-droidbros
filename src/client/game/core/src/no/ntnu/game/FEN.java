@@ -30,8 +30,21 @@ public class FEN {
                         blank = 0;
                     }
                     switch (p.type()) {
+                        case ROOK:
+                            ch = 'R';
+                            break;
+                        case KNIGHT:
+                            ch = 'N';
+                            break;
+                        case BISHOP:
+                            ch = 'B';
+                            break;
+                        case QUEEN:
+                            ch = 'Q';
+                            break;
                         case KING:
                             ch = 'K';
+                            break;
                         case PAWN:
                         default:
                             ch = 'P';
