@@ -19,6 +19,8 @@ public class Message {
     }
 
     public String toString() {
+        if (userid.equals(""))
+            return "";
         return time + " <" + userid + "> "+text;
     }
 }

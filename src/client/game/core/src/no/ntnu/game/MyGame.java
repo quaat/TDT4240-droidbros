@@ -58,12 +58,6 @@ public class MyGame extends Game{
 	}
 
 	public void setTestView() {
-		Gdx.app.log("ANDYPANDY", "set test view");
-		//model.addMessage(new Message("13:37", "Andy", "HALLA"));
-		//model.addMessage(new Message("13:37", "Per", "Yo"));
-		//model.addMessage(new Message("13:37", "Andy", "Sup?"));
-		//model.addMessage(new Message("13:37", "Per", "Chillin"));
-		Gdx.app.log("ANDYPANDY", "gTEST VIEW");
 		setScreen(testView);
 	}
 
