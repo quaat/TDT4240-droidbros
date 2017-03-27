@@ -9,10 +9,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import no.ntnu.game.MyGame;
+import java.util.ArrayList;
 
-public abstract class MyScreen implements Screen {
-	MyGame game;
+import no.ntnu.game.controllers.GameController;
+import no.ntnu.game.models.GameModel;
+import no.ntnu.game.models.Message;
+import no.ntnu.game.util.ScreenObserver;
+
+public abstract class AbstractView implements Screen, ScreenObserver {
+	GameModel model;
+	GameController controller;
+
 	SpriteBatch batch;
 	Stage stage;
 	Skin skin;
@@ -24,9 +31,13 @@ public abstract class MyScreen implements Screen {
 	int objectHeight;
 	int padX;
 	int padY;
+
+	private boolean changeInData;
 	
-	public MyScreen(MyGame game) {
-		this.game = game;
+	public AbstractView(GameModel model, GameController controller) {
+		this.model = model;
+		this.controller = controller;
+		model.addObserver(this);
 		init();
 	}
 
@@ -52,7 +63,7 @@ public abstract class MyScreen implements Screen {
 	}
 	
 	// Put all the objects on the screen!
-	abstract void build();
+	public abstract void build();
 
 	@Override
 	public void show() {
@@ -68,24 +79,16 @@ public abstract class MyScreen implements Screen {
 	}
 
 	@Override
-	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-	}
+	public void resize(int width, int height) { }
 
 	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-	}
+	public void pause() { }
 
 	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-	}
+	public void resume() { }
 
 	@Override
-	public void hide() {
-		// TODO Auto-generated method stub
-	}
+	public void hide() { }
 
 	@Override
 	public void dispose() {
@@ -93,4 +96,10 @@ public abstract class MyScreen implements Screen {
 		skin.dispose();
 		batch.dispose();
 	}
+
+	@Override
+	public void onUpdate() { }
+
+	@Override
+	public void onMessage() { }
 }

@@ -1,11 +1,14 @@
 package no.ntnu.game.network;
 
-import com.badlogic.gdx.utils.async.AsyncTask;
-
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import no.ntnu.game.models.Message;
+import no.ntnu.game.models.Room;
 import no.ntnu.game.models.User;
+import no.ntnu.game.util.JsonSerializer;
 import no.ntnu.game.util.NetworkObserver;
 
 /**
@@ -13,43 +16,53 @@ import no.ntnu.game.util.NetworkObserver;
  */
 
 public abstract class NetworkCommunication {
+    final String apiPath = "api";
+    final String protocol = "http";
+
+    JsonSerializer serializer = new JsonSerializer();
+
     protected List<NetworkObserver> observers = new ArrayList<NetworkObserver>();
     private HostInfo hostInfo;
-    public abstract void login(User user);
 
-    NetworkCommunication(){
-        super();
-    }
-
-    public void addObserver(NetworkObserver observer) {
+    NetworkCommunication(NetworkObserver observer, HostInfo hostInfo){
+        this.hostInfo = hostInfo;
         observers.add(observer);
     }
 
-    NetworkCommunication(HostInfo hostInfo){
-        super();
-        this.hostInfo = hostInfo;
+    public URL getRouteUrl(String route) {
+        URL url = null;
+        try {
+            if (hostInfo().port()!=0) {
+                url = new URL(this.protocol, hostInfo().hostAddress(), hostInfo().port(), route);
+            }
+            url = new URL(this.protocol, hostInfo().hostAddress(), route);
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return url;
     }
 
     protected HostInfo hostInfo() {
         return this.hostInfo;
-
     }
-    protected void emitConnected() {
+
+    protected void emitConnected(Room room) {
         for (NetworkObserver observer : observers) {
-            observer.onConnected();
+            observer.onConnected(room);
         }
     }
 
-    protected void emitLogin(String response) {
+    protected void emitLogin(User user) {
         for (NetworkObserver observer : observers) {
-            observer.onLogin(response);
+            observer.onLogin(user);
         }
     }
 
     protected void emitDisconnected()
     {
         for (NetworkObserver observer : observers) {
-           observer.onDisconnected();
+            observer.onDisconnected();
         }
     }
 
@@ -58,5 +71,16 @@ public abstract class NetworkCommunication {
             observer.onError(error);
         }
     }
-}
 
+    protected void emitMessage(Message message){
+        for (NetworkObserver observer : observers) {
+            observer.onMessage(message);
+        }
+    }
+
+    protected void emitUserJoined(List<String> users){
+        for (NetworkObserver observer : observers) {
+            observer.onUserJoined(users);
+        }
+    }
+}

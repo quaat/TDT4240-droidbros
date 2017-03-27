@@ -15,6 +15,7 @@ public class HostInfo{
         this.address = address;
         this.port = port;
     }
+
     String hostAddress() {
         return this.address;
     }

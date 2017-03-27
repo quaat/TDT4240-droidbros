@@ -1,12 +1,13 @@
-package no.ntnu.game.views;
+/*package no.ntnu.game.oldFiles;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 import no.ntnu.game.MyGame;
+import no.ntnu.game.views.AbstractScreen;
 
-public class SettingsScreen extends MyScreen {
+public class SettingsScreen extends AbstractScreen {
 
 	public SettingsScreen(MyGame game) {
 		super(game);
@@ -42,4 +43,10 @@ public class SettingsScreen extends MyScreen {
 		table.add(vibrationButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(backButton).width(objectWidth).height(objectHeight);
 	}
+
+	@Override
+	public void onUpdate() {
+
+	}
 }
+*/

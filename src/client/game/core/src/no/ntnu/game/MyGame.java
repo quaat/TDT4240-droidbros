@@ -3,100 +3,69 @@ package no.ntnu.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 
-import no.ntnu.game.models.User;
-import no.ntnu.game.network.HostInfo;
-import no.ntnu.game.network.HttpCommunication;
-import no.ntnu.game.network.MyNetwork;
-import no.ntnu.game.network.NetworkCommunication;
-import no.ntnu.game.util.NetworkObserver;
-import no.ntnu.game.views.LoginScreen;
-import no.ntnu.game.views.MenuScreen;
-import no.ntnu.game.views.RegisterScreen;
+import java.util.ArrayList;
+import java.util.List;
+
+import no.ntnu.game.controllers.GameController;
+import no.ntnu.game.models.GameModel;
+import no.ntnu.game.models.Message;
+import no.ntnu.game.views.AbstractView;
+import no.ntnu.game.views.LoginView;
+import no.ntnu.game.views.TestView;
 
 
-public class MyGame extends Game implements NetworkObserver {
-	NetworkCommunication networkComm = null;
-	HostInfo hostInfo = new HostInfo("192.168.22.1", 8081);
-	User user = null;
-	String token = null;
-	
+public class MyGame extends Game{
+
+	// model
+	private GameModel model;
+
+	// views
+	private AbstractView loginView;
+	private AbstractView testView;
+
+	// controllers
+	private GameController controller;
+
 	@Override
 	public void create () {
 		Gdx.app.log("ANDYPANDY", "game init");
-		networkComm = new HttpCommunication(hostInfo);
-		networkComm.addObserver(this);
-		setScreen(new LoginScreen(this));
+
+		createModel();
+		createControllers();
+		createViews();
+
+		// Set start screen of application
+		setScreen(loginView);
 	}
 
-	@Override
-	public void render () {
-		super.render();
-	}
-	
-	@Override
-	public void dispose () {
-		getScreen().dispose();
-	}
-	
-	public void login(String username, String password) {
-		user = new User(username, password);
-		networkComm.login(user);
+	// Creators
+	private void createModel() {
+		model = new GameModel();
 	}
 
-	public void register(String username, String password) {
-		user = new User(username, password);
+	private void createControllers() {
+		controller = new GameController(model, this);
 	}
 
-	// delete
-	public String getToken() {
-
-		return this.token;
-	}
-	
-	public User getUser() {
-		return user;
+	private void createViews() {
+		loginView = new LoginView(model, controller);
+		testView = new TestView(model, controller);
 	}
 
-	public void sendMessage() {
-		
+	// Setters view
+	public void setLoginView() {
+		setScreen(loginView);
 	}
 
-	@Override
-	public void onConnected() {
-
+	public void setTestView() {
+		setScreen(testView);
 	}
 
-	@Override
-	public void onLogin(String response) {
-
-		this.token = response;
-		changeScreenHelper(0);
+	public LoginView getLoginView() {
+		return (LoginView) loginView;
 	}
 
-	@Override
-	public void onDisconnected() {
-
-	}
-
-	@Override
-	public void onError(String error) {
-
-	}
-
-	public void changeScreenHelper(final int screen) {
-		final Game game = this;
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				Gdx.app.postRunnable(new Runnable() {
-					@Override
-					public void run() {
-						if (screen==0) game.setScreen(new MenuScreen((MyGame)game));
-						else if (screen==1) game.setScreen(new LoginScreen((MyGame)game));
-						else if (screen==2) game.setScreen(new RegisterScreen((MyGame)game));
-					}
-				});
-			}
-		}).start();
+	public TestView getTestView() {
+		return (TestView) testView;
 	}
 }
