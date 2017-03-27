@@ -43,12 +43,20 @@ public class Board {
         return this.fullmoveClock;
     }
 
+    public void setActiveColor(Piece.Color color) {
+        this.activeColor = color;
+    }
+
     public Piece.Color activeColor() {
         return this.activeColor;
     }
 
     public Boolean[] castlingAvailability() {
         return this.castlingAvailability;
+    }
+
+    public void setCastlingAvailability(int idx, Boolean value) {
+        this.castlingAvailability[idx] = value;
     }
 
     private void initializeCastlingAvailability() {
@@ -76,5 +84,13 @@ public class Board {
 
     public int cols() {
         return this.cols;
+    }
+
+    public void setHalfmoveClock(int halfmoveClock) {
+        this.halfmoveClock = halfmoveClock;
+    }
+
+    public void setFullmoveClock(int fullmoveClock) {
+        this.fullmoveClock = fullmoveClock;
     }
 }

@@ -13,7 +13,9 @@ import static org.junit.Assert.*;
 public class FENTest {
     @Test
     public void toBoard() throws Exception {
-        // TODO: Implement method
+        String fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        Board board = FEN.toBoard(fen);
+        assertEquals(FEN.toFen(board), fen);
     }
 
     @Test
@@ -46,6 +48,18 @@ public class FENTest {
         board.square(7, 7).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK));
 
         assertEquals(FEN.toFen(board), "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    }
+
+    @Test
+    public void fenToBoardToFen() throws Exception {
+        String fen = "rnbqkbnr/pppp4/4pppp/8/8/8/PPPPPPPP/QNBRRBNK b Qq - 10 2";
+        Board board = FEN.toBoard(fen);
+
+        String copy = FEN.toFen(board);
+        Board board2 = FEN.toBoard(copy);
+
+        String copy2 = FEN.toFen(board2);
+        assertEquals(fen, copy2);
     }
 
 }
