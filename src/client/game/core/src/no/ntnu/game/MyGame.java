@@ -19,12 +19,10 @@ public class MyGame extends Game implements NetworkObserver {
 	HostInfo hostInfo = new HostInfo("192.168.22.1", 8081);
 	User user = null;
 	String token = null;
-	//MyNetwork myNetwork;
 	
 	@Override
 	public void create () {
 		Gdx.app.log("ANDYPANDY", "game init");
-		//myNetwork = new MyNetwork(this);
 		networkComm = new HttpCommunication(hostInfo);
 		networkComm.addObserver(this);
 		setScreen(new LoginScreen(this));
@@ -43,16 +41,12 @@ public class MyGame extends Game implements NetworkObserver {
 	public void login(String username, String password) {
 		user = new User(username, password);
 		networkComm.login(user);
-		//myNetwork.login(username, password);
 	}
 
 	public void register(String username, String password) {
 		user = new User(username, password);
-		//networkComm.login(user);
 	}
-	//	myNetwork.register(username, password);
-	//}
-	
+
 	// delete
 	public String getToken() {
 
@@ -62,9 +56,7 @@ public class MyGame extends Game implements NetworkObserver {
 	public User getUser() {
 		return user;
 	}
-	//	return myNetwork.getUser();
-	//}
-	
+
 	public void sendMessage() {
 		
 	}

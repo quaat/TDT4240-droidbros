@@ -9,6 +9,11 @@ import static org.junit.Assert.*;
  */
 public class StandardChessPawnMovementTest {
     @Test
+    public void legalMoves1() throws Exception {
+
+    }
+
+    @Test
     public void legalMoves() throws Exception {
 
     }

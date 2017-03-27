@@ -10,10 +10,16 @@ public class Square {
     final int col;
     final int row;
     Piece piece = null;
+    Board board = null; // back-reference
 
-    public Square(int col, int row) {
+    public Square(Board board, int col, int row) {
+        this.board = board;
         this.col = col;
         this.row = row;
+    }
+
+    public Board board() {
+        return this.board;
     }
 
     public Piece piece() { return this.piece; }

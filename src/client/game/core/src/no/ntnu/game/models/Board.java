@@ -61,7 +61,7 @@ public class Board {
     private void initalizeSquares() {
         for (int c = 0; c < cols; c++) {
             for (int r = 0; r < rows; r++) {
-                squares[c][r] = new Square(c,r);
+                squares[c][r] = new Square(this,c,r);
             }
         }
     }
