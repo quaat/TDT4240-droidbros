@@ -8,7 +8,6 @@ var morgan     = require('morgan');
 var mongoose   = require('mongoose');
 
 var jwt        = require('jsonwebtoken');
-var socketioJwt= require('socketio-jwt');
 var config     = require('./config');
 var User       = require('./app/models/user');
 var crypto     = require('./app/crypto/hashing');
@@ -32,20 +31,20 @@ app.get('/admin', function(req,res){
   try {
     var passwordHash = crypto.hash('password');
   } catch (err) {
-	  console.log('error ' + err);
+    console.log('error ' + err);
   }
   console.log('=> using crypto hash: ' + passwordHash);
   var nick = new User({
-  	userid: "nick",
-  	name: 'Nick Cerminara',
-  	email: 'nick@night.com',
-  	hash: passwordHash,
-  	admin: true
+    userid: "nick",
+    name: 'Nick Cerminara',
+    email: 'nick@night.com',
+    hash: passwordHash,
+    admin: true
   });
   nick.save(function(err){
-	  if (err) throw err;
-	  console.log('User saved successfully');
-	  res.json({success:true});
+    if (err) throw err;
+    console.log('User saved successfully');
+    res.json({success:true});
   });
 });
 
@@ -92,7 +91,7 @@ apiRoutes.use(function(req, res, next){
         return res.json({
           success: false,
           message: 'Failed to authenticate token.'
-	      });
+        });
       } else {
       req.decoded = decoded;
       next();
@@ -126,14 +125,67 @@ var server = require('http').createServer(app).listen(port)
 
 var io = require('socket.io').listen(server);
 
-io.set('authorization', socketioJwt.authorize({
-  secret: app.get('superSecret'),
-  handshake: true
-}));
+var users = [];
 
-io.sockets
-  .on('connection', function(socket){
-    console.log('id: ' + socket.handshake.decoded_token.userid);
+io.use(function(socket, next){
+  if (socket.handshake.query && socket.handshake.query.token){
+    jwt.verify(socket.handshake.query.token, app.get('superSecret'), function(err, decoded) {
+      if(err) return next(new Error('Authentication error'));
+      socket.decoded = decoded;
+      next();
+    });
+  }
+  next(new Error('Authentication error'));
+})
+.on('connection', function(socket) {
+    // Connection now authenticated to receive further events
+    console.log('connected user');
+    var user = {
+      id: socket.id,
+      name: socket.decoded._doc.userid
+    };
+    var room;
+    users.push(user);
+
+    socket.emit("welcome", "text");
+
+    socket.on('join', function(data) {
+      console.log(data);
+      socket.join(data, function(){
+        room = data;
+        console.log(io.sockets.adapter.rooms[data]);
+        var info =  {
+          roomid: room,
+          users: io.sockets.adapter.rooms[data]
+        };
+        socket.emit("join", info);
+        io.in(room).emit("userJoined", info);
+        // emitte new user join, instead of 
+      });
+    });
+
+    socket.on('leave', function(data) {
+      socket.leave(room, function() {
+        console.log(room, 'room left');
+        io.sockets.to(room, 'a user has left the room');
+        room = null;
+      })
+    });
+
+    socket.on('message', function(message) {
+      console.log(message);
+      // Change message to json, not string
+      io.in(room).emit("message", message);
+    });
+
+    socket.on('disconnect', function() {
+      console.log('disconnected');
+      for (var i = 0; i < users.length; i++) {
+        if (users[i].id == socket.id) {
+          users.splice(i, 1);
+        }
+      }
+    })
 });
 
 console.log('Server started. http://localhost:' + port);

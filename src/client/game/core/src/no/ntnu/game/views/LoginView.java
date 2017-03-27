@@ -1,5 +1,6 @@
 package no.ntnu.game.views;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -8,50 +9,52 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-import no.ntnu.game.MyGame;
+import no.ntnu.game.controllers.GameController;
+import no.ntnu.game.models.GameModel;
+import no.ntnu.game.models.User;
 
-public class LoginScreen extends MyScreen {
+public class LoginView extends AbstractView {
+
+	private Label statusLabel;
 	
-	public LoginScreen(MyGame game) {
-		super(game);
+	public LoginView(GameModel model, GameController controller) {
+		super(model, controller);
 	}
 
 	@Override
-	void build() {
+	public void build() {
 		String userid = "nick";
 		String password = "password";
-		if (game.getUser() != null) {
-			userid = game.getUser().userid;
-			password = game.getUser().password;
-		}
+
 		// Textfield
 		final TextField usernameField = new TextField(userid, skin);
 		final TextField passwordField = new TextField(password, skin);
-		usernameField.setAlignment(1); // center
-		passwordField.setAlignment(1); // center
+		usernameField.setAlignment(1);
+		passwordField.setAlignment(1);
 		
 		// Button
-		final TextButton loginButton = new TextButton("LOGIN", skin);
-		final TextButton registerButton = new TextButton("REGISTER", skin);
+		TextButton loginButton = new TextButton("LOGIN", skin);
+		TextButton registerButton = new TextButton("REGISTER", skin);
 		
 		// Label
-		final Label statusLabel = new Label("", skin);
-		
+		statusLabel = new Label("", skin);
+
+		// Listeners
+
 		// Listeners
 		loginButton.addListener(new ChangeListener() {
 			public void changed (ChangeEvent event, Actor actor) {
-				game.login(usernameField.getText(), passwordField.getText());
-				statusLabel.setText("Logging in...");
-				// add some sort of waiting animation
+				// Add some logic for correct input check
+				controller.login(usernameField.getText(), passwordField.getText());
 			}
 		});
 
 		registerButton.addListener(new ChangeListener() {
 			public void changed (ChangeEvent event, Actor actor) {
-				game.setScreen(new RegisterScreen(game));
+				// Register call
 			}
 		});
-		
+
 		usernameField.addListener(new ClickListener() {
 			public void clicked(InputEvent e, float x, float y) {
 				usernameField.setText("");
@@ -69,5 +72,9 @@ public class LoginScreen extends MyScreen {
 		table.add(loginButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(registerButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(statusLabel).width(objectWidth).height(objectHeight);
+	}
+
+	@Override
+	public void onUpdate() {
 	}
 }

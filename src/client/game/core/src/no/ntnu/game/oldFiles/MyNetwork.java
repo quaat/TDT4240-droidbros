@@ -1,4 +1,5 @@
-package no.ntnu.game.network;
+/*
+package no.ntnu.game.oldFiles;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
@@ -13,45 +14,49 @@ import com.badlogic.gdx.utils.JsonWriter;
 import no.ntnu.game.MyGame;
 import no.ntnu.game.models.User;
 import no.ntnu.game.views.LoginScreen;
-import no.ntnu.game.views.MenuScreen;
-import no.ntnu.game.views.RegisterScreen;
 
 public class MyNetwork {
 	private MyGame game;
+	public MySocket socket;
 	private final String host = "https://fast-crag-60223.herokuapp.com";
 	private User user;
 	private String token;
 
 	public MyNetwork(MyGame game) {
 		this.game = game;
+		this.socket = new MySocket(game, host);
 	}
-	
+
 	public String getToken() {
 		return token;
 	}
-	
+
 	public User getUser() {
 		return user;
 	}
-	
+
+	public void connect() {
+		socket.connect(token);
+	}
+
 	// Can't change screen from inside another thread (httpResponse) than the rendering thread
 	// This thread runs the code in rendering thread in the next frame
 	public void changeScreenHelper(final int screen) {
 		new Thread(new Runnable() {
-		   @Override
-		   public void run() {
-		      Gdx.app.postRunnable(new Runnable() {
-		         @Override
-		         public void run() {
-		        	 if (screen==0) game.setScreen(new MenuScreen(game));
-		        	 else if (screen==1) game.setScreen(new LoginScreen(game));
-		        	 else if (screen==2) game.setScreen(new RegisterScreen(game));
-		         }
-		      });
+			@Override
+			public void run() {
+				Gdx.app.postRunnable(new Runnable() {
+					@Override
+					public void run() {
+						if (screen==0) game.setScreen(new MenuScreen(game));
+						else if (screen==1) game.setScreen(new LoginScreen(game));
+						else if (screen==2) game.setScreen(new RegisterScreen(game));
+					}
+				});
 			}
 		}).start();
 	}
-	
+
 	// sends a login auth post call, if success
 	public void login(String userid, String password) {
 		user = new User(userid, password);
@@ -69,7 +74,7 @@ public class MyNetwork {
 			public void cancelled() { }
 		});
 	}
-	
+
 	// NOT WORKING, må endre i server koden til (POST)
 	// sends a register (/admin) post call, if success
 	public void register(String userid, String password) {
@@ -98,18 +103,18 @@ public class MyNetwork {
 		httpRequest.setHeader("Content-Type", "application/json");
 		httpRequest.setContent(data);
 		NetJavaImpl net = new NetJavaImpl();
-		
+
 		net.sendHttpRequest(httpRequest, listener);
 	}
 
 	public void sendGetRequest(String route, Net.HttpResponseListener listener) {
 		HttpRequestBuilder requestBuilder = new HttpRequestBuilder();
 		String url = host + "/api" + route;
-		
+
 		Net.HttpRequest httpRequest = requestBuilder.newRequest().method(Net.HttpMethods.GET).url(url).build();
 		httpRequest.setHeader("Content-Type", "application/json");
 		NetJavaImpl net = new NetJavaImpl();
-		
+
 		net.sendHttpRequest(httpRequest, listener);
 	}
 
@@ -123,11 +128,12 @@ public class MyNetwork {
 		json.setOutputType(JsonWriter.OutputType.json);
 		return json.toJson(object);
 	}
-	
-    public String prettyPrint(JsonValue value){
-        JsonValue.PrettyPrintSettings settings = new JsonValue.PrettyPrintSettings();
-        settings.outputType = JsonWriter.OutputType.json;
-        return value.prettyPrint(settings);
-    }
-	
+
+	public String prettyPrint(JsonValue value){
+		JsonValue.PrettyPrintSettings settings = new JsonValue.PrettyPrintSettings();
+		settings.outputType = JsonWriter.OutputType.json;
+		return value.prettyPrint(settings);
+	}
 }
+
+*/
