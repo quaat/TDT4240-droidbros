@@ -5,12 +5,18 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter;
 
-public class JsonSerializer {
-    public JsonValue read(String data) {
+/**
+ * Created by thomash on 19.03.2017.
+ */
+
+public class JsonSerializer extends AbstractSerializer {
+    @Override
+    public Object read(String data) {
         JsonReader jsonReader = new JsonReader();
-        return jsonReader.parse(data);
+        return (Object)jsonReader.parse(data);
     }
 
+    @Override
     public String write(Object object) {
         Json json = new Json();
         json.setOutputType(JsonWriter.OutputType.json);

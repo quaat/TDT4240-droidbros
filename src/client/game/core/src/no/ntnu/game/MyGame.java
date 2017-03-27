@@ -29,7 +29,7 @@ public class MyGame extends Game{
 	@Override
 	public void create () {
 		Gdx.app.log("ANDYPANDY", "game init");
-		
+
 		createModel();
 		createControllers();
 		createViews();

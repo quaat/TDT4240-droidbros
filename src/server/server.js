@@ -52,10 +52,10 @@ app.get('/admin', function(req,res){
 var apiRoutes = express.Router();
 
 apiRoutes.post('/authenticate', function(req, res) {
-  // find the user
-  User.findOne({ 
+    console.log("Requesting user " + req.body.userid);
+  User.findOne({  // Find the user
     userid: req.body.userid
-  }, function(err, user) {
+  }, function(err, user) {    
     if (err) throw err;
 
     if (!user) {
@@ -119,7 +119,7 @@ app.use('/api', apiRoutes);
 
 // Start the server
 //app.listen(port);
-var server = require('http').createServer(app).listen(port)
+var server = require('http').createServer(app).listen(port);
 
 // sockets
 

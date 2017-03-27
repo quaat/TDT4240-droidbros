@@ -83,7 +83,7 @@ public class SocketCommunication extends NetworkCommunication {
     private Emitter.Listener onJoin = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            JsonValue response = serializer.read(args[0].toString());
+            JsonValue response = (JsonValue)serializer.read(args[0].toString());
             String roomid = response.getString("roomid");
             List<String> users = new ArrayList<String>();
             JsonValue map = response.getChild("users");
@@ -100,7 +100,7 @@ public class SocketCommunication extends NetworkCommunication {
     private Emitter.Listener onMessage = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            JsonValue response = serializer.read(args[0].toString());
+            JsonValue response = (JsonValue)serializer.read(args[0].toString());
             Message message = new Message(response.getString("time"), response.getString("userid"), response.getString("text"));
             emitMessage(message);
         }
@@ -109,7 +109,7 @@ public class SocketCommunication extends NetworkCommunication {
     private Emitter.Listener onUserJoined = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            JsonValue response = serializer.read(args[0].toString());
+            JsonValue response = (JsonValue)serializer.read(args[0].toString());
             List<String> users = new ArrayList<String>();
             JsonValue map = response.getChild("users");
             for (JsonValue entry = map.child; entry != null; entry = entry.next) {

@@ -1,5 +1,8 @@
 package no.ntnu.game.models;
 
+/**
+ *
+ */
 public class User {
 	private String userid;
 	private String password;
