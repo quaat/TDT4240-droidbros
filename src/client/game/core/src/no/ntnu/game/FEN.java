@@ -1,7 +1,10 @@
 package no.ntnu.game;
 
+import com.sun.jndi.cosnaming.ExceptionMapper;
+
 import no.ntnu.game.models.Board;
 import no.ntnu.game.models.Piece;
+import no.ntnu.game.TypeErrorException;
 
 /**
  * Created by thomash on 26.03.2017.
@@ -9,8 +12,125 @@ import no.ntnu.game.models.Piece;
 
 public class FEN {
 
-    static public Board toBoard(String fenstring){
-        return new Board();
+    static private Character getCharacterType(Piece.Type type) {
+        switch (type) {
+            case ROOK:
+                return new Character('R');
+            case KNIGHT:
+                return new Character('N');
+            case BISHOP:
+                return new Character('B');
+            case QUEEN:
+                return new Character('Q');
+            case KING:
+                return new Character('K');
+            case PAWN:
+            default:
+                return new Character('P');
+        }
+    }
+
+    static private Piece.Type getType(Character ch) throws TypeErrorException{
+        switch (Character.toUpperCase(ch)) {
+            case 'P':
+                return Piece.Type.PAWN;
+            case 'R':
+                return Piece.Type.ROOK;
+            case 'N':
+                return Piece.Type.KNIGHT;
+            case 'K':
+                return Piece.Type.KING;
+            case 'B':
+                return Piece.Type.BISHOP;
+            case 'Q':
+                return Piece.Type.QUEEN;
+            default:
+                throw new TypeErrorException("Unkown piece type");
+        }
+    }
+
+    static public Board toBoard(String fenstring) throws TypeErrorException {
+        // NOTE!! Assumes an 8x8 board
+        Board board = new Board(8,8);
+
+        String delims = "[ ]+";
+        String[] sections = fenstring.split(delims);
+        if (sections.length != 6) {
+            throw new TypeErrorException("Illegal FEN format");
+        }
+
+        String[] ranks = sections[0].split("[/]+");
+        int row = ranks.length-1;
+        for (int r = 0; r < ranks.length; r++, row--) {
+            int col = 0;
+            for (int c = 0; c < ranks[r].length(); c++, col++) {
+                Piece.Type type = null;
+                Piece.Color color = null;
+                Character alnum = ranks[r].charAt(c);
+                // If character is a number, move to the next non-empty position or end of row
+                if (Character.isDigit(alnum)) {
+                    int dc = Character.getNumericValue(alnum);
+                    col += dc - 1; // remove 1 due to the autoincrement
+                }
+                else {
+                    if (Character.isLowerCase(alnum)) {
+                        color = Piece.Color.BLACK;
+                    } else {
+                        color = Piece.Color.WHITE;
+                    }
+                    try {
+                        type = getType(alnum);
+                    } catch (TypeErrorException err) {
+                        //
+                        throw err;
+                    }
+
+                    board.square(col, row).setPiece(new Piece(type, color));
+                }
+            }
+        }
+
+        // Get active color
+        if (Character.toLowerCase(sections[1].charAt(0)) == 'w') {
+            board.setActiveColor(Piece.Color.WHITE);
+        } else if ((Character.toLowerCase(sections[1].charAt(0)) == 'b')) {
+            board.setActiveColor(Piece.Color.BLACK);
+        } else {
+            throw new TypeErrorException("Illegal FEN format - faulty active color");
+        }
+
+        // Get castling availability
+        board.setCastlingAvailability(0, Boolean.FALSE);
+        board.setCastlingAvailability(1, Boolean.FALSE);
+        board.setCastlingAvailability(2, Boolean.FALSE);
+        board.setCastlingAvailability(3, Boolean.FALSE);
+        for (int cidx = 0; cidx < sections[2].length(); cidx++) {
+            switch (sections[2].charAt(cidx)) {
+                case 'K':
+                    board.setCastlingAvailability(0, Boolean.TRUE);
+                    break;
+                case 'Q':
+                    board.setCastlingAvailability(1, Boolean.TRUE);
+                    break;
+                case 'k':
+                    board.setCastlingAvailability(2, Boolean.TRUE);
+                    break;
+                case 'q':
+                    board.setCastlingAvailability(3, Boolean.TRUE);
+                    break;
+            }
+        }
+
+        // TODO: parse en-passant target
+
+        // TODO: Check errors here:
+        int halfmoveClock = Integer.parseInt(sections[4]);
+        board.setHalfmoveClock(halfmoveClock);
+
+        int fullmoveClock = Integer.parseInt(sections[5]);
+        board.setFullmoveClock(fullmoveClock );
+
+        return board;
     }
 
     static public String toFen(final Board board) {
@@ -29,31 +149,12 @@ public class FEN {
                         sbc.append(blank);
                         blank = 0;
                     }
-                    switch (p.type()) {
-                        case ROOK:
-                            ch = 'R';
-                            break;
-                        case KNIGHT:
-                            ch = 'N';
-                            break;
-                        case BISHOP:
-                            ch = 'B';
-                            break;
-                        case QUEEN:
-                            ch = 'Q';
-                            break;
-                        case KING:
-                            ch = 'K';
-                            break;
-                        case PAWN:
-                        default:
-                            ch = 'P';
-                    }
 
+                    ch = getCharacterType(p.type());
                     if (p.color() == Piece.Color.BLACK) {
                         ch = Character.toLowerCase(ch);
                     }
-                    sb.append(ch);
+                    sbc.append(ch);
                 } else {
                     blank++;
                 }
@@ -72,10 +173,18 @@ public class FEN {
         sb.append(" ");
 
         // Castling availability
-        if (board.castlingAvailability()[0]) sb.append('K');
-        if (board.castlingAvailability()[1]) sb.append('Q');
-        if (board.castlingAvailability()[2]) sb.append('k');
-        if (board.castlingAvailability()[3]) sb.append('q');
+        if (board.castlingAvailability()[0] ||
+                board.castlingAvailability()[1] ||
+                board.castlingAvailability()[2] ||
+                board.castlingAvailability()[3]) {
+
+            if (board.castlingAvailability()[0]) sb.append('K');
+            if (board.castlingAvailability()[1]) sb.append('Q');
+            if (board.castlingAvailability()[2]) sb.append('k');
+            if (board.castlingAvailability()[3]) sb.append('q');
+        } else {
+            sb.append('-');
+        }
         sb.append(' ');
 
         // TODO: Insert en passant target

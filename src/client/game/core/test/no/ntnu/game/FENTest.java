@@ -13,7 +13,9 @@ import static org.junit.Assert.*;
 public class FENTest {
     @Test
     public void toBoard() throws Exception {
-        // TODO: Implement method
+        String fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        Board board = FEN.toBoard(fen);
+        assertEquals(FEN.toFen(board), fen);
     }
 
     @Test
@@ -46,6 +48,41 @@ public class FENTest {
         board.square(7, 7).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK));
 
         assertEquals(FEN.toFen(board), "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    }
+
+    @Test
+    public void fenToBoardToFen() throws Exception {
+        String fen = "rnbqkbnr/pppp4/4pppp/8/8/8/PPPPPPPP/QNBRRBNK b Qq - 10 2";
+        Board board = FEN.toBoard(fen);
+
+        String copy = FEN.toFen(board);
+        Board board2 = FEN.toBoard(copy);
+
+        String copy2 = FEN.toFen(board2);
+        assertEquals(fen, copy2);
+    }
+
+    @Test
+    public void multifen() throws Exception {
+        String fen = "8/8/2k5/8/8/8/8/K7 w - - 0 1";
+        Board board = FEN.toBoard(fen);
+        assertEquals(fen, FEN.toFen(board));
+
+        fen = "6k1/3P4/2N1p3/PPR1PB2/1pn3p1/1R3b2/P1K5/8 w - - 0 1";
+        board = FEN.toBoard(fen);
+        assertEquals(fen, FEN.toFen(board));
+
+        fen = "1N6/3pPRp1/2P2pb1/2Kp2r1/2B1q1kP/2p5/8/8 w - - 0 1";
+        board = FEN.toBoard(fen);
+        assertEquals(fen, FEN.toFen(board));
+
+        fen = "7q/N5Qp/1p2k3/4p1p1/pP2R2P/7p/5PR1/K7 w - - 0 1";
+        board = FEN.toBoard(fen);
+        assertEquals(fen, FEN.toFen(board));
+
+        fen = "4N3/qP1Nr3/2p1pK1p/4R1Pr/PPpkBp2/pPpq2B1/PPPp1n2/b1Q2b2 w - - 0 1";
+        board = FEN.toBoard(fen);
+        assertEquals(fen, FEN.toFen(board));
     }
 
 }
