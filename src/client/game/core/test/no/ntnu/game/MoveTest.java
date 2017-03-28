@@ -65,5 +65,21 @@ public class MoveTest {
         assertEquals(m2.to().row(), 5);
     }
 
+    @Test
+    public void movePieceOnBoard() throws Exception {
+        // Start
+        String standardStartPosition ="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        Board board = FEN.toBoard(standardStartPosition);
 
+        board = GameAction.movePiece(board, new Move("d2", "d4"));
+        String fen = FEN.toFen(board);
+        assertEquals(fen, "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1");
+
+        board = GameAction.movePiece(board, new Move("d7", "d5"));
+        board = GameAction.movePiece(board, new Move("b1", "c3"));
+        board = GameAction.movePiece(board, new Move("c7", "c6"));
+        fen = FEN.toFen(board);
+
+        assertEquals(fen, "rnbqkbnr/pp2pppp/2p5/3p4/3P4/2N5/PPP1PPPP/R1BQKBNR w KQkq - 0 3");
+    }
 }

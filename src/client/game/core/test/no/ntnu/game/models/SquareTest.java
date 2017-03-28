@@ -9,6 +9,25 @@ import static org.junit.Assert.*;
  */
 public class SquareTest {
     @Test
+    public void constructor() throws Exception {
+        Square sq = new Square("A1");
+        assertEquals(sq.col(), 0);
+        assertEquals(sq.row(), 0);
+
+        sq = new Square("H1");
+        assertEquals(sq.col(), 7);
+        assertEquals(sq.row(), 0);
+
+        sq = new Square("A8");
+        assertEquals(sq.col(), 0);
+        assertEquals(sq.row(), 7);
+
+        sq = new Square("H8");
+        assertEquals(sq.col(), 7);
+        assertEquals(sq.row(), 7);
+    }
+
+    @Test
     public void piece() throws Exception {
 
     }

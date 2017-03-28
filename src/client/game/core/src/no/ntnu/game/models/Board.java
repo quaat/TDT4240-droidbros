@@ -47,6 +47,10 @@ public class Board {
         this.activeColor = color;
     }
 
+    public void flipActiveColor() {
+        this.activeColor = (this.activeColor == Piece.Color.BLACK ? Piece.Color.WHITE: Piece.Color.BLACK);
+    }
+
     public Piece.Color activeColor() {
         return this.activeColor;
     }
@@ -90,7 +94,18 @@ public class Board {
         this.halfmoveClock = halfmoveClock;
     }
 
+    public void resetHalfmoveClock() {
+        this.halfmoveClock = 0;
+    }
+    public void incrementHalfmoveClock() {
+        this.halfmoveClock++;
+    }
+
     public void setFullmoveClock(int fullmoveClock) {
         this.fullmoveClock = fullmoveClock;
+    }
+
+    public void incrementFullmoveClock() {
+        this.fullmoveClock++;
     }
 }
