@@ -7,6 +7,12 @@ import java.util.function.Function;
 import no.ntnu.game.models.Board;
 import no.ntnu.game.models.Square;
 import no.ntnu.game.models.Piece;
+import no.ntnu.game.movestrategy.HorizontalStrategyDecorator;
+import no.ntnu.game.movestrategy.MoveStrategy;
+import no.ntnu.game.movestrategy.StandardChessPawnMovement;
+import no.ntnu.game.movestrategy.ULDiagonalStrategyDecorator;
+import no.ntnu.game.movestrategy.URDiagonalStrategyDecorator;
+import no.ntnu.game.movestrategy.VerticalStrategyDecorator;
 
 import static org.junit.Assert.*;
 
@@ -42,6 +48,19 @@ public class MoveTest {
         return board;
     }
 
+    private Board createBoardWithStrategy() {
+
+
+        Board board = new Board();
+        for (int col = 0; col < board.cols(); col++) {
+            board.square(col, 1).setPiece(new Piece(Piece.Type.PAWN, Piece.Color.WHITE, new StandardChessPawnMovement()));
+        }
+        for (int col = 0; col < board.cols(); col++) {
+            board.square(col, board.rows()-2).setPiece(new Piece(Piece.Type.PAWN, Piece.Color.BLACK, new StandardChessPawnMovement()));
+        }
+        return board;
+    }
+
     @Test
     public void testMovement() throws Exception {
         Function<Square,Move> forwardMove = s -> {
@@ -63,6 +82,24 @@ public class MoveTest {
         Square s2 = b.square(1,6); // should be a black piece
         Move m2 = forwardMove.apply(s2);
         assertEquals(m2.to().row(), 5);
+    }
+
+    @Test
+    public void testPawnMoveStrategy() throws Exception {
+        MoveStrategy queenStrategy = new HorizontalStrategyDecorator(
+                new VerticalStrategyDecorator(
+                        new ULDiagonalStrategyDecorator(
+                                new URDiagonalStrategyDecorator()
+                        )
+                )
+        );
+        Piece piece = new Piece(Piece.Type.QUEEN,Piece.Color.WHITE,queenStrategy);
+        Board board = FEN.toBoard("8/8/8/4Q3/8/8/8/8 w - - 0 1");
+        Square square = board.square(4,4);
+
+        for (Function<Square,Move[]> fn : piece.legalMoves()) {
+            Move[] moves = fn.apply(square);
+        }
     }
 
     @Test

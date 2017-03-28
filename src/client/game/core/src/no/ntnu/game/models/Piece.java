@@ -1,5 +1,9 @@
 package no.ntnu.game.models;
 
+import java.util.List;
+import java.util.function.Function;
+
+import no.ntnu.game.Move;
 import no.ntnu.game.movestrategy.MoveStrategy;
 
 /**
@@ -45,5 +49,9 @@ public class Piece {
 
     public Object object() {
         return this.object;
+    }
+
+    public List<Function<Square,Move[]>> legalMoves() {
+        return this.strategy.legalMoves();
     }
 }

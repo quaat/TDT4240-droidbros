@@ -12,6 +12,5 @@ import no.ntnu.game.models.Square;
  */
 
 public interface MoveStrategy {
-    public List<Function<Square,Move>> legalMoves();
-    public Move[] legalMoves(Square square);
+    public List<Function<Square,Move[]>> legalMoves();
 }
