@@ -126,6 +126,7 @@ var server = require('http').createServer(app).listen(port);
 var io = require('socket.io').listen(server);
 
 var users = [];
+var rooms = [];
 
 io.use(function(socket, next){
   if (socket.handshake.query && socket.handshake.query.token){
@@ -144,23 +145,20 @@ io.use(function(socket, next){
       id: socket.id,
       name: socket.decoded._doc.userid
     };
-    var room;
+
     users.push(user);
 
     socket.emit("welcome", "text");
 
     socket.on('join', function(data) {
-      console.log(data);
       socket.join(data, function(){
         room = data;
-        console.log(io.sockets.adapter.rooms[data]);
         var info =  {
           roomid: room,
-          users: io.sockets.adapter.rooms[data]
+          users: io.sockets.adapter.rooms[data] // gives all socket.id's
         };
         socket.emit("join", info);
         io.in(room).emit("userJoined", info);
-        // emitte new user join, instead of 
       });
     });
 
