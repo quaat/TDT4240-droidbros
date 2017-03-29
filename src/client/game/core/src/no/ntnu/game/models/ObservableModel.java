@@ -29,12 +29,4 @@ public abstract class ObservableModel {
             observer.onMessage();
         }
     }
-
-    protected void emitQueueUpdate() {
-        for (ScreenObserver observer : observers) {
-            observer.onQueueUpdate();
-        }
-    }
-
-
 }

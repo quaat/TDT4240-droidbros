@@ -17,8 +17,7 @@ public interface NetworkObserver {
     // socket
     public void onConnected(Room room);
     public void onMessage(Message message);
-    public void onQueueUpdate(String queue);
-    public void onWelcome(String users, String queue);
+    public void onUpdate(String users, String queue, String games);
     public void onDisconnected();
 
     // error

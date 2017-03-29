@@ -7,9 +7,10 @@ public class GameModel extends ObservableModel {
     private Room currentRoom; // change to game
 
 
-    // Length of queue
+    // Statistics from server
+    private String currentUsers;
     private String currentQueue;
-    private String currentUsersOnline;
+    private String currentGames;
 
     public GameModel() {
         setRoom(new Room(""));
@@ -28,20 +29,16 @@ public class GameModel extends ObservableModel {
     }
 
     // update queue size
-    public void setQueue(String queue) {
+    public void updateStatistics(String users, String queue, String games) {
+        currentUsers = users;
         currentQueue = queue;
-        emitChanges();
-    }
-
-    public void setCurrentUsersOnline(String users) {
-        currentUsersOnline =  users;
+        currentGames = games;
         emitChanges();
     }
 
     // add message to current room
     public void addMessage(Message message) {
         currentRoom.addMessage(message);
-        Gdx.app.log("ANDYPANDY", "message add");
         emitMessage();
     }
 
@@ -53,11 +50,15 @@ public class GameModel extends ObservableModel {
         return currentRoom;
     }
 
-    public String getQueue() {
+    public String getCurrentUsers() {
+        return currentUsers;
+    }
+
+    public String getCurrentQueue() {
         return currentQueue;
     }
 
-    public String getCurrentUsersOnline() {
-        return currentUsersOnline;
+    public String getCurrentGames() {
+        return currentGames;
     }
 }

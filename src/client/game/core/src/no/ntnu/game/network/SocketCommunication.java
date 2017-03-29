@@ -1,7 +1,6 @@
 package no.ntnu.game.network;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
 import java.util.ArrayList;
@@ -36,9 +35,7 @@ public class SocketCommunication extends NetworkCommunication {
             socket.on("join", onJoin); // room
             socket.on("message", onMessage); // room
 
-            socket.on("welcome", onWelcome); // game
-            socket.on("queue", onQueue); // game
-
+            socket.on("update", onUpdate); // game
 
             socket.connect();
         } catch(Exception e){
@@ -129,21 +126,14 @@ public class SocketCommunication extends NetworkCommunication {
         }
     };
 
-    private Emitter.Listener onWelcome = new Emitter.Listener() {
+    private Emitter.Listener onUpdate = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            //JsonValue response = (JsonValue)serializer.read(args[0].toString());
-            Gdx.app.log("ANDYPANDY", args[0].toString());
-            emitWelcome(args[0].toString(), args[1].toString());
+            JsonValue response = (JsonValue)serializer.read(args[0].toString());
+            String users = response.getString("users");
+            String queue = response.getString("queue");
+            String games = response.getString("games");
+            emitUpdate(users, queue, games);
         }
     };
-
-    private Emitter.Listener onQueue = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            Gdx.app.log("ANDYPANDY", args[0].toString());
-            emitQueueUpdate(args[0].toString());
-        }
-    };
-
 }

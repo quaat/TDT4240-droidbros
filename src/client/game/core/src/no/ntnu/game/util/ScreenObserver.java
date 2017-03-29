@@ -12,5 +12,4 @@ import no.ntnu.game.models.ObservableModel;
 public interface ScreenObserver {
     public void onUpdate();
     public void onMessage();
-    public void onQueueUpdate();
 }

@@ -102,7 +102,4 @@ public abstract class AbstractView implements Screen, ScreenObserver {
 
 	@Override
 	public void onMessage() { }
-
-	@Override
-	public void onQueueUpdate() { }
 }

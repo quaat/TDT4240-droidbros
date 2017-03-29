@@ -83,15 +83,8 @@ public class GameController implements NetworkObserver{
     }
 
     @Override
-    public void onQueueUpdate(String queue) {
-        Gdx.app.log("ANDYPANDY", queue);
-        model.setQueue(queue);
-    }
-
-    @Override
-    public void onWelcome(String users, String queue) {
-        Gdx.app.log("ANDYPANDY", "users online: " + users + ", queue num: " + queue);
-        model.setQueue(queue);
+    public void onUpdate(String users, String queue, String games) {
+        model.updateStatistics(users, queue, games);
     }
 
     @Override

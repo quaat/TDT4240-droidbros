@@ -74,12 +74,7 @@ public class TestView2 extends AbstractView {
 
     @Override
     public void onUpdate() {
-        queueLabel.setText(usersText + model.getCurrentUsersOnline() + " - " + queueText + model.getQueue());
-    }
-
-    @Override
-    public void onQueueUpdate() {
-
+        queueLabel.setText(usersText + model.getCurrentUsers() + " - " + queueText + model.getCurrentQueue());
     }
 
     public void gameJoined() {
