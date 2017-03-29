@@ -126,7 +126,77 @@ var server = require('http').createServer(app).listen(port);
 var io = require('socket.io').listen(server);
 
 var users = [];
-var rooms = [];
+var games = [];
+var queue = [];
+
+function user(id, name, level) {
+  this.id = id;
+  this.name = name;
+  this.level = level;
+  this.inGame = false;
+  this.setInGame = function(bool) {
+    this.inGame = bool;
+  };
+}
+
+function game(id) {
+  this.id = id;
+  this.active = false;
+  this.start = null;
+  this.player1 = null;
+  this.player2 = null;
+
+  this.initGame = function(player1, player2, date) {
+    this.start = date;
+    this.active  = true;
+    this.player1 = player1;
+    this.player2 = player2;
+  }
+  this.resetGame = function() {
+    this.start = null;
+    this.active = false;
+    this.player1 = null;
+    this.player2 = null;
+  }
+}
+
+function findUser(user) {
+  return user.id == 2;
+}
+/*
+// Add games
+var g1 = new game(1);
+var g2 = new game(2);
+
+games.push(g1);
+games.push(g2);
+
+// Add users
+var u1 = new user(1, "andy", 1);
+var u2 = new user(2, "johan", 1);
+var u3 = new user(3, "nora", 1);
+
+users.push(u1);
+users.push(u2);
+users.push(u3);
+
+console.log(users.find(findUser));
+*/
+
+// Add users to queue
+//queue.push(u1);
+//queue.push(u2);
+//queue.push(u3);
+
+
+// FIFO from queue, and 2 players to game object
+if (queue.length >= 2) {
+  var player1 = queue.shift();
+  var player2 = queue.shift();
+  g1.initGame(player1, player2, new Date().toLocaleString());
+}
+
+
 
 io.use(function(socket, next){
   if (socket.handshake.query && socket.handshake.query.token){
@@ -139,17 +209,38 @@ io.use(function(socket, next){
   next(new Error('Authentication error'));
 })
 .on('connection', function(socket) {
-    // Connection now authenticated to receive further events
     console.log('connected user');
-    var user = {
-      id: socket.id,
-      name: socket.decoded._doc.userid
-    };
+    // Create new user when connected
+    var user_ = new user(socket.id, socket.decoded._doc.userid, 1);
+    // Add user to list of players online
+    users.push(user_);
+    // Send welcome message back, with username and users online
+    socket.emit("welcome", users.length, queue.length);
 
-    users.push(user);
+    socket.on('findGame', function() {
+      socket.join("queue", function(){ // add user to a "queue" room
+        // if user already in queue return blank
+        var bool = queue.find(function(user) {
+          return user.id == user_.id;
+        });
+        if (bool) return;
+        queue.push(user_); // add user to queue
+        io.in("queue").emit("queue", queue.length); // Update clients queue length
+      });
+    });
 
-    socket.emit("welcome", "text");
 
+
+
+
+
+
+
+
+
+
+
+    // ROOM METHODS, merge if we want text function
     socket.on('join', function(data) {
       socket.join(data, function(){
         room = data;
@@ -176,11 +267,21 @@ io.use(function(socket, next){
       io.in(room).emit("message", message);
     });
 
+    // DISCONNECT FROM SOCKET
+
     socket.on('disconnect', function() {
       console.log('disconnected');
+      // remove from users list
       for (var i = 0; i < users.length; i++) {
         if (users[i].id == socket.id) {
           users.splice(i, 1);
+        }
+      }
+      // remove from queue list
+      for (var i = 0; i < queue.length; i++) {
+        if (queue[i].id == socket.id) {
+          queue.splice(i, 1);
+          io.in("queue").emit("queue", queue.length); // update queue for clients
         }
       }
     })
