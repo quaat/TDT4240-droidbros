@@ -33,9 +33,12 @@ public class SocketCommunication extends NetworkCommunication {
             socket = IO.socket(getRouteUrl("").toString(), options);
             socket.on(Socket.EVENT_CONNECT, onConnect);
             socket.on(Socket.EVENT_DISCONNECT, onDisconnect);
-            socket.on("join", onJoin); //change name to something else: joinRoom etc?
-            socket.on("message", onMessage);
-            socket.on("userJoined", onUserJoined); // TODO
+            socket.on("join", onJoin); // room
+            socket.on("message", onMessage); // room
+
+            socket.on("welcome", onWelcome); // game
+            socket.on("queue", onQueue); // game
+
 
             socket.connect();
         } catch(Exception e){
@@ -48,6 +51,8 @@ public class SocketCommunication extends NetworkCommunication {
         socket.disconnect();
     }
 
+
+    // ROOM TEST METHODS
     // Tell server to join room
     public void joinRoom(Room room) {
         Gdx.app.log("ANDYPANDY", room.getRoomid());
@@ -63,6 +68,11 @@ public class SocketCommunication extends NetworkCommunication {
     // Send message
     public void sendMessage(Message message) {
         socket.emit("message", serializer.write(message));
+    }
+
+    // GAME TEST METHODS
+    public void findGame() {
+        socket.emit("findGame");
     }
 
     private Emitter.Listener onConnect = new Emitter.Listener() {
@@ -116,7 +126,23 @@ public class SocketCommunication extends NetworkCommunication {
                 Gdx.app.log("ANDYPANDY", entry.name + " = " + entry.asString());
                 users.add(entry.name);
             }
-            emitUserJoined(users);
+        }
+    };
+
+    private Emitter.Listener onWelcome = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            //JsonValue response = (JsonValue)serializer.read(args[0].toString());
+            Gdx.app.log("ANDYPANDY", args[0].toString());
+            emitWelcome(args[0].toString(), args[1].toString());
+        }
+    };
+
+    private Emitter.Listener onQueue = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            Gdx.app.log("ANDYPANDY", args[0].toString());
+            emitQueueUpdate(args[0].toString());
         }
     };
 

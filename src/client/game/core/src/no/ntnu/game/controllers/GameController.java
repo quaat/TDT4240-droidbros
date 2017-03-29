@@ -41,6 +41,7 @@ public class GameController implements NetworkObserver{
         // wait for response, see onLogin()
     }
 
+    // Room test methods
     public void joinRoom(String roomid) {
         Gdx.app.log("ANDYPANDY", "Join room");
         Room room = new Room(roomid);
@@ -53,13 +54,20 @@ public class GameController implements NetworkObserver{
         socket.sendMessage(new Message(time, model.getUser().getUserid(), text));
     }
 
+    // Game test methods
+    public void findGame() {
+        Gdx.app.log("ANDYPANDY", "Find game");
+        socket.findGame();
+    }
+
+
     @Override
     public void onLogin(User user) {
         Gdx.app.log("ANDYPANDY", "Logged in: " + user.getUserid());
         model.setUser(user);
         Gdx.app.log("ANDYPANDY", "Token: " + user.getToken());
         socket.connect(user.getToken());
-        viewController.setTestView();
+        viewController.setTestView2();
     }
 
     @Override
@@ -75,9 +83,15 @@ public class GameController implements NetworkObserver{
     }
 
     @Override
-    public void onUserJoined(List<String> users) {
-        Gdx.app.log("ANDYPANDY", "halla");
-        model.getRoom().addUser("asd");
+    public void onQueueUpdate(String queue) {
+        Gdx.app.log("ANDYPANDY", queue);
+        model.setQueue(queue);
+    }
+
+    @Override
+    public void onWelcome(String users, String queue) {
+        Gdx.app.log("ANDYPANDY", "users online: " + users + ", queue num: " + queue);
+        model.setQueue(queue);
     }
 
     @Override

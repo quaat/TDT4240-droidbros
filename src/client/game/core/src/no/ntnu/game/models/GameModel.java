@@ -4,7 +4,12 @@ import com.badlogic.gdx.Gdx;
 
 public class GameModel extends ObservableModel {
     private User currentUser;
-    private Room currentRoom;
+    private Room currentRoom; // change to game
+
+
+    // Length of queue
+    private String currentQueue;
+    private String currentUsersOnline;
 
     public GameModel() {
         setRoom(new Room(""));
@@ -22,6 +27,17 @@ public class GameModel extends ObservableModel {
         emitChanges();
     }
 
+    // update queue size
+    public void setQueue(String queue) {
+        currentQueue = queue;
+        emitChanges();
+    }
+
+    public void setCurrentUsersOnline(String users) {
+        currentUsersOnline =  users;
+        emitChanges();
+    }
+
     // add message to current room
     public void addMessage(Message message) {
         currentRoom.addMessage(message);
@@ -35,5 +51,13 @@ public class GameModel extends ObservableModel {
 
     public Room getRoom() {
         return currentRoom;
+    }
+
+    public String getQueue() {
+        return currentQueue;
+    }
+
+    public String getCurrentUsersOnline() {
+        return currentUsersOnline;
     }
 }

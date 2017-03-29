@@ -78,9 +78,15 @@ public abstract class NetworkCommunication {
         }
     }
 
-    protected void emitUserJoined(List<String> users){
+    protected void emitWelcome(String users, String queue){
         for (NetworkObserver observer : observers) {
-            observer.onUserJoined(users);
+            observer.onWelcome(users, queue);
+        }
+    }
+
+    protected void emitQueueUpdate(String queue){
+        for (NetworkObserver observer : observers) {
+            observer.onQueueUpdate(queue);
         }
     }
 }

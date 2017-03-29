@@ -16,7 +16,7 @@ public abstract class ObservableModel {
         observers.add(observer);
     }
 
-    // Notify all models about change
+    // Notify all views about change
     protected void emitChanges() {
         for (ScreenObserver observer : observers) {
             observer.onUpdate();
@@ -27,6 +27,12 @@ public abstract class ObservableModel {
     protected void emitMessage() {
         for (ScreenObserver observer : observers) {
             observer.onMessage();
+        }
+    }
+
+    protected void emitQueueUpdate() {
+        for (ScreenObserver observer : observers) {
+            observer.onQueueUpdate();
         }
     }
 
