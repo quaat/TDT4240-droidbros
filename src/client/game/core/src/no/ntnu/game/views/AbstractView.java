@@ -101,5 +101,5 @@ public abstract class AbstractView implements Screen, ScreenObserver {
 	public void onUpdate() { }
 
 	@Override
-	public void onMessage() { }
+	public void onNewMove() { }
 }

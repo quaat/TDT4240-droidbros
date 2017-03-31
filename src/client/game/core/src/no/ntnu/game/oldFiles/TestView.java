@@ -1,4 +1,4 @@
-package no.ntnu.game.views;
+/*package no.ntnu.game.oldFiles;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -12,6 +12,7 @@ import java.util.List;
 import no.ntnu.game.controllers.GameController;
 import no.ntnu.game.models.GameModel;
 import no.ntnu.game.models.Message;
+import no.ntnu.game.views.AbstractView;
 
 public class TestView extends AbstractView {
 
@@ -87,3 +88,4 @@ public class TestView extends AbstractView {
         message4Label.setText(messages.get(messages.size() - 1).toString());
     }
 }
+*/

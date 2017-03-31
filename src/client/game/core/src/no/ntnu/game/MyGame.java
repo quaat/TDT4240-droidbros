@@ -3,15 +3,10 @@ package no.ntnu.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import no.ntnu.game.controllers.GameController;
 import no.ntnu.game.models.GameModel;
-import no.ntnu.game.models.Message;
 import no.ntnu.game.views.AbstractView;
 import no.ntnu.game.views.LoginView;
-import no.ntnu.game.views.TestView;
 import no.ntnu.game.views.TestView2;
 
 
@@ -22,7 +17,6 @@ public class MyGame extends Game{
 
 	// views
 	private AbstractView loginView;
-	private AbstractView testView; // message room
 	private AbstractView testView2; // game room
 
 	// controllers
@@ -51,7 +45,6 @@ public class MyGame extends Game{
 
 	private void createViews() {
 		loginView = new LoginView(model, controller);
-		testView = new TestView(model, controller);
 		testView2 = new TestView2(model, controller);
 	}
 
@@ -60,19 +53,16 @@ public class MyGame extends Game{
 		setScreen(loginView);
 	}
 
-	public void setTestView() {
-		setScreen(testView);
-	}
-
 	public void setTestView2() {
 		setScreen(testView2);
 	}
+
+	// Getters view
 	public LoginView getLoginView() {
 		return (LoginView) loginView;
 	}
 
-	public TestView getTestView() {
-		return (TestView) testView;
+	public TestView2 getTestView2() {
+		return (TestView2) testView2;
 	}
-
 }

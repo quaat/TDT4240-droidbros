@@ -41,23 +41,18 @@ public class GameController implements NetworkObserver{
         // wait for response, see onLogin()
     }
 
-    // Room test methods
-    public void joinRoom(String roomid) {
-        Gdx.app.log("ANDYPANDY", "Join room");
-        Room room = new Room(roomid);
-        socket.joinRoom(room);
-    }
-
-    public void sendMessage(String text) {
-        Gdx.app.log("ANDYPANDY", "send message");
-        // Todo set time to real time
-        socket.sendMessage(new Message(time, model.getUser().getUserid(), text));
-    }
-
-    // Game test methods
+    // Find new game
     public void findGame() {
         Gdx.app.log("ANDYPANDY", "Find game");
         socket.findGame();
+    }
+
+    // Do a move
+    public void doMove() {
+        if (model.isItMyTurn()) {
+            Gdx.app.log("ANDYPANDY", "I did a move");
+            socket.doMove();
+        }
     }
 
 
@@ -65,26 +60,32 @@ public class GameController implements NetworkObserver{
     public void onLogin(User user) {
         Gdx.app.log("ANDYPANDY", "Logged in: " + user.getUserid());
         model.setUser(user);
-        Gdx.app.log("ANDYPANDY", "Token: " + user.getToken());
+        //Gdx.app.log("ANDYPANDY", "Token: " + user.getToken());
         socket.connect(user.getToken());
         viewController.setTestView2();
     }
 
     @Override
-    public void onConnected(Room room) {
-        Gdx.app.log("ANDYPANDY", room.toString());
-        model.setRoom(room);
-    }
-
-    @Override
-    public void onMessage(Message message) {
-        Gdx.app.log("ANDYPANDY", "halla");
-        model.addMessage(message);
+    public void onConnected() {
+        Gdx.app.log("ANDYPANDY", "connected");
     }
 
     @Override
     public void onUpdate(String users, String queue, String games) {
         model.updateStatistics(users, queue, games);
+    }
+
+    @Override
+    public void onStartGame(String gameid, String opponent, String color) {
+        Gdx.app.log("ANDYPANDY", "start game");
+        model.startGame(gameid, opponent, color);
+        viewController.getTestView2().gameJoined();
+    }
+
+    @Override
+    public void onNewMove() {
+        Gdx.app.log("ANDYPANDY", "start game");
+        model.updateGame("yup", "new");
     }
 
     @Override

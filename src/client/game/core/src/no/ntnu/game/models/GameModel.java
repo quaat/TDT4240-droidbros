@@ -3,29 +3,50 @@ package no.ntnu.game.models;
 import com.badlogic.gdx.Gdx;
 
 public class GameModel extends ObservableModel {
-    private User currentUser;
-    private Room currentRoom; // change to game
+    private User user;
 
+    // Current game
+    private String gameid; // gameid
+    private String opponent; // playing against
+    private String color; // your color
+    private String state; // current game state
+    private String turn; // Who takes next move
 
     // Statistics from server
-    private String currentUsers;
-    private String currentQueue;
-    private String currentGames;
+    private String currentUsers; // Users online
+    private String currentQueue; // Users searching for game
+    private String currentGames; // Games in progress
 
     public GameModel() {
-        setRoom(new Room(""));
+
     }
 
     // set current user
     public void setUser(User user) {
-        currentUser = new User(user);
+        this.user = new User(user);
         emitChanges();
     }
 
-    // set current room
-    public void setRoom(Room room) {
-        currentRoom = new Room(room);
+    // start a new game
+    public void startGame(String gameid, String opponent, String color) {
+        this.gameid = gameid;
+        this.opponent = opponent;
+        this.color = color;
+        this.state = "start";
+        this.turn = "white";
         emitChanges();
+    }
+
+    // update ongoing game
+    public void updateGame(String state, String turn) {
+        this.state = state;
+        this.turn = turn;
+        onNewMove();
+    }
+
+    // end game
+    public void endGame() {
+        // game over
     }
 
     // update queue size
@@ -36,18 +57,29 @@ public class GameModel extends ObservableModel {
         emitChanges();
     }
 
-    // add message to current room
-    public void addMessage(Message message) {
-        currentRoom.addMessage(message);
-        emitMessage();
-    }
 
     public User getUser() {
-        return currentUser;
+        return user;
     }
 
-    public Room getRoom() {
-        return currentRoom;
+    public String getColor() {
+        return color;
+    }
+
+    public String getOpponent() {
+        return opponent;
+    }
+
+    public String getGameid() {
+        return gameid;
+    }
+
+    public String getState(){
+        return state;
+    }
+
+    public String getTurn() {
+        return turn;
     }
 
     public String getCurrentUsers() {
@@ -60,5 +92,9 @@ public class GameModel extends ObservableModel {
 
     public String getCurrentGames() {
         return currentGames;
+    }
+
+    public boolean isItMyTurn() {
+        return color.equals(turn);
     }
 }

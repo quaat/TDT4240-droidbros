@@ -144,8 +144,9 @@ io.use(function(socket, next){
       name: socket.decoded._doc.userid, // userid
       level: 1 // todo, fetch from database?
     };
+    var game;
+    var opponent;
 
-    var game = null;
     // Connect user to controller
     controller.connect(player); 
     // Send welcome message back, with some info
@@ -153,15 +154,33 @@ io.use(function(socket, next){
     // User request to find a game
     socket.on('findGame', function() {
       controller.joinQueue(player); // Add player to queue
-      var game = controller.matchmaking(); // Find two players for game
+      game = controller.matchmaking(); // Find two players for game
       if (game) { // if game created
         console.log(game);
+        // Tell players that game is ready!
+        opponent = (player.id == game.player1.id) ? game.player2 : game.player1;
+        // send only what is needed
+        // see matchmaking function in controller.js, for game object variables.
+        var dataToPlayer = {
+          gameid: game.id,
+          opponent: opponent.name,
+          color: player.color
+        }
+        var dataToOpponent = {
+          gameid: game.id,
+          opponent: player.name,
+          color: opponent.color
+        }
+        socket.to(opponent.id).emit("startGame", dataToOpponent); // opponent
+        socket.emit("startGame", dataToPlayer); // player
       }
       io.sockets.emit("update", controller.getInfo());
     });
 
-
-    socket.on('doMove', function() {
+    socket.on('newMove', function(data) {
+      console.log(data);
+      // var state = controller.updateGame(data.id, data.newstate, data.move);
+      socket.to(opponent.id).emit("newMove", "halla");
       // Assumes it is a valid move
       // Add move to game object
       // Send move to other client (opponent)

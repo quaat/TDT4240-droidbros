@@ -47,9 +47,9 @@ public abstract class NetworkCommunication {
         return this.hostInfo;
     }
 
-    protected void emitConnected(Room room) {
+    protected void emitConnected() {
         for (NetworkObserver observer : observers) {
-            observer.onConnected(room);
+            observer.onConnected();
         }
     }
 
@@ -72,15 +72,21 @@ public abstract class NetworkCommunication {
         }
     }
 
-    protected void emitMessage(Message message){
-        for (NetworkObserver observer : observers) {
-            observer.onMessage(message);
-        }
-    }
-
     protected void emitUpdate(String users, String queue, String games){
         for (NetworkObserver observer : observers) {
             observer.onUpdate(users, queue, games);
+        }
+    }
+
+    protected void emitStartGame(String gameid, String opponent, String color){
+        for (NetworkObserver observer : observers) {
+            observer.onStartGame(gameid, opponent, color);
+        }
+    }
+
+    protected void emitNewMove(){
+        for (NetworkObserver observer : observers) {
+            observer.onNewMove();
         }
     }
 }

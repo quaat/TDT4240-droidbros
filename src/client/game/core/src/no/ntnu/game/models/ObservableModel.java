@@ -24,9 +24,9 @@ public abstract class ObservableModel {
     }
 
     // New message in model
-    protected void emitMessage() {
+    protected void onNewMove() {
         for (ScreenObserver observer : observers) {
-            observer.onMessage();
+            observer.onNewMove();
         }
     }
 }

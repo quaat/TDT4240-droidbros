@@ -38,15 +38,29 @@ exports.leaveQueue = function(player) {
 };
 
 exports.matchmaking = function() {
-  // Creates a game with two players if in queue
+  // Creates a game if two players are in the queue
+  // make new object in database
   if (queue.length >= 2) {
     var p1 = queue.shift();
     var p2 = queue.shift();
+
+    // set random color on each player
+    if (Math.floor(Math.random()*2)==0) {
+      p1.color = "white";
+      p2.color = "black";
+    } else {
+      p1.color = "black";
+      p2.color = "white";
+    }
+
     var game = {
       id: nextGameId, // gameid
       player1: p1, // player1
       player2: p2, // player2
-      start: new Date().toLocaleString() // date
+      start: new Date().toLocaleString(), // date
+      moves: [], // history of all moves
+      state: "start", // Fen string
+      turn: "white" //
     };
     nextGameId++;
     games.push(game); // add game object to list
@@ -54,11 +68,28 @@ exports.matchmaking = function() {
   }
 }
 
-exports.endGame = function(game) {
-  return;
+exports.updateGame = function(gameid, newstate, move) {
+  // Adds new move to a game
+  // Save it to database!
+  for (var i = 0; i < games.length; i++) {
+    if (games[i].id == game.id) {
+      games[i].moves.push(move); // add new move
+      games[i].state = newstate; // Update gamestate
+      games[i].turn = (games[i].turn == "white") ? "black" : "white";
+      console.log("Updated game");
+      return [games[i].state, games[i].turn]; // return the new state and turn
+    }
+  } // Return nothing if gameid not found
 }
 
-exports.removeGame = function(game) {
+exports.endGame = function(gameid) {
+  // save game to database, not save after each move, if server crash -> just erase game, and start another
+  // when server is up again. Both players might not be ready at that time.
+  this.removeGame();
+  return;
+};
+
+exports.removeGame = function(gameid) {
   // remove game from games list
   for (var i = 0; i < games.length; i++) {
     if (games[i].id == game.id) {

@@ -1,23 +1,26 @@
 package no.ntnu.game.views;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.badlogic.gdx.graphics.Color;
 
 import no.ntnu.game.controllers.GameController;
 import no.ntnu.game.models.GameModel;
-import no.ntnu.game.models.Message;
+
 
 public class TestView2 extends AbstractView {
 
     private final String queueText = "Users in queue: ";
     private final String usersText = "Users online: ";
     private final String winnerText = "Winner is: ";
+
+    private TextButton findGameButton;
+    private TextButton doMoveButton;
+    private TextButton resignButton;
 
     private Label queueLabel;
     private Label statusLabel;
@@ -32,16 +35,16 @@ public class TestView2 extends AbstractView {
     @Override
     public void build() {
         // Buttons
-        final TextButton findGameButton = new TextButton("FIND GAME", skin);
-        final TextButton doMoveButton = new TextButton("DO MOVE", skin);
-        final TextButton resignButton = new TextButton("RESIGN", skin);
+        findGameButton = new TextButton("FIND GAME", skin);
+        doMoveButton = new TextButton("DO MOVE", skin);
+        resignButton = new TextButton("RESIGN", skin);
 
         // Labels
         queueLabel = new Label(queueText, skin);
         statusLabel = new Label("", skin);
         player1Label = new Label("", skin);
         player2Label = new Label("", skin);
-        winnerLabel = new Label(winnerText, skin);
+        winnerLabel = new Label("", skin);
 
         // Listeners
         findGameButton.addListener(new ChangeListener() {
@@ -52,7 +55,8 @@ public class TestView2 extends AbstractView {
 
         doMoveButton.addListener(new ChangeListener() {
             public void changed (ChangeEvent event, Actor actor) {
-                //controller.doMove();
+                controller.doMove();
+                doMoveButton.setColor(Color.RED);
             }
         });
 
@@ -70,6 +74,8 @@ public class TestView2 extends AbstractView {
         table.add(doMoveButton).width(objectWidth).height(objectHeight).row();
         table.add(resignButton).width(objectWidth).height(objectHeight).row();
         table.add(winnerLabel).width(objectWidth).height(objectHeight);
+
+        changeState(true);
     }
 
     @Override
@@ -78,17 +84,31 @@ public class TestView2 extends AbstractView {
     }
 
     public void gameJoined() {
-        // Set game stuff visible
-        // Hide searching stuff
+        changeState(false);
+        if (model.getColor().equals("white")) doMoveButton.setColor(Color.GREEN);
+        else doMoveButton.setColor(Color.RED);
+        player1Label.setText("you: " + model.getUser().getUserid());
+        player2Label.setText("playing against: " + model.getOpponent());
+        statusLabel.setText("gameid: "+ model.getGameid() + "   your color: " + model.getColor());
+    }
+
+    public void onNewMove() {
+        doMoveButton.setColor(Color.GREEN);
+        winnerLabel.setText("hihi");
     }
 
     public void gameLeft() {
-        // Hide game stuff
-        // Set searching stuff visible
-        // Add winner?
+        changeState(true);
     }
 
-    public void updateQueue() {
-
+    // search -> game -> search -> ...
+    private void changeState(boolean bool) {
+        findGameButton.setVisible(bool);
+        queueLabel.setVisible(bool);
+        player1Label.setVisible(!bool);
+        player2Label.setVisible(!bool);
+        doMoveButton.setVisible(!bool);
+        resignButton.setVisible(!bool);
+        winnerLabel.setVisible(!bool);
     }
 }

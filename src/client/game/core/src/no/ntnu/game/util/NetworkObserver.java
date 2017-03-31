@@ -15,9 +15,10 @@ public interface NetworkObserver {
     public void onLogin(User user);
 
     // socket
-    public void onConnected(Room room);
-    public void onMessage(Message message);
+    public void onConnected();
     public void onUpdate(String users, String queue, String games);
+    public void onStartGame(String gameid, String opponent, String color);
+    public void onNewMove();
     public void onDisconnected();
 
     // error
