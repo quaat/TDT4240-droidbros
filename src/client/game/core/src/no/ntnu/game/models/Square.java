@@ -35,6 +35,7 @@ public class Square {
         this.board = board;
         this.col = col;
         this.row = row;
+        this.board.setSquare(col, row, this);
     }
 
     public Board board() {
@@ -46,9 +47,14 @@ public class Square {
     public int row()  { return this.row; }
     public int col() { return this.col; }
 
+    @Override
+    public String toString(){
+        return getAlgebraicCoordinate();
+    }
+
     public String getAlgebraicCoordinate() {
         StringBuilder sb = new StringBuilder();
-        sb.append('a' + (char)this.col);
+        sb.append(Character.toChars('a' + (char)this.col));
         sb.append(this.row);
         return sb.toString();
     };

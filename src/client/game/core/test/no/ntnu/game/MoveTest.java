@@ -2,13 +2,17 @@ package no.ntnu.game;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 import no.ntnu.game.models.Board;
 import no.ntnu.game.models.Square;
 import no.ntnu.game.models.Piece;
+import no.ntnu.game.movestrategy.DoubleForwardStrategyDecorator;
 import no.ntnu.game.movestrategy.HorizontalStrategyDecorator;
 import no.ntnu.game.movestrategy.MoveStrategy;
+import no.ntnu.game.movestrategy.SingleForwardStrategyDecorator;
 import no.ntnu.game.movestrategy.StandardChessPawnMovement;
 import no.ntnu.game.movestrategy.ULDiagonalStrategyDecorator;
 import no.ntnu.game.movestrategy.URDiagonalStrategyDecorator;
@@ -84,8 +88,33 @@ public class MoveTest {
         assertEquals(m2.to().row(), 5);
     }
 
+    static public List<Move> legalMoves(Square square) {
+        Piece piece = square.piece();
+        if (piece == null) return null;
+        List<Move> moves = new ArrayList<Move>();
+
+        for (Function<Square, List<Move>> fn : piece.legalMoves())
+        {
+            moves.addAll(fn.apply(square));
+        }
+        return moves;
+    }
+
     @Test
     public void testPawnMoveStrategy() throws Exception {
+        MoveStrategy pawnStrategy = new SingleForwardStrategyDecorator(new DoubleForwardStrategyDecorator());
+        Piece piece = new Piece(Piece.Type.PAWN, Piece.Color.WHITE, pawnStrategy);
+        Board board = FEN.toBoard("rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1");
+        Square square  = board.square(0, 1);
+        square.setPiece(piece);
+        for (Move m : legalMoves(square)) {
+            String s = m.toString();
+            assertEquals(s, s);
+        }
+    }
+
+    @Test
+    public void testQueenMoveStrategy() throws Exception {
         MoveStrategy queenStrategy = new HorizontalStrategyDecorator(
                 new VerticalStrategyDecorator(
                         new ULDiagonalStrategyDecorator(
@@ -97,8 +126,12 @@ public class MoveTest {
         Board board = FEN.toBoard("8/8/8/4Q3/8/8/8/8 w - - 0 1");
         Square square = board.square(4,4);
 
-        for (Function<Square,Move[]> fn : piece.legalMoves()) {
-            Move[] moves = fn.apply(square);
+        for (Function<Square, List<Move>> fn : piece.legalMoves()) {
+            List<Move> moves = fn.apply(square);
+            for (Move m : moves) {
+                String s = m.toString();
+                assertEquals(s, "failed");
+            }
         }
     }
 

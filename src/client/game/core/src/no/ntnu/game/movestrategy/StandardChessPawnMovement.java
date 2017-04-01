@@ -1,13 +1,9 @@
 package no.ntnu.game.movestrategy;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
 import no.ntnu.game.Move;
-import no.ntnu.game.models.Board;
-import no.ntnu.game.models.Piece;
 import no.ntnu.game.models.Square;
 
 /**
@@ -15,7 +11,7 @@ import no.ntnu.game.models.Square;
  */
 
 public class StandardChessPawnMovement implements MoveStrategy {
-    public List<Function<Square,Move[]>> legalMoves() {
+    public List<Function<Square, List<Move>>> legalMoves() {
         return null;
     }
     /*

@@ -21,8 +21,8 @@ public class HorizontalStrategyDecorator implements MoveStrategy {
     }
 
     @Override
-    public List<Function<Square, Move[]>> legalMoves() {
-        List<Function<Square, Move[]>> moves = new ArrayList<Function<Square, Move[]>>();
+    public List<Function<Square, List<Move>>> legalMoves() {
+        List<Function<Square, List<Move>>> moves = new ArrayList<>();
         if (this.moveStrategy != null)
             moves.addAll(this.moveStrategy.legalMoves());
         return moves;

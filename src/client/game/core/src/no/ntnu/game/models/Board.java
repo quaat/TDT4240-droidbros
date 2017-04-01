@@ -78,6 +78,11 @@ public class Board {
         }
     }
 
+    public void setSquare(int col, int row, Square square)
+    {
+        this.squares[col][row] = square;
+    }
+
     public Square square(int col, int row) {
         return this.squares[col][row];
     }

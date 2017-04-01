@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import no.ntnu.game.Move;
+import no.ntnu.game.models.Board;
 import no.ntnu.game.models.Square;
 
 /**
@@ -21,8 +22,31 @@ public class VerticalStrategyDecorator implements MoveStrategy {
     }
 
     @Override
-    public List<Function<Square, Move[]>> legalMoves() {
-        List<Function<Square, Move[]>> moves = new ArrayList<Function<Square, Move[]>>();
+    public List<Function<Square, List<Move>>> legalMoves() {
+        List<Function<Square, List<Move>>> moves = new ArrayList<>();
+        moves.add(square -> {
+
+            List<Move>movesList = new ArrayList<Move>();
+            Board b = square.board();
+            int rank = square.row() + 1;
+            // empty squares upwards
+            final int col = square.col();
+            while (rank < b.rows() && b.square(col, rank).piece() == null) {
+                Square dest = b.square(col, rank);
+                movesList.add(new Move(square, dest));
+                rank++;
+            }
+            // opposite color up
+            if (b.square(col,rank).piece() != null && b.square(col,rank).piece().color() != square.piece().color()) {
+                movesList.add(new Move(square, b.square(col,rank)));
+            }
+
+            // empty squares downwards
+
+            // opposite color down
+            return movesList;
+        });
+
         if (this.moveStrategy == null) {
             moves.addAll(this.moveStrategy.legalMoves());
         }

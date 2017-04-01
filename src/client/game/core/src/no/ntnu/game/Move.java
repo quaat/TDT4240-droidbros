@@ -51,7 +51,7 @@ public class Move {
         this.to = dest;
     }
 
-    /**
+     /**
      *
      * @return originating square
      */
@@ -59,6 +59,10 @@ public class Move {
         return this.from;
     }
 
+    @Override
+    public String toString() {
+        return from.toString() + ", " + to.toString();
+    }
     /**
      *
      * @return destination square

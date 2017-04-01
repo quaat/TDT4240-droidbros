@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.function.Function;
 
 import no.ntnu.game.Move;
-import no.ntnu.game.models.Board;
 import no.ntnu.game.models.Square;
 
 /**
@@ -12,5 +11,5 @@ import no.ntnu.game.models.Square;
  */
 
 public interface MoveStrategy {
-    public List<Function<Square,Move[]>> legalMoves();
+    public List<Function<Square, List<Move>>> legalMoves();
 }
