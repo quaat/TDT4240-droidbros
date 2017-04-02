@@ -11,6 +11,15 @@ public class Move {
     public Square to;
 
     /**
+     * Give the alphanumeric value for the squares
+     * @param from - as String [A-H][1-8]
+     * @param to - as String [A-H][1-8]
+     */
+    public Move(String from, String to) throws TypeErrorException{
+        this.from = new Square(from);
+        this.to = new Square(to);
+    }
+    /**
      * Define a possible move
      * @param from - original position
      * @param to - destination
@@ -30,6 +39,10 @@ public class Move {
         this.from = from;
     }
 
+    public Move(String from)throws TypeErrorException
+    {
+        this.from = new Square(from);
+    }
     /**
      * Set destination square
      * @param dest desination square
@@ -38,7 +51,7 @@ public class Move {
         this.to = dest;
     }
 
-    /**
+     /**
      *
      * @return originating square
      */
@@ -46,6 +59,10 @@ public class Move {
         return this.from;
     }
 
+    @Override
+    public String toString() {
+        return from.toString() + ", " + to.toString();
+    }
     /**
      *
      * @return destination square

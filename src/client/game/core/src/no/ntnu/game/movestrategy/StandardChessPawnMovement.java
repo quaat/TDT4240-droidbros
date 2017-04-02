@@ -1,11 +1,9 @@
 package no.ntnu.game.movestrategy;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
 import no.ntnu.game.Move;
-import no.ntnu.game.models.Board;
 import no.ntnu.game.models.Square;
 
 /**
@@ -13,22 +11,53 @@ import no.ntnu.game.models.Square;
  */
 
 public class StandardChessPawnMovement implements MoveStrategy {
-    @Override
-    public Move[] legalMoves(Square square)
-    {
-        Board board = square.board();
-        int col = square.col();
-        int row = square.row();
-
-        // The Pawn may move 2 ranks forward on first move, otherwise 1
-        // The pawn may take if opponent is at rank+1 and either col-1 and col+1
-
-
-
+    public List<Function<Square, List<Move>>> legalMoves() {
         return null;
     }
+    /*
+        ArrayList<Function<Square,Move>> functionList = new ArrayList<Function<Square,Move>>();
 
-    public List<Function<Square,Move>> legalMoves() {
-        return new ArrayList<Function<Square,Move>>();
+        // Single forward
+        functionList.add(from -> {
+            int forward = from.piece().color() == Piece.Color.WHITE ? 1 : -1;
+            Square to = from.board().square(from.col(), from.row()+forward);
+            return (to.piece() == null ? new Move(from, to) : null);
+        });
+
+        // Double forward
+        functionList.add(from ->  {
+            if (from.row() <= 1 && from.piece().color() == Piece.Color.WHITE ||
+                    from.row() >= 6 && from.piece().color() == Piece.Color.BLACK) {
+                int forward = from.piece().color() == Piece.Color.WHITE ? 2 : -2;
+                Square to = from.board().square(from.col(), from.row()+forward);
+                return (to.piece() == null ? new Move(from, to) : null);
+            }
+            return null;
+        });
+
+        // Take right
+        functionList.add(from -> {
+            if (from.col() == from.board().cols()) return null;
+            int forward = from.piece().color() == Piece.Color.WHITE ? 1 : -1;
+            Square to = from.board().square(from.col()+1, from.row()+forward);
+            return (to.piece() != null && (to.piece().color() != from.piece().color())
+                    ? new Move(from, to)
+                    : null);
+        });
+
+        // Take left
+        functionList.add(from -> {
+            if (from.col() == 0) return null;
+            int forward = from.piece().color() == Piece.Color.WHITE ? 1 : -1;
+            Square to = from.board().square(from.col()-1, from.row()+forward);
+            return (to.piece() != null && (to.piece().color() != from.piece().color())
+                    ? new Move(from, to)
+                    : null);
+        });
+
+
+        functionList.removeAll(Collections.singleton(null));
+        return functionList;
     }
+    */
 }
