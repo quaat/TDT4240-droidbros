@@ -34,6 +34,7 @@ public class SocketCommunication extends NetworkCommunication {
             socket.on(Socket.EVENT_DISCONNECT, onDisconnect);
 
             socket.on("update", onUpdate);
+            socket.on("gameReady", onGameReady);
             socket.on("startGame", onStartGame);
             socket.on("newMove", onNewMove);
 
@@ -52,8 +53,13 @@ public class SocketCommunication extends NetworkCommunication {
         socket.emit("findGame");
     }
 
-    public void doMove() {
-        socket.emit("newMove", "Some interseting json data!");
+    public void joinGame(String gameid) {
+        socket.emit("joinGame", gameid);
+    }
+
+    public void doMove(String id, String state, String move) {
+        String data = serializer.write(new NewMove(id, state, move));
+        socket.emit("newMove", data);
     }
 
     private Emitter.Listener onConnect = new Emitter.Listener() {
@@ -81,26 +87,55 @@ public class SocketCommunication extends NetworkCommunication {
         }
     };
 
-    private Emitter.Listener onStartGame = new Emitter.Listener() {
+    private Emitter.Listener onGameReady = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
             JsonValue response = (JsonValue)serializer.read(args[0].toString());
             Gdx.app.log("ANDYPANDY", response.toString());
             String gameid = response.getString("gameid");
-            String opponent = response.getString("opponent");
-            String color = response.getString("color");
-            emitStartGame(gameid, opponent, color);
+            joinGame(gameid);
         }
     };
+
+    private Emitter.Listener onStartGame = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            JsonValue response = (JsonValue)serializer.read(args[0].toString());
+            Gdx.app.log("ANDYPANDY", "********");
+            Gdx.app.log("ANDYPANDY", response.get("player1").toString());
+            Gdx.app.log("ANDYPANDY", "********");
+            //String player1 = response.getChild("player1").getString("name");
+            //String gameid = response.getString("gameid");
+            //String opponent = response.getString("player1");
+            //String color = response.getString("color");
+            //emitStartGame(gameid, opponent, color);
+        }
+    };
+
+
 
     private Emitter.Listener onNewMove = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
             JsonValue response = (JsonValue)serializer.read(args[0].toString());
             Gdx.app.log("ANDYPANDY", response.toString());
+            String state = response.getString("state");
+            String move = response.getString("move");
 
-            emitNewMove();
+            emitNewMove(state, move);
         }
     };
 
+    // Object to send to server
+    private class NewMove {
+        private String id;
+        private String state;
+        private String move;
+
+        public NewMove(String id, String state, String move) {
+            this.id = id;
+            this.state = state;
+            this.move = move;
+        }
+    }
 }

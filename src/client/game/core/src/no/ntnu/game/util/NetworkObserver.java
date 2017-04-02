@@ -18,7 +18,7 @@ public interface NetworkObserver {
     public void onConnected();
     public void onUpdate(String users, String queue, String games);
     public void onStartGame(String gameid, String opponent, String color);
-    public void onNewMove();
+    public void onNewMove(String state, String move);
     public void onDisconnected();
 
     // error

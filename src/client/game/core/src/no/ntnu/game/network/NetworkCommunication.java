@@ -84,9 +84,9 @@ public abstract class NetworkCommunication {
         }
     }
 
-    protected void emitNewMove(){
+    protected void emitNewMove(String state, String move){
         for (NetworkObserver observer : observers) {
-            observer.onNewMove();
+            observer.onNewMove(state, move);
         }
     }
 }

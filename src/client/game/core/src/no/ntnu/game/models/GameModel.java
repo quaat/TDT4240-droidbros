@@ -10,6 +10,7 @@ public class GameModel extends ObservableModel {
     private String opponent; // playing against
     private String color; // your color
     private String state; // current game state
+    private String move; // Last move of opponent
     private String turn; // Who takes next move
 
     // Statistics from server
@@ -38,9 +39,10 @@ public class GameModel extends ObservableModel {
     }
 
     // update ongoing game
-    public void updateGame(String state, String turn) {
+    public void updateGame(String state, String move) {
         this.state = state;
-        this.turn = turn;
+        this.move = move;
+        turn = (turn.equals("white")) ? "black" : "white";
         onNewMove();
     }
 

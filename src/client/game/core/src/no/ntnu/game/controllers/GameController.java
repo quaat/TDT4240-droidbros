@@ -48,13 +48,12 @@ public class GameController implements NetworkObserver{
     }
 
     // Do a move
-    public void doMove() {
+    public void doMove(String state, String move) {
         if (model.isItMyTurn()) {
             Gdx.app.log("ANDYPANDY", "I did a move");
-            socket.doMove();
+            socket.doMove(model.getGameid(), state, move);
         }
     }
-
 
     @Override
     public void onLogin(User user) {
@@ -83,9 +82,9 @@ public class GameController implements NetworkObserver{
     }
 
     @Override
-    public void onNewMove() {
+    public void onNewMove(String state, String move) {
         Gdx.app.log("ANDYPANDY", "start game");
-        model.updateGame("yup", "new");
+        model.updateGame(state, move);
     }
 
     @Override

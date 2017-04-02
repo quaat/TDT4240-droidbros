@@ -55,7 +55,7 @@ public class TestView2 extends AbstractView {
 
         doMoveButton.addListener(new ChangeListener() {
             public void changed (ChangeEvent event, Actor actor) {
-                controller.doMove();
+                controller.doMove("new state", "next move");
                 doMoveButton.setColor(Color.RED);
             }
         });
