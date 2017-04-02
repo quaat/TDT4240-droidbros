@@ -39,6 +39,7 @@ public class TestView2 extends AbstractView {
         doMoveButton = new TextButton("DO MOVE", skin);
         resignButton = new TextButton("RESIGN", skin);
 
+
         // Labels
         queueLabel = new Label(queueText, skin);
         statusLabel = new Label("", skin);
@@ -55,8 +56,8 @@ public class TestView2 extends AbstractView {
 
         doMoveButton.addListener(new ChangeListener() {
             public void changed (ChangeEvent event, Actor actor) {
-                controller.doMove("new state", "next move");
-                doMoveButton.setColor(Color.RED);
+                if (controller.doMove("new state", "next move"));
+                    doMoveButton.setVisible(false);
             }
         });
 
@@ -85,15 +86,15 @@ public class TestView2 extends AbstractView {
 
     public void gameJoined() {
         changeState(false);
-        if (model.getColor().equals("white")) doMoveButton.setColor(Color.GREEN);
-        else doMoveButton.setColor(Color.RED);
-        player1Label.setText("you: " + model.getUser().getUserid());
-        player2Label.setText("playing against: " + model.getOpponent());
-        statusLabel.setText("gameid: "+ model.getGameid() + "   your color: " + model.getColor());
+        if (model.isItMyTurn()) doMoveButton.setVisible(true);
+        else doMoveButton.setVisible(false);
+        player1Label.setText("You: " + model.getPlayer().toString());
+        player2Label.setText("Opponent: " + model.getOpponent().toString());
+        statusLabel.setText("gameid: "+ model.getGameid());
     }
 
     public void onNewMove() {
-        doMoveButton.setColor(Color.GREEN);
+        doMoveButton.setVisible(true);
         winnerLabel.setText("hihi");
     }
 

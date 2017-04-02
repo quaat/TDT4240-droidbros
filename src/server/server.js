@@ -144,50 +144,60 @@ io.use(function(socket, next){
       name: socket.decoded._doc.userid, // userid
       level: 1 // todo, fetch from database?
     };
-    var game;
+    var game; // current game playing
     var opponent;
 
     // Connect user to controller
     controller.connect(player); 
-    // Send welcome message back, with some info
+    // Send update emit back, with some info (users online, etc)
     io.sockets.emit("update", controller.getInfo());
+
     // User request to find a game
     socket.on('findGame', function() {
-      controller.joinQueue(player); // Add player to queue
-      game = controller.matchmaking(); // Find two players for game
-      if (game) { // if game created
-        console.log(game);
-        // Tell players that game is ready!
-        opponent = (player.id == game.player1.id) ? game.player2 : game.player1;
-        // send only what is needed
-        // see matchmaking function in controller.js, for game object variables.
-        var dataToPlayer = {
-          gameid: game.id,
-          opponent: opponent.name,
-          color: player.color
+      console.log(player.name, "findgame");
+      // Try to find opponent in queue
+      var opponent = controller.matchmaking();
+      if (opponent) { // Found opponent
+        // Create game
+        game = controller.createGame(player, opponent);
+        console.log("game created", game.gameid);
+        var data = {
+          gameid: game.gameid
         }
-        var dataToOpponent = {
-          gameid: game.id,
-          opponent: player.name,
-          color: opponent.color
-        }
-        socket.to(opponent.id).emit("startGame", dataToOpponent); // opponent
-        socket.emit("startGame", dataToPlayer); // player
+        opponent = controller.getOpponent(game, player);
+        socket.join(game.id);
+        // Tell other player that game is ready
+        socket.to(opponent.id).emit("gameReady", data);
+      } else { // Did not find opponent
+        controller.joinQueue(player); // Add player to queue
       }
+      // Update server info to all clients
       io.sockets.emit("update", controller.getInfo());
     });
 
-    socket.on('newMove', function(data) {
+    socket.on('joinGame', function(gameid) {
+      console.log(player.name, "joinGame", gameid);
+      // update game object
+      game = controller.findGame(gameid);
+      // update opponent object 
+      opponent = controller.getOpponent(game, player);
+      socket.join(game.id);
+      // send game info to both clients connected
+      io.in(game.id).emit("startGame", game);
+    })
+
+    socket.on('newMove', function(json) {
+      console.log(player.name, "newMove");
+      data = JSON.parse(json);
       console.log(data);
-      // var state = controller.updateGame(data.id, data.newstate, data.move);
-      socket.to(opponent.id).emit("newMove", "halla");
-      // Assumes it is a valid move
-      // Add move to game object
-      // Send move to other client (opponent)
-      // send confirmation back to client?
+      // update game object
+      // controller.updateGame(data.id, data.state, data.move);
+      // send new move to opponent
+      socket.to(data.gameid).emit("newMove", data);
     });
 
     socket.on('resign', function() {
+      console.log(player.name, "Resign");
       // Give up current game
       // Send info to other client (opponent)
       // End and remove game

@@ -6,7 +6,6 @@ package no.ntnu.game.models;
 public class User {
 	private String userid;
 	private String password;
-
 	private String token;
 
 	public User(String userid, String password) {

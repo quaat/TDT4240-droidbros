@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import no.ntnu.game.models.GameInfo;
 import no.ntnu.game.models.Message;
 import no.ntnu.game.models.Room;
 import no.ntnu.game.models.User;
@@ -78,15 +79,15 @@ public abstract class NetworkCommunication {
         }
     }
 
-    protected void emitStartGame(String gameid, String opponent, String color){
+    protected void emitStartGame(GameInfo gameInfo){
         for (NetworkObserver observer : observers) {
-            observer.onStartGame(gameid, opponent, color);
+            observer.onStartGame(gameInfo);
         }
     }
 
-    protected void emitNewMove(String state, String move){
+    protected void emitNewMove(String state, String move, String turn){
         for (NetworkObserver observer : observers) {
-            observer.onNewMove(state, move);
+            observer.onNewMove(state, move, turn);
         }
     }
 }

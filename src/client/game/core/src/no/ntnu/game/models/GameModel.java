@@ -3,15 +3,10 @@ package no.ntnu.game.models;
 import com.badlogic.gdx.Gdx;
 
 public class GameModel extends ObservableModel {
-    private User user;
+    private User user; // user logged in as
 
     // Current game
-    private String gameid; // gameid
-    private String opponent; // playing against
-    private String color; // your color
-    private String state; // current game state
-    private String move; // Last move of opponent
-    private String turn; // Who takes next move
+    private GameInfo gameInfo;
 
     // Statistics from server
     private String currentUsers; // Users online
@@ -29,20 +24,15 @@ public class GameModel extends ObservableModel {
     }
 
     // start a new game
-    public void startGame(String gameid, String opponent, String color) {
-        this.gameid = gameid;
-        this.opponent = opponent;
-        this.color = color;
-        this.state = "start";
-        this.turn = "white";
+    public void startGame(GameInfo gameInfo) {
+        this.gameInfo = gameInfo;
+        Gdx.app.log("ANDYPANDY", user.getUserid());
         emitChanges();
     }
 
     // update ongoing game
-    public void updateGame(String state, String move) {
-        this.state = state;
-        this.move = move;
-        turn = (turn.equals("white")) ? "black" : "white";
+    public void updateGame(String state, String move, String turn) {
+        gameInfo.update(state, move, turn);
         onNewMove();
     }
 
@@ -64,24 +54,25 @@ public class GameModel extends ObservableModel {
         return user;
     }
 
-    public String getColor() {
-        return color;
+
+    public Player getOpponent() {
+        return gameInfo.getOpponent(user.getUserid());
     }
 
-    public String getOpponent() {
-        return opponent;
+    public Player getPlayer() {
+        return gameInfo.getPlayer(user.getUserid());
     }
 
     public String getGameid() {
-        return gameid;
+        return gameInfo.getGameid();
     }
 
     public String getState(){
-        return state;
+        return gameInfo.getState();
     }
 
     public String getTurn() {
-        return turn;
+        return gameInfo.getTurn();
     }
 
     public String getCurrentUsers() {
@@ -97,6 +88,6 @@ public class GameModel extends ObservableModel {
     }
 
     public boolean isItMyTurn() {
-        return color.equals(turn);
+        return gameInfo.isItMyTurn(user.getUserid());
     }
 }

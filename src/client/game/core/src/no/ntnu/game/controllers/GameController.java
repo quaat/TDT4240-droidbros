@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import java.util.List;
 
 import no.ntnu.game.MyGame;
+import no.ntnu.game.models.GameInfo;
 import no.ntnu.game.models.GameModel;
 import no.ntnu.game.models.Message;
 import no.ntnu.game.models.Room;
@@ -48,11 +49,14 @@ public class GameController implements NetworkObserver{
     }
 
     // Do a move
-    public void doMove(String state, String move) {
+    public boolean doMove(String state, String move) {
         if (model.isItMyTurn()) {
             Gdx.app.log("ANDYPANDY", "I did a move");
-            socket.doMove(model.getGameid(), state, move);
+            String turn = (model.getPlayer().getColor().equals("white")) ? "black" : "white";
+            socket.doMove(model.getGameid(), state, move, turn);
+            return true;
         }
+        return false;
     }
 
     @Override
@@ -75,16 +79,16 @@ public class GameController implements NetworkObserver{
     }
 
     @Override
-    public void onStartGame(String gameid, String opponent, String color) {
+    public void onStartGame(GameInfo gameInfo) {
         Gdx.app.log("ANDYPANDY", "start game");
-        model.startGame(gameid, opponent, color);
+        model.startGame(gameInfo);
         viewController.getTestView2().gameJoined();
     }
 
     @Override
-    public void onNewMove(String state, String move) {
+    public void onNewMove(String state, String move, String turn) {
         Gdx.app.log("ANDYPANDY", "start game");
-        model.updateGame(state, move);
+        model.updateGame(state, move, turn);
     }
 
     @Override
