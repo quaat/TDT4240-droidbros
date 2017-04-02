@@ -22,7 +22,7 @@ public class URDiagonalStrategyDecorator implements MoveStrategy {
     @Override
     public List<Function<Square, List<Move>>> legalMoves() {
         List<Function<Square, List<Move>>> moves = new ArrayList<>();
-        if (this.moveStrategy == null) {
+        if (this.moveStrategy != null) {
             moves.addAll(this.moveStrategy.legalMoves());
         }
         return moves;

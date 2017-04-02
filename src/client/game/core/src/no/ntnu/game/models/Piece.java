@@ -32,6 +32,8 @@ public class Piece {
     }
 
     public Piece (Type pieceType, Color pieceColor, MoveStrategy strategy) {
+        this.type = pieceType;
+        this.color = pieceColor;
         this.strategy = strategy;
     }
 

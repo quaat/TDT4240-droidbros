@@ -6,6 +6,7 @@ import java.util.function.Function;
 
 import no.ntnu.game.Move;
 import no.ntnu.game.models.Board;
+import no.ntnu.game.models.Piece;
 import no.ntnu.game.models.Square;
 
 /**
@@ -37,17 +38,29 @@ public class VerticalStrategyDecorator implements MoveStrategy {
                 rank++;
             }
             // opposite color up
-            if (b.square(col,rank).piece() != null && b.square(col,rank).piece().color() != square.piece().color()) {
+            Piece squarePiece = square.piece();
+            Piece tmpPiece = b.square(col,rank).piece();
+            if (rank < b.rows() && tmpPiece != null && tmpPiece.color() != square.piece().color()) {
                 movesList.add(new Move(square, b.square(col,rank)));
             }
 
             // empty squares downwards
+            rank = square.row() - 1;
+            while (rank >= 0 && b.square(col, rank).piece() == null) {
+                Square dest = b.square(col, rank);
+                movesList.add(new Move(square, dest));
+                rank--;
+            }
 
             // opposite color down
+            if (rank >= 0 && b.square(col,rank).piece() != null && b.square(col,rank).piece().color() != square.piece().color()) {
+                movesList.add(new Move(square, b.square(col,rank)));
+            }
+
             return movesList;
         });
 
-        if (this.moveStrategy == null) {
+        if (this.moveStrategy != null) {
             moves.addAll(this.moveStrategy.legalMoves());
         }
         return moves;

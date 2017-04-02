@@ -136,6 +136,34 @@ public class MoveTest {
     }
 
     @Test
+    public void testRookMoveStrategy() throws Exception {
+        MoveStrategy rookStrategy = new HorizontalStrategyDecorator(
+                new VerticalStrategyDecorator()
+        );
+        Piece piece = new Piece(Piece.Type.BISHOP, Piece.Color.WHITE, rookStrategy);
+        Board board = FEN.toBoard("8/8/8/8/8/8/8/8 w - - 0 1");
+        Square square = board.square(4,4);
+        square.setPiece(piece);
+        List<Move> moves = legalMoves(square);
+        int numMoves = moves.size();
+        assertEquals(numMoves, 14);
+    }
+
+    @Test
+    public void testRookMoveStrategy2() throws Exception {
+        MoveStrategy rookStrategy = new HorizontalStrategyDecorator(
+                new VerticalStrategyDecorator()
+        );
+        Piece piece = new Piece(Piece.Type.BISHOP, Piece.Color.WHITE, rookStrategy);
+        Board board = FEN.toBoard("8/pppppppp/8/8/8/8/PPPPPPPP/8 w - - 0 1");
+        Square square = board.square(4,4);
+        square.setPiece(piece);
+        List<Move> moves = legalMoves(square);
+        int numMoves = moves.size();
+        assertEquals(numMoves, 11);
+    }
+
+    @Test
     public void movePieceOnBoard() throws Exception {
         // Start
         String standardStartPosition ="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
