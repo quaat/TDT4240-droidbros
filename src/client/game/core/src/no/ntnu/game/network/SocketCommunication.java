@@ -19,9 +19,11 @@ public class SocketCommunication extends NetworkCommunication {
         super(observer, hostInfo);
     }
 
-    // Connect socket to server
+    /**
+     * Connect socket to server with token auth
+     * @param token - user token
+     */
     public void connect(String token) {
-        Gdx.app.log("ANDYPANDY", "socket trying to connect");
         try {
             IO.Options options = new IO.Options();
             options.query = "token="+token;
@@ -34,6 +36,7 @@ public class SocketCommunication extends NetworkCommunication {
             socket.on("gameReady", onGameReady);
             socket.on("startGame", onStartGame);
             socket.on("newMove", onNewMove);
+            socket.on("gameOver", onGameOver);
 
             socket.connect();
         } catch(Exception e){
@@ -41,24 +44,50 @@ public class SocketCommunication extends NetworkCommunication {
         }
     }
 
-    // Disconnect socket from server
+    /**
+     * Disconnect from socket
+     */
     public void disconnect() {
         socket.disconnect();
     }
 
+    /**
+     * Find another player to play against
+     */
     public void findGame() {
         socket.emit("findGame");
     }
 
+    /**
+     * Join a game that is ready for you
+     */
     public void joinGame(String gameid) {
         socket.emit("joinGame", gameid);
     }
 
-    public void doMove(String id, String state, String move, String turn) {
-        String data = serializer.write(new JsonNewMoveObject(id, state, move, turn));
+    /**
+     * Emit a new move to the server
+     * @param id - gameid
+     * @param fen - fen string of game position
+     * @param move - last move
+     * @param turn - color of next move
+     */
+    public void doMove(String id, String fen, String move, String turn) {
+        String data = serializer.write(new JsonNewMoveObject(id, fen, move, turn));
         socket.emit("newMove", data);
     }
 
+    /**
+     * Give up the game
+     * @param id - gameid
+     */
+    public void resign(String id) {
+        socket.emit("resign");
+    }
+
+    /**
+     * Called when client successfully connects to server
+     */
     private Emitter.Listener onConnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
@@ -66,6 +95,9 @@ public class SocketCommunication extends NetworkCommunication {
         }
     };
 
+    /**
+     * Called when client disconnects from server
+     */
     private Emitter.Listener onDisconnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
@@ -73,6 +105,9 @@ public class SocketCommunication extends NetworkCommunication {
         }
     };
 
+    /**
+     * Called when server emits update to client socket.
+     */
     private Emitter.Listener onUpdate = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
@@ -84,42 +119,52 @@ public class SocketCommunication extends NetworkCommunication {
         }
     };
 
+    /**
+     * Called when server emits that a game is ready for the client
+     */
     private Emitter.Listener onGameReady = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
             JsonValue response = (JsonValue)serializer.read(args[0].toString());
-            Gdx.app.log("ANDYPANDY", response.toString());
             String gameid = response.getString("gameid");
             joinGame(gameid);
         }
     };
 
+    /**
+     * Called when server emits that clients game has started
+     */
     private Emitter.Listener onStartGame = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
             JsonValue response = (JsonValue)serializer.read(args[0].toString());
-            Gdx.app.log("ANDYPANDY", "********");
-
             GameInfo gameInfo = new GameInfo(response);
-            Gdx.app.log("ANDYPANDY", gameInfo.toString());
-
-            Gdx.app.log("ANDYPANDY", "********");
             emitStartGame(gameInfo);
         }
     };
 
-
-
+    /**
+     * Called when server emits that a new move has been done
+     */
     private Emitter.Listener onNewMove = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
             JsonValue response = (JsonValue)serializer.read(args[0].toString());
-            Gdx.app.log("ANDYPANDY", response.toString());
             String state = response.getString("state");
             String move = response.getString("move");
             String turn = response.getString("turn");
-
             emitNewMove(state, move, turn);
+        }
+    };
+
+    /**
+     * Called when server emits that the game is over
+     */
+    private Emitter.Listener onGameOver = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            JsonValue response = (JsonValue)serializer.read(args[0].toString());
+            Gdx.app.log("ANDYPANDY", "Game over! " + response.getString("winner") + " wins");
         }
     };
 }

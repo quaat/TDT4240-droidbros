@@ -20,6 +20,7 @@ public interface NetworkObserver {
     public void onUpdate(String users, String queue, String games);
     public void onStartGame(GameInfo gameInfo);
     public void onNewMove(String state, String move, String turn);
+    public void onGameOver();
     public void onDisconnected();
 
     // error

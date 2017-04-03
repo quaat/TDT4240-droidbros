@@ -90,4 +90,10 @@ public abstract class NetworkCommunication {
             observer.onNewMove(state, move, turn);
         }
     }
+
+    protected void emitGameOver() {
+        for (NetworkObserver observer : observers) {
+            observer.onGameOver();
+        }
+    }
 }

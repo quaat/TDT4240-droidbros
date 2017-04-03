@@ -144,8 +144,6 @@ io.use(function(socket, next){
       name: socket.decoded._doc.userid, // userid
       level: 1 // todo, fetch from database?
     };
-    var game; // current game playing
-    var opponent;
 
     // Connect user to controller
     controller.connect(player); 
@@ -159,15 +157,13 @@ io.use(function(socket, next){
       var opponent = controller.matchmaking();
       if (opponent) { // Found opponent
         // Create game
-        game = controller.createGame(player, opponent);
+        var game = controller.createGame(player, opponent);
         console.log("game created", game.gameid);
-        var data = {
-          gameid: game.gameid
-        }
-        opponent = controller.getOpponent(game, player);
+
+        var opponent = controller.getOpponent(game, player);
         socket.join(game.id);
         // Tell other player that game is ready
-        socket.to(opponent.id).emit("gameReady", data);
+        socket.to(opponent.id).emit("gameReady", {gameid: game.gameid});
       } else { // Did not find opponent
         controller.joinQueue(player); // Add player to queue
       }
@@ -177,68 +173,30 @@ io.use(function(socket, next){
 
     socket.on('joinGame', function(gameid) {
       console.log(player.name, "joinGame", gameid);
-      // update game object
+      // Update game object
       game = controller.findGame(gameid);
-      // update opponent object 
-      opponent = controller.getOpponent(game, player);
+      // Update opponent object 
       socket.join(game.id);
-      // send game info to both clients connected
+      // Send game info to both clients connected
       io.in(game.id).emit("startGame", game);
-    })
+    });
 
     socket.on('newMove', function(json) {
       console.log(player.name, "newMove");
       data = JSON.parse(json);
-      console.log(data);
-      // update game object
-      // controller.updateGame(data.id, data.state, data.move);
-      // send new move to opponent
+      // Update game object
+      controller.updateGame(data.id, data.state, data.move, data.turn);
+      // Send new move to opponent
       socket.to(data.gameid).emit("newMove", data);
     });
 
-    socket.on('resign', function() {
+    socket.on('resign', function(gameid) {
       console.log(player.name, "Resign");
-      // Give up current game
-      // Send info to other client (opponent)
-      // End and remove game
-    })
-
-
-
-
-
-
-
-
-
-    // ROOM METHODS, merge if we want text function
-    socket.on('join', function(data) {
-      socket.join(data, function(){
-        room = data;
-        var info =  {
-          roomid: room,
-          users: io.sockets.adapter.rooms[data] // gives all socket.id's
-        };
-        socket.emit("join", info);
-        io.in(room).emit("userJoined", info);
-      });
+      // End game
+      var game = controller.endGame(gameid);
+      // Send game over to both players
+      io.in(game.id).emit("gameOver", game)
     });
-
-    socket.on('leave', function(data) {
-      socket.leave(room, function() {
-        console.log(room, 'room left');
-        io.sockets.to(room, 'a user has left the room');
-        room = null;
-      })
-    });
-
-    socket.on('message', function(message) {
-      console.log(message);
-      // Change message to json, not string
-      io.in(room).emit("message", message);
-    });
-
-    // DISCONNECT FROM SOCKET
 
     socket.on('disconnect', function() {
       console.log('disconnected ' + player.name);
@@ -247,7 +205,7 @@ io.use(function(socket, next){
       player = null; // unødvendig
       // update all connected clients with correct info
       io.sockets.emit("update", controller.getInfo());
-    })
+    });
 });
 
 console.log('Server started. http://localhost:' + port);
