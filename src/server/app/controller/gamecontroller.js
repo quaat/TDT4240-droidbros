@@ -1,9 +1,9 @@
 // global variables
+var Game = require('../models/game');
 
 var users = []; // users connected
 var games = []; // games running
 var queue = []; // users in game queue
-
 
 exports.connect = function(player) {
   users.push(player);
@@ -12,9 +12,8 @@ exports.connect = function(player) {
 exports.disconnect = function(player) {
   // remove player from users list
   for (var i = 0; i < users.length; i++) {
-    if (users[i].id == player.id) {
+    if (users[i].id == player.id)
       users.splice(i, 1);
-    }
   }
 };
 
@@ -29,9 +28,8 @@ exports.joinQueue = function(player) {
 exports.leaveQueue = function(player) {
   // remove player from queue
   for (var i = 0; i < queue.length; i++) {
-    if (queue[i].id == player.id) {
+    if (queue[i].id == player.id)
       queue.splice(i, 1);
-    }
   }
 };
 
@@ -56,10 +54,10 @@ exports.createGame = function(p1, p2) {
     gameid: (Math.random()+1).toString(36).slice(2, 18),
     player1: p1, // player1
     player2: p2, // player2
-    start: new Date().toLocaleString(), // date
+    started: new Date().toLocaleString(), // date
+    ended: "",
     moves: [], // history of all moves
     fen: "", // Fen string
-    state: "start", // start->playing->complete
     turn: "white", //
     winner: ""
   };
@@ -67,33 +65,64 @@ exports.createGame = function(p1, p2) {
   return game;
 };
 
-exports.updateGame = function(gameid, newstate, move, turn) {
-  // Adds new move to a game
-  var game = this.findGame(gameid);
-  game.moves.push(move); // add new move
-  game.state = newstate; // Update gamestate
-  game.turn = turn; //
-  return game;
-  // Return nothing if gameid not found
-}
-
-exports.findGame = function(gameid) {
-  // TODO finne game i databasen
-  for (var i = 0; i < games.length; i++) {
-    if (games[i].gameid == gameid) {
-      return games[i];
-    }
+exports.updateGame = function(game, fen, move, turn) {
+  if (game) {
+    game.moves.push(move); // add new move
+    game.fen = fen; // Update fen
+    game.turn = turn; // Update next turn
   }
 }
 
-exports.endGame = function(gameid, winner) {
-  var game = this.findGame(gameid);
-  game.winner = winner;
-  game.state = "done";
-  // Save to database
-  this.removeGame(gameid);
-  return game;
+// Find game in list
+exports.findGame = function(gameid) {
+  for (var i = 0; i < games.length; i++) {
+    if (games[i].gameid == gameid)
+      return games[i];
+  }
+}
+
+// Find game in database
+exports.findGameDB = function(gameid) {
+  Game.findone({
+    gameid: gameid
+  }, function(err, game) {
+    if (err) throw err;
+    console.log("found game with id: ", gameid);
+    return game;
+  })
+}
+
+exports.endGame = function(game, winner) {
+  if (game) {
+    // set winner
+    game.winner = winner;
+    game.ended = new Date().toLocaleString();
+    // Save to database
+    this.saveGame(game);
+    // Remove game from current game list
+  }
 };
+
+exports.saveGame = function(game) {
+  if (game) {
+    var g = new Game({
+      gameid: game.gameid,
+      player1: game.player1.name,
+      player2: game.player2.name,
+      started: game.started,
+      ended: game.ended,
+      moves: game.moves,
+      winner: game.winner
+    });
+
+    console.log(g);
+    g.save(function(err) {
+      if (err) throw err;
+      console.log('Game saved successfully');
+    });
+  }
+  console.log("game undefined");
+}
 
 exports.removeGame = function(gameid) {
   // remove game from games list

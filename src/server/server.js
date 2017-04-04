@@ -145,6 +145,8 @@ io.use(function(socket, next){
       level: 1 // todo, fetch from database?
     };
 
+    var currentGame; // Current this user os game playing
+
     // Connect user to controller
     controller.connect(player); 
     // Send update emit back, with some info (users online, etc)
@@ -157,13 +159,13 @@ io.use(function(socket, next){
       var opponent = controller.matchmaking();
       if (opponent) { // Found opponent
         // Create game
-        var game = controller.createGame(player, opponent);
-        console.log("game created", game.gameid);
-
-        var opponent = controller.getOpponent(game, player);
-        socket.join(game.id);
+        currentGame = controller.createGame(player, opponent);
+        console.log("game created", currentGame.gameid);
+        // Find opponents socket id
+        var opponent = controller.getOpponent(currentGame, player);
+        socket.join(currentGame.gameid);
         // Tell other player that game is ready
-        socket.to(opponent.id).emit("gameReady", {gameid: game.gameid});
+        socket.to(opponent.id).emit("gameReady", {gameid: currentGame.gameid});
       } else { // Did not find opponent
         controller.joinQueue(player); // Add player to queue
       }
@@ -174,36 +176,56 @@ io.use(function(socket, next){
     socket.on('joinGame', function(gameid) {
       console.log(player.name, "joinGame", gameid);
       // Update game object
-      game = controller.findGame(gameid);
+      currentGame = controller.findGame(gameid);
       // Update opponent object 
-      socket.join(game.id);
-      // Send game info to both clients connected
-      io.in(game.id).emit("startGame", game);
+      if (currentGame) {
+        socket.join(gameid);
+        // Send game info to both clients connected
+        io.in(gameid).emit("startGame", currentGame);
+      } else {
+        console.log("couldnt find game", gameid);
+      }
     });
 
     socket.on('newMove', function(json) {
       console.log(player.name, "newMove");
       data = JSON.parse(json);
+      console.log(data);
       // Update game object
-      controller.updateGame(data.id, data.state, data.move, data.turn);
+      controller.updateGame(currentGame, data.fen, data.move, data.turn);
+      console.log(currentGame);
       // Send new move to opponent
-      socket.to(data.gameid).emit("newMove", data);
+      socket.to(currentGame.gameid).emit("newMove", data);
     });
 
     socket.on('resign', function(gameid) {
       console.log(player.name, "Resign");
       // End game
-      var game = controller.endGame(gameid);
+      controller.endGame(currentGame);
       // Send game over to both players
-      io.in(game.id).emit("gameOver", game)
+      console.log(currentGame);
+      io.in(game.gameid).emit("gameOver", currentGame)
+      // remove game
+      controller.removeGame(currentGame.gameid);
     });
 
     socket.on('disconnect', function() {
       console.log('disconnected ' + player.name);
-      controller.disconnect(player); // Disconnects from controller
-      controller.leaveQueue(player); // Remove from queue
-      player = null; // unødvendig
-      // update all connected clients with correct info
+
+      //****** test
+      if (currentGame) {
+        controller.endGame(currentGame);
+        console.log(currentGame);
+        io.in(currentGame.gameid).emit("gameOver", currentGame)
+      }
+      //******
+
+      // Disconnects from controller
+      controller.disconnect(player);
+      // Remove from queue
+      controller.leaveQueue(player);
+      player = null;
+      // Update all connected clients with correct info
       io.sockets.emit("update", controller.getInfo());
     });
 });
