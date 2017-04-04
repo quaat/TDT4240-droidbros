@@ -38,10 +38,12 @@ public class VerticalStrategyDecorator implements MoveStrategy {
                 rank++;
             }
             // opposite color up
-            Piece squarePiece = square.piece();
-            Piece tmpPiece = b.square(col,rank).piece();
-            if (rank < b.rows() && tmpPiece != null && tmpPiece.color() != square.piece().color()) {
-                movesList.add(new Move(square, b.square(col,rank)));
+            if (b.square(col,rank) != null) {
+                Piece squarePiece = square.piece();
+                Piece tmpPiece = b.square(col, rank).piece();
+                if (tmpPiece != null && tmpPiece.color() != square.piece().color()) {
+                    movesList.add(new Move(square, b.square(col, rank)));
+                }
             }
 
             // empty squares downwards
@@ -53,9 +55,12 @@ public class VerticalStrategyDecorator implements MoveStrategy {
             }
 
             // opposite color down
-            if (rank >= 0 && b.square(col,rank).piece() != null && b.square(col,rank).piece().color() != square.piece().color()) {
-                movesList.add(new Move(square, b.square(col,rank)));
+            if (b.square(col, rank) != null) {
+                if (b.square(col,rank).piece() != null && b.square(col,rank).piece().color() != square.piece().color()) {
+                    movesList.add(new Move(square, b.square(col,rank)));
+                }
             }
+
 
             return movesList;
         });

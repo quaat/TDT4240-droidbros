@@ -39,28 +39,30 @@ public class ULDiagonalStrategyDecorator implements MoveStrategy {
                 rank--;
             }
 
-            // Opposite color to the lower right
-            if (col < b.cols() && rank >= 0
-                && b.square(col, rank).piece() != null
-                && b.square(col, rank).piece().color() != square.piece().color()) {
-                movesList.add(new Move(square, b.square(col, rank)));
+            if (b.square(col, rank) != null) {
+                // Opposite color to the lower right
+                if (b.square(col, rank).piece() != null
+                    && b.square(col, rank).piece().color() != square.piece().color()) {
+                    movesList.add(new Move(square, b.square(col, rank)));
+                }
             }
 
             col = square.col() - 1;
             rank = square.col() +1 ;
             // Empty squares to the upper left
-            while (col >= 0 && rank <= b.rows()
+            while (col >= 0 && rank < b.rows()
                     && b.square(col, rank).piece() == null) {
                 movesList.add(new Move(square, b.square(col, rank)));
                 col--;
                 rank++;
             }
 
-            // Opposite color to the lower right
-            if (col >= 0 && rank <= b.rows()
-                && b.square(col, rank).piece() != null
-                && b.square(col, rank).piece().color() != square.piece().color()) {
-                movesList.add(new Move(square, b.square(col, rank)));
+            if (b.square(col, rank) != null) {
+                // Opposite color to the lower right
+                if (b.square(col, rank).piece() != null
+                    && b.square(col, rank).piece().color() != square.piece().color()) {
+                    movesList.add(new Move(square, b.square(col, rank)));
+                }
             }
 
             return movesList;

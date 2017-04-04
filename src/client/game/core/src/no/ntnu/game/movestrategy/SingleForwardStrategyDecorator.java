@@ -28,11 +28,25 @@ public class SingleForwardStrategyDecorator implements MoveStrategy {
         moves.add(square -> {
             ArrayList<Move> movesArray = new ArrayList<Move>();
             Board b = square.board();
+            final int rank = square.row();
+            final int col = square.col();
             int forward = square.piece().color() == Piece.Color.BLACK ? -1 : 1;
-            Square dest = b.square(square.col(), square.row()+forward);
+            Square dest = b.square(col, rank+forward);
             if (dest.piece() == null) {
                 movesArray.add(new Move(square, dest));
             }
+
+            // take opponent pieces to the upper left and upper right
+            dest = b.square(col-1, rank+forward);
+            if (dest != null && dest.piece() != null && dest.piece().color() != square.piece().color()) {
+                movesArray.add(new Move(square, dest));
+            }
+
+            dest = b.square(col+1, rank+forward);
+            if (dest != null && dest.piece() != null && dest.piece().color() != square.piece().color()) {
+                movesArray.add(new Move(square, dest));
+            }
+
             return movesArray;
         });
         if (this.moveStrategy != null)
