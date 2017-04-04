@@ -80,11 +80,19 @@ public class Board {
 
     public void setSquare(int col, int row, Square square)
     {
-        this.squares[col][row] = square;
+        if (col >= 0 && col <= this.cols()
+                && row >= 0 && row <= this.rows()) {
+            this.squares[col][row] = square;
+        }
+        // TODO: Throw an exception
     }
 
     public Square square(int col, int row) {
-        return this.squares[col][row];
+        if (col >= 0 && col < this.cols()
+                && row >= 0 && row < this.rows()) {
+            return this.squares[col][row];
+        }
+        return null;
     }
 
     public int rows() {

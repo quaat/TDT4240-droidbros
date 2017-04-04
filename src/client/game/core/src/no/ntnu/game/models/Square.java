@@ -55,7 +55,7 @@ public class Square {
     public String getAlgebraicCoordinate() {
         StringBuilder sb = new StringBuilder();
         sb.append(Character.toChars('a' + (char)this.col));
-        sb.append(this.row);
+        sb.append(this.row+1);
         return sb.toString();
     };
 }

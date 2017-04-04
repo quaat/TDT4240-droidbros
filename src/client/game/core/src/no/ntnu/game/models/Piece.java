@@ -26,12 +26,9 @@ public class Piece {
     private Object object = null;
     private Boolean moved = false;
 
-    public Piece (Type type, Color color) {
-        this.type = type;
-        this.color = color;
-    }
-
     public Piece (Type pieceType, Color pieceColor, MoveStrategy strategy) {
+        this.type = pieceType;
+        this.color = pieceColor;
         this.strategy = strategy;
     }
 

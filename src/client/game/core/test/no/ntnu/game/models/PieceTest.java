@@ -11,7 +11,7 @@ public class PieceTest {
 
     private Piece p;
     public PieceTest() {
-        this.p = new Piece(Piece.Type.BISHOP, Piece.Color.BLACK);
+        this.p = new Piece(Piece.Type.BISHOP, Piece.Color.BLACK, null);
         String v = "foo";
         this.p.setObject(v);
     }

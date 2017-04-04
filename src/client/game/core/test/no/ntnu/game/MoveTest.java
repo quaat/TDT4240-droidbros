@@ -4,6 +4,8 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
 import no.ntnu.game.models.Board;
@@ -11,6 +13,7 @@ import no.ntnu.game.models.Square;
 import no.ntnu.game.models.Piece;
 import no.ntnu.game.movestrategy.DoubleForwardStrategyDecorator;
 import no.ntnu.game.movestrategy.HorizontalStrategyDecorator;
+import no.ntnu.game.movestrategy.LJumpStrategyDecorator;
 import no.ntnu.game.movestrategy.MoveStrategy;
 import no.ntnu.game.movestrategy.SingleForwardStrategyDecorator;
 import no.ntnu.game.movestrategy.StandardChessPawnMovement;
@@ -27,28 +30,28 @@ public class MoveTest {
     private Board createBoard() {
         Board board = new Board();
         for (int col = 0; col < board.cols(); col++) {
-            board.square(col, 1).setPiece(new Piece(Piece.Type.PAWN, Piece.Color.WHITE));
+            board.square(col, 1).setPiece(new Piece(Piece.Type.PAWN, Piece.Color.WHITE, null));
         }
         for (int col = 0; col < board.cols(); col++) {
-            board.square(col, board.rows()-2).setPiece(new Piece(Piece.Type.PAWN, Piece.Color.BLACK));
+            board.square(col, board.rows()-2).setPiece(new Piece(Piece.Type.PAWN, Piece.Color.BLACK, null));
         }
 
-        board.square(0, 0).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.WHITE));
-        board.square(1, 0).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE));
-        board.square(2, 0).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.WHITE));
-        board.square(3, 0).setPiece(new Piece(Piece.Type.QUEEN, Piece.Color.WHITE));
-        board.square(4, 0).setPiece(new Piece(Piece.Type.KING, Piece.Color.WHITE));
-        board.square(5, 0).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.WHITE));
-        board.square(6, 0).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE));
-        board.square(7, 0).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.WHITE));
-        board.square(0, 7).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK));
-        board.square(1, 7).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.BLACK));
-        board.square(2, 7).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.BLACK));
-        board.square(3, 7).setPiece(new Piece(Piece.Type.QUEEN, Piece.Color.BLACK));
-        board.square(4, 7).setPiece(new Piece(Piece.Type.KING, Piece.Color.BLACK));
-        board.square(5, 7).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.BLACK));
-        board.square(6, 7).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.BLACK));
-        board.square(7, 7).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK));
+        board.square(0, 0).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.WHITE, null));
+        board.square(1, 0).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE, null));
+        board.square(2, 0).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.WHITE, null));
+        board.square(3, 0).setPiece(new Piece(Piece.Type.QUEEN, Piece.Color.WHITE, null));
+        board.square(4, 0).setPiece(new Piece(Piece.Type.KING, Piece.Color.WHITE, null));
+        board.square(5, 0).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.WHITE, null));
+        board.square(6, 0).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE, null));
+        board.square(7, 0).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.WHITE, null));
+        board.square(0, 7).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK, null));
+        board.square(1, 7).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.BLACK, null));
+        board.square(2, 7).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.BLACK, null));
+        board.square(3, 7).setPiece(new Piece(Piece.Type.QUEEN, Piece.Color.BLACK, null));
+        board.square(4, 7).setPiece(new Piece(Piece.Type.KING, Piece.Color.BLACK, null));
+        board.square(5, 7).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.BLACK, null));
+        board.square(6, 7).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.BLACK, null));
+        board.square(7, 7).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK, null));
         return board;
     }
 
@@ -123,16 +126,70 @@ public class MoveTest {
                 )
         );
         Piece piece = new Piece(Piece.Type.QUEEN,Piece.Color.WHITE,queenStrategy);
-        Board board = FEN.toBoard("8/8/8/4Q3/8/8/8/8 w - - 0 1");
+        Board board = FEN.toBoard("8/8/8/8/8/8/8/8 w - - 0 1");
         Square square = board.square(4,4);
+        square.setPiece(piece);
 
-        for (Function<Square, List<Move>> fn : piece.legalMoves()) {
-            List<Move> moves = fn.apply(square);
-            for (Move m : moves) {
-                String s = m.toString();
-                assertEquals(s, "failed");
-            }
-        }
+        List<Move> moves = legalMoves(square);
+        int numMoves = moves.size();
+        assertEquals(numMoves, 27);
+    }
+
+    @Test
+    public void testRookMoveStrategy() throws Exception {
+        MoveStrategy rookStrategy = new HorizontalStrategyDecorator(
+                new VerticalStrategyDecorator()
+        );
+        Piece piece = new Piece(Piece.Type.ROOK, Piece.Color.WHITE, rookStrategy);
+        Board board = FEN.toBoard("8/8/8/8/8/8/8/8 w - - 0 1");
+        Square square = board.square(4,4);
+        square.setPiece(piece);
+        List<Move> moves = legalMoves(square);
+        int numMoves = moves.size();
+        assertEquals(numMoves, 14);
+    }
+
+    @Test
+    public void testRookMoveStrategy2() throws Exception {
+        MoveStrategy rookStrategy = new HorizontalStrategyDecorator(
+                new VerticalStrategyDecorator()
+        );
+        Piece piece = new Piece(Piece.Type.ROOK, Piece.Color.WHITE, rookStrategy);
+        Board board = FEN.toBoard("8/pppppppp/8/8/8/8/PPPPPPPP/8 w - - 0 1");
+        Square square = board.square(4,4);
+        square.setPiece(piece);
+        List<Move> moves = legalMoves(square);
+        int numMoves = moves.size();
+        assertEquals(numMoves, 11);
+    }
+
+    @Test
+    public void testKnightMoveStrategy() throws Exception {
+        MoveStrategy ljump = new LJumpStrategyDecorator();
+        Piece knight = new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE, ljump);
+        Board board = FEN.toBoard("8/pppppppp/8/8/8/8/PPPPPPPP/8 w - - 0 1");
+        Square square = board.square(3,3);
+        square.setPiece(knight);
+        List<Move> moves = legalMoves(square);
+        int numMoves = moves.size();
+        assertEquals(numMoves, 6);
+
+        square = board.square(0, 2);
+        square.setPiece(knight);
+        moves = legalMoves(square);
+        numMoves = moves.size();
+        assertEquals(numMoves, 3);
+    }
+
+    @Test
+    public void bishopMoveStrategy() throws Exception {
+        String standardStartPosition ="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        Board board = FEN.toBoard(standardStartPosition);
+        Square square = board.square(2, 0);
+        assertEquals(square.piece().type(),Piece.Type.BISHOP);
+        List<Move> moves = legalMoves(square);
+        int numMoves = moves.size();
+        assertEquals(numMoves, 0);
     }
 
     @Test
@@ -151,5 +208,33 @@ public class MoveTest {
         fen = FEN.toFen(board);
 
         assertEquals(fen, "rnbqkbnr/pp2pppp/2p5/3p4/3P4/2N5/PPP1PPPP/R1BQKBNR w KQkq - 0 3");
+    }
+
+    @Test
+    public void moveRandomPiece() throws Exception {
+        String standardStartPosition ="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1";
+        Board board = FEN.toBoard(standardStartPosition);
+        int i = 0;
+        while (i++ < 20) {
+            Piece.Color activeColor = board.activeColor();
+            List<Move> moves = new ArrayList<Move>();
+            for (int row = 0; row < board.rows(); row++) {
+                for (int col = 0; col < board.cols(); col++) {
+
+                    Square square = board.square(col, row);
+                    if (square != null) {
+                        Piece piece = square.piece();
+                        if (piece != null && piece.color() == activeColor) {
+                            moves.addAll(legalMoves(square));
+                        }
+                    }
+                }
+            }
+            Random rand = new Random();
+            int randomMove = rand.nextInt(moves.size());
+            board = GameAction.movePiece(board, moves.get(randomMove));
+            String fen = FEN.toFen(board);
+            System.out.println(fen);
+        }
     }
 }

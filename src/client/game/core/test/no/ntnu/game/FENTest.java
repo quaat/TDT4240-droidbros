@@ -22,30 +22,30 @@ public class FENTest {
     public void toFen() throws Exception {
         Board board = new Board();
         for (int col = 0; col < board.cols(); col++) {
-            board.square(col, 1).setPiece(new Piece(Piece.Type.PAWN, Piece.Color.WHITE));
+            board.square(col, 1).setPiece(new Piece(Piece.Type.PAWN, Piece.Color.WHITE, null));
         }
         for (int col = 0; col < board.cols(); col++) {
-            board.square(col, board.rows()-2).setPiece(new Piece(Piece.Type.PAWN, Piece.Color.BLACK));
+            board.square(col, board.rows()-2).setPiece(new Piece(Piece.Type.PAWN, Piece.Color.BLACK, null));
         }
 
         assertEquals(FEN.toFen(board), "8/pppppppp/8/8/8/8/PPPPPPPP/8 w KQkq - 0 1");
 
-        board.square(0, 0).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.WHITE));
-        board.square(1, 0).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE));
-        board.square(2, 0).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.WHITE));
-        board.square(3, 0).setPiece(new Piece(Piece.Type.QUEEN, Piece.Color.WHITE));
-        board.square(4, 0).setPiece(new Piece(Piece.Type.KING, Piece.Color.WHITE));
-        board.square(5, 0).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.WHITE));
-        board.square(6, 0).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE));
-        board.square(7, 0).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.WHITE));
-        board.square(0, 7).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK));
-        board.square(1, 7).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.BLACK));
-        board.square(2, 7).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.BLACK));
-        board.square(3, 7).setPiece(new Piece(Piece.Type.QUEEN, Piece.Color.BLACK));
-        board.square(4, 7).setPiece(new Piece(Piece.Type.KING, Piece.Color.BLACK));
-        board.square(5, 7).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.BLACK));
-        board.square(6, 7).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.BLACK));
-        board.square(7, 7).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK));
+        board.square(0, 0).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.WHITE, null));
+        board.square(1, 0).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE, null));
+        board.square(2, 0).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.WHITE, null));
+        board.square(3, 0).setPiece(new Piece(Piece.Type.QUEEN, Piece.Color.WHITE, null));
+        board.square(4, 0).setPiece(new Piece(Piece.Type.KING, Piece.Color.WHITE, null));
+        board.square(5, 0).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.WHITE, null));
+        board.square(6, 0).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE, null));
+        board.square(7, 0).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.WHITE, null));
+        board.square(0, 7).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK, null));
+        board.square(1, 7).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.BLACK, null));
+        board.square(2, 7).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.BLACK, null));
+        board.square(3, 7).setPiece(new Piece(Piece.Type.QUEEN, Piece.Color.BLACK, null));
+        board.square(4, 7).setPiece(new Piece(Piece.Type.KING, Piece.Color.BLACK, null));
+        board.square(5, 7).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.BLACK, null));
+        board.square(6, 7).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.BLACK, null));
+        board.square(7, 7).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK, null));
 
         assertEquals(FEN.toFen(board), "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     }
