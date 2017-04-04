@@ -7,7 +7,6 @@ import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
 import no.ntnu.game.models.GameInfo;
-import no.ntnu.game.models.Player;
 import no.ntnu.game.util.JsonNewMoveObject;
 import no.ntnu.game.util.NetworkObserver;
 
@@ -82,7 +81,7 @@ public class SocketCommunication extends NetworkCommunication {
      * @param id - gameid
      */
     public void resign(String id) {
-        socket.emit("resign");
+        socket.emit("resign", id);
     }
 
     /**

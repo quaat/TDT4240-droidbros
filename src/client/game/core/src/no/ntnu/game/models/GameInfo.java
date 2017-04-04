@@ -16,8 +16,9 @@ public class GameInfo {
     private Player player2;
     private String start;
     private List<String> moves;
-    private String state;
+    private String fen;
     private String turn;
+    private String state;
 
     public GameInfo(JsonValue response) {
         this.gameid = response.getString("gameid");
@@ -25,6 +26,7 @@ public class GameInfo {
         this.player2 = new Player(response.get("player2"));
         this.start = response.getString("start");
         this.moves = new ArrayList<String>();
+        this.fen = response.getString("fen");
         this.state = response.getString("state");
         this.turn = response.getString("turn");
     }
@@ -49,8 +51,8 @@ public class GameInfo {
         return turn;
     }
 
-    public void update(String state, String move, String turn) {
-        this.state = state;
+    public void update(String fen, String move, String turn) {
+        this.fen = fen;
         this.moves.add(move);
         this.turn = turn;
     }
