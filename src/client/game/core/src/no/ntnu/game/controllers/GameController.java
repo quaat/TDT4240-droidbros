@@ -58,7 +58,7 @@ public class GameController implements NetworkObserver{
     public boolean doMove(String fen, String move) {
         if (model.isItMyTurn()) {
             String turn = (model.getPlayer().getColor().equals("white")) ? "black" : "white";
-            socket.doMove(model.getGameid(), fen, move, turn);
+            socket.doMove(fen, move, turn);
             model.updateGame(fen, move, turn);
             return true;
         }

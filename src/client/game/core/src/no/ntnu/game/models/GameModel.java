@@ -49,11 +49,9 @@ public class GameModel extends ObservableModel {
         emitChanges();
     }
 
-
     public User getUser() {
         return user;
     }
-
 
     public Player getOpponent() {
         return gameInfo.getOpponent(user.getUserid());
@@ -65,10 +63,6 @@ public class GameModel extends ObservableModel {
 
     public String getGameid() {
         return gameInfo.getGameid();
-    }
-
-    public String getState(){
-        return gameInfo.getState();
     }
 
     public String getTurn() {

@@ -56,7 +56,7 @@ public class TestView2 extends AbstractView {
 
         doMoveButton.addListener(new ChangeListener() {
             public void changed (ChangeEvent event, Actor actor) {
-                if (controller.doMove("new state", "next move"));
+                if (controller.doMove("new fen", "next move"));
                     doMoveButton.setVisible(false);
             }
         });
@@ -95,6 +95,7 @@ public class TestView2 extends AbstractView {
 
     public void onNewMove() {
         doMoveButton.setVisible(true);
+        Gdx.app.log("ANDYPANDY", model.getGameid() + "   " + model.getTurn());
         winnerLabel.setText("hihi");
     }
 

@@ -71,8 +71,8 @@ public class SocketCommunication extends NetworkCommunication {
      * @param move - last move
      * @param turn - color of next move
      */
-    public void doMove(String id, String fen, String move, String turn) {
-        String data = serializer.write(new JsonNewMoveObject(id, fen, move, turn));
+    public void doMove(String fen, String move, String turn) {
+        String data = serializer.write(new JsonNewMoveObject(fen, move, turn));
         socket.emit("newMove", data);
     }
 
@@ -137,6 +137,7 @@ public class SocketCommunication extends NetworkCommunication {
         @Override
         public void call(Object... args) {
             JsonValue response = (JsonValue)serializer.read(args[0].toString());
+            Gdx.app.log("ANDYPANDY", "game started");
             GameInfo gameInfo = new GameInfo(response);
             emitStartGame(gameInfo);
         }
@@ -149,10 +150,10 @@ public class SocketCommunication extends NetworkCommunication {
         @Override
         public void call(Object... args) {
             JsonValue response = (JsonValue)serializer.read(args[0].toString());
-            String state = response.getString("state");
+            String fen = response.getString("fen");
             String move = response.getString("move");
             String turn = response.getString("turn");
-            emitNewMove(state, move, turn);
+            emitNewMove(fen, move, turn);
         }
     };
 

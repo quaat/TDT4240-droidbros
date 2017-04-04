@@ -5,14 +5,12 @@ package no.ntnu.game.util;
  */
 
 public class JsonNewMoveObject {
-    private String id;
-    private String state;
+    private String fen;
     private String move;
     private String turn;
 
-    public JsonNewMoveObject(String id, String state, String move, String turn) {
-        this.id = id;
-        this.state = state;
+    public JsonNewMoveObject(String fen, String move, String turn) {
+        this.fen = fen;
         this.move = move;
         this.turn = turn;
     }

@@ -14,21 +14,23 @@ public class GameInfo {
     private String gameid;
     private Player player1;
     private Player player2;
-    private String start;
+    private String started;
+    private String ended;
     private List<String> moves;
     private String fen;
     private String turn;
-    private String state;
+    private String winner;
 
     public GameInfo(JsonValue response) {
         this.gameid = response.getString("gameid");
         this.player1 = new Player(response.get("player1"));
         this.player2 = new Player(response.get("player2"));
-        this.start = response.getString("start");
+        this.started = response.getString("started");
+        this.ended = response.getString("ended");
         this.moves = new ArrayList<String>();
         this.fen = response.getString("fen");
-        this.state = response.getString("state");
         this.turn = response.getString("turn");
+        this.winner = response.getString("winner");
     }
 
     public Player getOpponent(String name) {
@@ -43,8 +45,8 @@ public class GameInfo {
         return gameid;
     }
 
-    public String getState() {
-        return state;
+    public String getWinner() {
+        return winner;
     }
 
     public String getTurn() {
