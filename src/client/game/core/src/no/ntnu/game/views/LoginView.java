@@ -1,6 +1,5 @@
 package no.ntnu.game.views;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -11,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import no.ntnu.game.controllers.GameController;
 import no.ntnu.game.models.GameModel;
-import no.ntnu.game.models.User;
 
 public class LoginView extends AbstractView {
 
@@ -35,8 +33,9 @@ public class LoginView extends AbstractView {
 		// Button
 		TextButton loginButton = new TextButton("LOGIN", skin);
 		TextButton registerButton = new TextButton("REGISTER", skin);
-		
-		// Label
+        TextButton testGameViewButton = new TextButton("Test gameView", skin);
+
+        // Label
 		statusLabel = new Label("", skin);
 
 		// Listeners
@@ -66,13 +65,21 @@ public class LoginView extends AbstractView {
 				passwordField.setText("");
 			}
 		});
+
+        testGameViewButton.addListener(new ChangeListener() {
+            @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                controller.testGameview();
+            }
+        });
 		
 		table.add(usernameField).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(passwordField).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(loginButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(registerButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
-		table.add(statusLabel).width(objectWidth).height(objectHeight);
-	}
+		table.add(statusLabel).width(objectWidth).height(objectHeight).row();
+        table.add(testGameViewButton).width(objectWidth).height(objectHeight);
+    }
 
 	@Override
 	public void onUpdate() {
