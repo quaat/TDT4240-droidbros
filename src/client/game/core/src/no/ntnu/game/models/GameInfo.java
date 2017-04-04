@@ -12,58 +12,70 @@ import java.util.List;
 
 public class GameInfo {
     private String gameid;
-    private Player player1;
-    private Player player2;
+    private Player player;
+    private Player opponent;
     private String started;
     private String ended;
     private List<String> moves;
     private String fen;
-    private String turn;
     private String winner;
 
-    public GameInfo(JsonValue response) {
+    public GameInfo(JsonValue response, User user) {
         this.gameid = response.getString("gameid");
-        this.player1 = new Player(response.get("player1"));
-        this.player2 = new Player(response.get("player2"));
+        Player p1 = new Player(response.get("player1"));
+        Player p2 = new Player(response.get("player2"));
+        if (p1.userid().equals(user.userid())) {
+            this.player = p1;
+            this.opponent = p2;
+        } else {
+            this.player = p2;
+            this.opponent = p1;
+        }
         this.started = response.getString("started");
         this.ended = response.getString("ended");
         this.moves = new ArrayList<String>();
-        this.fen = response.getString("fen");
-        this.turn = response.getString("turn");
         this.winner = response.getString("winner");
+        this.fen = response.getString("fen");
     }
 
-    public Player getOpponent(String name) {
-        return (name.equals(player1.getName())) ? player2 : player1;
-    }
-
-    public Player getPlayer(String name) {
-        return (name.equals(player1.getName())) ? player1 : player2;
-    }
-
-    public String getGameid() {
+    public String gameid() {
         return gameid;
     }
 
-    public String getWinner() {
+    public Player player() {
+        return player;
+    }
+
+    public Player opponent() {
+        return opponent;
+    }
+
+    public String started() {
+        return started;
+    }
+
+    public String ended() {
+        return ended;
+    }
+
+    public String fen() {
+        return fen;
+    }
+
+    public String winner() {
         return winner;
     }
 
-    public String getTurn() {
-        return turn;
+    public Piece.Color color() {
+        return (player.color().equals("white")) ? Piece.Color.WHITE : Piece.Color.BLACK;
     }
 
-    public void update(String fen, String move, String turn) {
+    public void update(String fen) {
         this.fen = fen;
-        this.moves.add(move);
-        this.turn = turn;
-    }
-
-    public boolean isItMyTurn(String name) {
-        return getPlayer(name).getColor().equals(turn);
+        this.moves.add(fen);
     }
 
     public String toString() {
-        return "id: " + gameid + ", " + player1.toString() + " vs " + player2.toString() + ", turn: " + turn;
+        return "id: " + gameid + ", " + player.toString() + " vs " + opponent.toString() + ", fen: " + fen;
     }
 }

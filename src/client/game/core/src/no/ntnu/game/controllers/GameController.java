@@ -1,6 +1,7 @@
 package no.ntnu.game.controllers;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.JsonValue;
 
 import no.ntnu.game.MyGame;
 import no.ntnu.game.models.GameInfo;
@@ -52,14 +53,13 @@ public class GameController implements NetworkObserver{
     /**
      * todo change this, just for testing
      * @param fen - fen string of game position
-     * @param move - last move
      * @return
      */
-    public boolean doMove(String fen, String move) {
+    public boolean doMove(String fen) {
         if (model.isItMyTurn()) {
-            String turn = (model.getPlayer().getColor().equals("white")) ? "black" : "white";
-            socket.doMove(fen, move, turn);
-            model.updateGame(fen, move, turn);
+            socket.doMove(fen);
+            model.updateGame(fen);
+            model.myTurn = false;
             return true;
         }
         return false;
@@ -69,7 +69,7 @@ public class GameController implements NetworkObserver{
      * Resign and give up current game
      */
     public void resign() {
-        socket.resign(model.getGameid());
+        socket.resign();
     }
 
     /**
@@ -80,7 +80,7 @@ public class GameController implements NetworkObserver{
     @Override
     public void onLogin(User user) {
         model.setUser(user);
-        socket.connect(user.getToken());
+        socket.connect(user.token());
         viewController.setTestView2();
     }
 
@@ -108,7 +108,7 @@ public class GameController implements NetworkObserver{
      * @param gameInfo game information
      */
     @Override
-    public void onStartGame(GameInfo gameInfo) {
+    public void onStartGame(JsonValue gameInfo) {
         Gdx.app.log("ANDYPANDY", "start game");
         model.startGame(gameInfo);
         viewController.getTestView2().gameJoined();
@@ -116,15 +116,13 @@ public class GameController implements NetworkObserver{
 
     /**
      * Gets new move from opponent
-     * todo send both move and fen? turn is just for confirmation atm
      * @param fen fen string of game position
-     * @param move last move done
-     * @param turn color of next move
      */
     @Override
-    public void onNewMove(String fen, String move, String turn) {
+    public void onNewMove(String fen) {
         Gdx.app.log("ANDYPANDY", "your turn");
-        model.updateGame(fen, move, turn);
+        model.updateGame(fen);
+        model.myTurn = true;
     }
 
     /**
@@ -135,6 +133,7 @@ public class GameController implements NetworkObserver{
     public void onGameOver() {
         Gdx.app.log("ANDYPANDY", "game over");
         model.endGame();
+        viewController.getTestView2().gameLeft();
     }
 
     /**

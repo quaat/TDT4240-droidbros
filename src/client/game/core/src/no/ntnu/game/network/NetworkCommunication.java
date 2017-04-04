@@ -1,13 +1,13 @@
 package no.ntnu.game.network;
 
+import com.badlogic.gdx.utils.JsonValue;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import no.ntnu.game.models.GameInfo;
-import no.ntnu.game.models.Message;
-import no.ntnu.game.models.Room;
 import no.ntnu.game.models.User;
 import no.ntnu.game.util.JsonSerializer;
 import no.ntnu.game.util.NetworkObserver;
@@ -79,15 +79,15 @@ public abstract class NetworkCommunication {
         }
     }
 
-    protected void emitStartGame(GameInfo gameInfo){
+    protected void emitStartGame(JsonValue response){
         for (NetworkObserver observer : observers) {
-            observer.onStartGame(gameInfo);
+            observer.onStartGame(response);
         }
     }
 
-    protected void emitNewMove(String state, String move, String turn){
+    protected void emitNewMove(String fen){
         for (NetworkObserver observer : observers) {
-            observer.onNewMove(state, move, turn);
+            observer.onNewMove(fen);
         }
     }
 

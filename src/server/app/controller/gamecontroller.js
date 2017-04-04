@@ -57,19 +57,38 @@ exports.createGame = function(p1, p2) {
     started: new Date().toLocaleString(), // date
     ended: "",
     moves: [], // history of all moves
-    fen: "", // Fen string
-    turn: "white", //
+    fen: this.createFen(p1, p2), // Starting fen string
     winner: ""
   };
   games.push(game); // add game object to list
   return game;
 };
 
-exports.updateGame = function(game, fen, move, turn) {
+// Creates initial fen based on custom start moves of both players
+exports.createFen = function(p1, p2) {
+  var fen = "";
+  // TODO make pretty! :)
+  if (p1.color=="black") {
+    fen += p1.fen;
+    fen += "/8/8/8/8/";
+    fen += p2.fen.toUpperCase().substring(9, 17);
+    fen += "/";
+    fen += p2.fen.toUpperCase().substring(0, 8);
+  } else {
+    fen += p2.fen;
+    fen += "/8/8/8/8/";
+    fen += p1.fen.toUpperCase().substring(9, 17);
+    fen += "/";
+    fen += p1.fen.toUpperCase().substring(0, 8);
+  }
+  fen += " w - - 0 1";
+  return fen;
+}
+
+exports.updateGame = function(game, fen) {
   if (game) {
-    game.moves.push(move); // add new move
+    game.moves.push(fen);
     game.fen = fen; // Update fen
-    game.turn = turn; // Update next turn
   }
 }
 
@@ -99,7 +118,6 @@ exports.endGame = function(game, winner) {
     game.ended = new Date().toLocaleString();
     // Save to database
     this.saveGame(game);
-    // Remove game from current game list
   }
 };
 
@@ -113,9 +131,7 @@ exports.saveGame = function(game) {
       ended: game.ended,
       moves: game.moves,
       winner: game.winner
-    });
-
-    console.log(g);
+    }); 
     g.save(function(err) {
       if (err) throw err;
       console.log('Game saved successfully');
@@ -132,12 +148,8 @@ exports.removeGame = function(gameid) {
   }
 };
 
-exports.toString = function() {
-  return "users: "+users.length + ", queue: "+queue.length;
-};
-
 exports.getOpponent = function(game, player) {
-  return (player.id == game.player1.id) ? game.player2 : game.player1;
+  if (game) return (player.id == game.player1.id) ? game.player2 : game.player1;
 };
 
 exports.getInfo = function() {

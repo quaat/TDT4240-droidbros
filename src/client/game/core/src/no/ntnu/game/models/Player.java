@@ -7,34 +7,37 @@ import com.badlogic.gdx.utils.JsonValue;
  */
 
 public class Player {
-    private String id;
-    private String name;
+    private String socketid;
+    private String userid;
     private int level;
     private String color;
-
-    public Player(String id, String name, int level, String color) {
-        this.id = id;
-        this.name = name;
-        this.level = level;
-        this.color = color;
-    }
+    private String fen;
 
     public Player(JsonValue response) {
-        this.id = response.getString("id");
-        this.name = response.getString("name");
+        this.socketid = response.getString("socketid");
+        this.userid = response.getString("userid");
         this.level = response.getInt("level");
+        this.fen = response.getString("fen");
         this.color = response.getString("color");
     }
 
-    public String getName() {
-        return name;
+    public String userid() {
+        return userid;
     }
 
-    public String getColor() {
+    public int level() {
+        return level;
+    }
+
+    public String color() {
         return color;
     }
 
+    public String fen() {
+        return fen;
+    }
+
     public String toString() {
-        return name + " (" + color + ")";
+        return userid + " (" + color + ")";
     }
 }

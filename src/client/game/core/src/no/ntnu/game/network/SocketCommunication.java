@@ -2,12 +2,14 @@ package no.ntnu.game.network;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.JsonValue;
+
+import org.json.JSONObject;
+
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
 import no.ntnu.game.models.GameInfo;
-import no.ntnu.game.util.JsonNewMoveObject;
 import no.ntnu.game.util.NetworkObserver;
 
 public class SocketCommunication extends NetworkCommunication {
@@ -66,22 +68,17 @@ public class SocketCommunication extends NetworkCommunication {
 
     /**
      * Emit a new move to the server
-     * @param id - gameid
-     * @param fen - fen string of game position
-     * @param move - last move
-     * @param turn - color of next move
+     * @param fen - fen string
      */
-    public void doMove(String fen, String move, String turn) {
-        String data = serializer.write(new JsonNewMoveObject(fen, move, turn));
-        socket.emit("newMove", data);
+    public void doMove(String fen) {
+        socket.emit("newMove", fen);
     }
 
     /**
      * Give up the game
-     * @param id - gameid
      */
-    public void resign(String id) {
-        socket.emit("resign", id);
+    public void resign() {
+        socket.emit("resign");
     }
 
     /**
@@ -138,8 +135,7 @@ public class SocketCommunication extends NetworkCommunication {
         public void call(Object... args) {
             JsonValue response = (JsonValue)serializer.read(args[0].toString());
             Gdx.app.log("ANDYPANDY", "game started");
-            GameInfo gameInfo = new GameInfo(response);
-            emitStartGame(gameInfo);
+            emitStartGame(response);
         }
     };
 
@@ -151,9 +147,7 @@ public class SocketCommunication extends NetworkCommunication {
         public void call(Object... args) {
             JsonValue response = (JsonValue)serializer.read(args[0].toString());
             String fen = response.getString("fen");
-            String move = response.getString("move");
-            String turn = response.getString("turn");
-            emitNewMove(fen, move, turn);
+            emitNewMove(fen);
         }
     };
 
@@ -164,7 +158,9 @@ public class SocketCommunication extends NetworkCommunication {
         @Override
         public void call(Object... args) {
             JsonValue response = (JsonValue)serializer.read(args[0].toString());
-            Gdx.app.log("ANDYPANDY", "Game over! " + response.getString("winner") + " wins");
+            Gdx.app.log("ANDYPANDY", args[0].toString());
+            Gdx.app.log("ANDYPANDY", "Game over! I" + " win");
+            emitGameOver();
         }
     };
 }

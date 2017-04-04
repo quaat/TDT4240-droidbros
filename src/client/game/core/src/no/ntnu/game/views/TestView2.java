@@ -18,6 +18,8 @@ public class TestView2 extends AbstractView {
     private final String usersText = "Users online: ";
     private final String winnerText = "Winner is: ";
 
+    String randFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
     private TextButton findGameButton;
     private TextButton doMoveButton;
     private TextButton resignButton;
@@ -39,7 +41,6 @@ public class TestView2 extends AbstractView {
         doMoveButton = new TextButton("DO MOVE", skin);
         resignButton = new TextButton("RESIGN", skin);
 
-
         // Labels
         queueLabel = new Label(queueText, skin);
         statusLabel = new Label("", skin);
@@ -56,14 +57,14 @@ public class TestView2 extends AbstractView {
 
         doMoveButton.addListener(new ChangeListener() {
             public void changed (ChangeEvent event, Actor actor) {
-                if (controller.doMove("new fen", "next move"));
+                if (controller.doMove(randFen));
                     doMoveButton.setVisible(false);
             }
         });
 
         resignButton.addListener(new ChangeListener() {
             public void changed (ChangeEvent event, Actor actor) {
-                //controller.resign();
+                controller.resign();
             }
         });
 
@@ -81,22 +82,21 @@ public class TestView2 extends AbstractView {
 
     @Override
     public void onUpdate() {
-        queueLabel.setText(usersText + model.getCurrentUsers() + " - " + queueText + model.getCurrentQueue());
+        queueLabel.setText(usersText + model.currentUsers() + " - " + queueText + model.currentQueue());
     }
 
     public void gameJoined() {
         changeState(false);
         if (model.isItMyTurn()) doMoveButton.setVisible(true);
         else doMoveButton.setVisible(false);
-        player1Label.setText("You: " + model.getPlayer().toString());
-        player2Label.setText("Opponent: " + model.getOpponent().toString());
-        statusLabel.setText("gameid: "+ model.getGameid());
+        player1Label.setText("You: " + model.player().toString());
+        player2Label.setText("Opponent: " + model.opponent().toString());
+        statusLabel.setText("gameid: "+ model.gameid());
     }
 
     public void onNewMove() {
         doMoveButton.setVisible(true);
-        Gdx.app.log("ANDYPANDY", model.getGameid() + "   " + model.getTurn());
-        winnerLabel.setText("hihi");
+        Gdx.app.log("ANDYPANDY", model.gameid() + "   " );
     }
 
     public void gameLeft() {

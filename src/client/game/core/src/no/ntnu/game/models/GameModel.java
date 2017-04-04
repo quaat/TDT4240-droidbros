@@ -1,12 +1,17 @@
 package no.ntnu.game.models;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.JsonValue;
 
 public class GameModel extends ObservableModel {
     private User user; // user logged in as
 
     // Current game
     private GameInfo gameInfo;
+    private Board board;
+
+    // remove
+    public boolean myTurn;
 
     // Statistics from server
     private String currentUsers; // Users online
@@ -24,15 +29,18 @@ public class GameModel extends ObservableModel {
     }
 
     // start a new game
-    public void startGame(GameInfo gameInfo) {
-        this.gameInfo = gameInfo;
-        Gdx.app.log("ANDYPANDY", user.getUserid());
+    public void startGame(JsonValue gameInfo) {
+        this.gameInfo = new GameInfo(gameInfo, user);
+        myTurn = (this.gameInfo.color()== Piece.Color.WHITE) ? true : false;
+
+        //board = new Board();
+        Gdx.app.log("ANDYPANDY", user.userid());
         emitChanges();
     }
 
     // update ongoing game
-    public void updateGame(String state, String move, String turn) {
-        gameInfo.update(state, move, turn);
+    public void updateGame(String fen) {
+        gameInfo.update(fen);
         onNewMove();
     }
 
@@ -49,39 +57,36 @@ public class GameModel extends ObservableModel {
         emitChanges();
     }
 
-    public User getUser() {
+    public User user() {
         return user;
     }
 
-    public Player getOpponent() {
-        return gameInfo.getOpponent(user.getUserid());
+    public Player player() {
+        return gameInfo.player();
     }
 
-    public Player getPlayer() {
-        return gameInfo.getPlayer(user.getUserid());
+    public Player opponent() {
+        return gameInfo.opponent();
     }
 
-    public String getGameid() {
-        return gameInfo.getGameid();
+    public String gameid() {
+        return gameInfo.gameid();
     }
 
-    public String getTurn() {
-        return gameInfo.getTurn();
-    }
-
-    public String getCurrentUsers() {
+    public String currentUsers() {
         return currentUsers;
     }
 
-    public String getCurrentQueue() {
+    public String currentQueue() {
         return currentQueue;
     }
 
-    public String getCurrentGames() {
+    public String currentGames() {
         return currentGames;
     }
 
     public boolean isItMyTurn() {
-        return gameInfo.isItMyTurn(user.getUserid());
+        return myTurn;
+        //return board.activeColor()==gameInfo.color();
     }
 }

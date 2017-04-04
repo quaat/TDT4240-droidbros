@@ -9,11 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import java.util.ArrayList;
-
 import no.ntnu.game.controllers.GameController;
 import no.ntnu.game.models.GameModel;
-import no.ntnu.game.models.Message;
 import no.ntnu.game.util.ScreenObserver;
 
 public abstract class AbstractView implements Screen, ScreenObserver {
