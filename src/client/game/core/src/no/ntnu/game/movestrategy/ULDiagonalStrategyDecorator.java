@@ -48,7 +48,7 @@ public class ULDiagonalStrategyDecorator implements MoveStrategy {
             }
 
             col = square.col() - 1;
-            rank = square.col() +1 ;
+            rank = square.row() +1 ;
             // Empty squares to the upper left
             while (col >= 0 && rank < b.rows()
                     && b.square(col, rank).piece() == null) {

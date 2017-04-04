@@ -4,6 +4,8 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
 import no.ntnu.game.models.Board;
@@ -28,28 +30,28 @@ public class MoveTest {
     private Board createBoard() {
         Board board = new Board();
         for (int col = 0; col < board.cols(); col++) {
-            board.square(col, 1).setPiece(new Piece(Piece.Type.PAWN, Piece.Color.WHITE));
+            board.square(col, 1).setPiece(new Piece(Piece.Type.PAWN, Piece.Color.WHITE, null));
         }
         for (int col = 0; col < board.cols(); col++) {
-            board.square(col, board.rows()-2).setPiece(new Piece(Piece.Type.PAWN, Piece.Color.BLACK));
+            board.square(col, board.rows()-2).setPiece(new Piece(Piece.Type.PAWN, Piece.Color.BLACK, null));
         }
 
-        board.square(0, 0).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.WHITE));
-        board.square(1, 0).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE));
-        board.square(2, 0).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.WHITE));
-        board.square(3, 0).setPiece(new Piece(Piece.Type.QUEEN, Piece.Color.WHITE));
-        board.square(4, 0).setPiece(new Piece(Piece.Type.KING, Piece.Color.WHITE));
-        board.square(5, 0).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.WHITE));
-        board.square(6, 0).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE));
-        board.square(7, 0).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.WHITE));
-        board.square(0, 7).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK));
-        board.square(1, 7).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.BLACK));
-        board.square(2, 7).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.BLACK));
-        board.square(3, 7).setPiece(new Piece(Piece.Type.QUEEN, Piece.Color.BLACK));
-        board.square(4, 7).setPiece(new Piece(Piece.Type.KING, Piece.Color.BLACK));
-        board.square(5, 7).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.BLACK));
-        board.square(6, 7).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.BLACK));
-        board.square(7, 7).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK));
+        board.square(0, 0).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.WHITE, null));
+        board.square(1, 0).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE, null));
+        board.square(2, 0).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.WHITE, null));
+        board.square(3, 0).setPiece(new Piece(Piece.Type.QUEEN, Piece.Color.WHITE, null));
+        board.square(4, 0).setPiece(new Piece(Piece.Type.KING, Piece.Color.WHITE, null));
+        board.square(5, 0).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.WHITE, null));
+        board.square(6, 0).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE, null));
+        board.square(7, 0).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.WHITE, null));
+        board.square(0, 7).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK, null));
+        board.square(1, 7).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.BLACK, null));
+        board.square(2, 7).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.BLACK, null));
+        board.square(3, 7).setPiece(new Piece(Piece.Type.QUEEN, Piece.Color.BLACK, null));
+        board.square(4, 7).setPiece(new Piece(Piece.Type.KING, Piece.Color.BLACK, null));
+        board.square(5, 7).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.BLACK, null));
+        board.square(6, 7).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.BLACK, null));
+        board.square(7, 7).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK, null));
         return board;
     }
 
@@ -180,6 +182,17 @@ public class MoveTest {
     }
 
     @Test
+    public void bishopMoveStrategy() throws Exception {
+        String standardStartPosition ="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        Board board = FEN.toBoard(standardStartPosition);
+        Square square = board.square(2, 0);
+        assertEquals(square.piece().type(),Piece.Type.BISHOP);
+        List<Move> moves = legalMoves(square);
+        int numMoves = moves.size();
+        assertEquals(numMoves, 0);
+    }
+
+    @Test
     public void movePieceOnBoard() throws Exception {
         // Start
         String standardStartPosition ="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -197,5 +210,31 @@ public class MoveTest {
         assertEquals(fen, "rnbqkbnr/pp2pppp/2p5/3p4/3P4/2N5/PPP1PPPP/R1BQKBNR w KQkq - 0 3");
     }
 
+    @Test
+    public void moveRandomPiece() throws Exception {
+        String standardStartPosition ="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1";
+        Board board = FEN.toBoard(standardStartPosition);
+        int i = 0;
+        while (i++ < 20) {
+            Piece.Color activeColor = board.activeColor();
+            List<Move> moves = new ArrayList<Move>();
+            for (int row = 0; row < board.rows(); row++) {
+                for (int col = 0; col < board.cols(); col++) {
 
+                    Square square = board.square(col, row);
+                    if (square != null) {
+                        Piece piece = square.piece();
+                        if (piece != null && piece.color() == activeColor) {
+                            moves.addAll(legalMoves(square));
+                        }
+                    }
+                }
+            }
+            Random rand = new Random();
+            int randomMove = rand.nextInt(moves.size());
+            board = GameAction.movePiece(board, moves.get(randomMove));
+            String fen = FEN.toFen(board);
+            System.out.println(fen);
+        }
+    }
 }

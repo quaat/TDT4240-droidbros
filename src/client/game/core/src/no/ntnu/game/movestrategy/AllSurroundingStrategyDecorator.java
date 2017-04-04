@@ -1,6 +1,8 @@
 package no.ntnu.game.movestrategy;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 
@@ -12,12 +14,12 @@ import no.ntnu.game.models.Square;
  * Created by thomash on 28.03.2017.
  */
 
-public class HorizontalStrategyDecorator implements MoveStrategy {
+public class AllSurroundingStrategyDecorator implements MoveStrategy {
     protected MoveStrategy moveStrategy = null;
-    public HorizontalStrategyDecorator()
+    public AllSurroundingStrategyDecorator()
     {}
 
-    public HorizontalStrategyDecorator(MoveStrategy moveStrategy) {
+    public AllSurroundingStrategyDecorator(MoveStrategy moveStrategy) {
         this.moveStrategy = moveStrategy;
     }
 
@@ -28,34 +30,26 @@ public class HorizontalStrategyDecorator implements MoveStrategy {
         moves.add(square -> {
             List<Move> movesList = new ArrayList<Move>();
             Board b = square.board();
-            int col = square.col() + 1;
             final int rank = square.row();
+            final int col = square.col();
+            List<Square> targetSquares = Arrays.asList(
+                    b.square(col-1, rank-1),
+                    b.square(col-1, rank),
+                    b.square(col-1, rank+1),
+                    b.square(col, rank+1),
+                    b.square(col+1, rank-1),
+                    b.square(col+1, rank),
+                    b.square(col+1, rank+1),
+                    b.square(col, rank-1));
+            for (Iterator it = targetSquares.iterator(); it.hasNext();) {
+                Square dest = (Square) it.next();
 
-            // Empty square to the right
-            while (col < b.cols() && b.square(col, rank).piece() == null) {
-                Square dest = b.square(col, rank);
-                movesList.add(new Move(square, dest));
-                col++;
-            }
-            // Opposite color to the right
-            if (col < b.cols()
-                    && b.square(col, rank).piece() != null
-                    && b.square(col, rank).piece().color() != square.piece().color()) {
-                movesList.add(new Move(square, b.square(col, rank)));
-            }
-
-            // Emtpty squares to the left
-            col = square.col() - 1;
-            while (col >= 0 && b.square(col, rank).piece() == null) {
-                Square dest = b.square(col, rank);
-                movesList.add(new Move(square, dest));
-                col--;
-            }
-
-            if (col >= 0
-                    && b.square(col, rank).piece() != null
-                    && b.square(col, rank).piece().color() != square.piece().color()) {
-                movesList.add(new Move(square, b.square(col, rank)));
+                if (dest != null
+                        && (dest.piece() == null
+                        || (dest.piece() != null
+                        && (dest.piece().color() != square.piece().color())))) {
+                    movesList.add(new Move(square, dest));
+                }
             }
             return movesList;
         });

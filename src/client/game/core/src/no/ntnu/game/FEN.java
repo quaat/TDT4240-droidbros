@@ -1,16 +1,44 @@
 package no.ntnu.game;
 
-import com.sun.jndi.cosnaming.ExceptionMapper;
-
 import no.ntnu.game.models.Board;
 import no.ntnu.game.models.Piece;
-import no.ntnu.game.TypeErrorException;
-
+import no.ntnu.game.movestrategy.DoubleForwardStrategyDecorator;
+import no.ntnu.game.movestrategy.HorizontalStrategyDecorator;
+import no.ntnu.game.movestrategy.LJumpStrategyDecorator;
+import no.ntnu.game.movestrategy.MoveStrategy;
+import no.ntnu.game.movestrategy.SingleForwardStrategyDecorator;
+import no.ntnu.game.movestrategy.ULDiagonalStrategyDecorator;
+import no.ntnu.game.movestrategy.URDiagonalStrategyDecorator;
+import no.ntnu.game.movestrategy.VerticalStrategyDecorator;
+import no.ntnu.game.movestrategy.AllSurroundingStrategyDecorator;
 /**
  * Created by thomash on 26.03.2017.
  */
 
 public class FEN {
+
+    static private MoveStrategy getStrategy(Piece.Type type) {
+        switch (type) {
+            case ROOK:
+                return new HorizontalStrategyDecorator(
+                        new VerticalStrategyDecorator());
+            case KNIGHT:
+                return new LJumpStrategyDecorator();
+            case BISHOP:
+                return new ULDiagonalStrategyDecorator(
+                        new URDiagonalStrategyDecorator());
+            case QUEEN:
+                return new ULDiagonalStrategyDecorator(
+                        new URDiagonalStrategyDecorator(
+                        new HorizontalStrategyDecorator(
+                        new VerticalStrategyDecorator())));
+            case KING:
+                return new AllSurroundingStrategyDecorator();
+            case PAWN:
+            default:
+                return new DoubleForwardStrategyDecorator(new SingleForwardStrategyDecorator());
+        }
+    }
 
     static private Character getCharacterType(Piece.Type type) {
         switch (type) {
@@ -84,8 +112,9 @@ public class FEN {
                         //
                         throw err;
                     }
+                    MoveStrategy moveStrategy = getStrategy(type);
 
-                    board.square(col, row).setPiece(new Piece(type, color));
+                    board.square(col, row).setPiece(new Piece(type, color, moveStrategy));
                 }
             }
         }
