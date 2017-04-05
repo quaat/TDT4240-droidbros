@@ -18,9 +18,16 @@ android {
         exclude 'META-INF/robovm/ios/robovm.xml'
     }
     defaultConfig {
+        jackOptions {
+	  enabled true
+	}
         applicationId "no.ntnu.game"
         minSdkVersion 8
         targetSdkVersion 25
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
