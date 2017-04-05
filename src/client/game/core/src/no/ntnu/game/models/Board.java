@@ -77,6 +77,50 @@ public class Board {
             }
         }
     }
+    public void setToDefault8x8Start(){
+
+        squares[0][0].setPiece(new Piece(Piece.Type.ROOK, Piece.Color.WHITE, null));
+        squares[1][0].setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE, null));
+        squares[2][0].setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.WHITE, null));
+        squares[3][0].setPiece(new Piece(Piece.Type.KING, Piece.Color.WHITE, null));
+        squares[4][0].setPiece(new Piece(Piece.Type.QUEEN, Piece.Color.WHITE, null));
+        squares[5][0].setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.WHITE, null));
+        squares[6][0].setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE, null));
+        squares[7][0].setPiece(new Piece(Piece.Type.ROOK, Piece.Color.WHITE, null));
+
+        squares[0][1].setPiece(new Piece(Piece.Type.PAWN, Piece.Color.WHITE, null));
+        squares[1][1].setPiece(new Piece(Piece.Type.PAWN, Piece.Color.WHITE, null));
+        squares[2][1].setPiece(new Piece(Piece.Type.PAWN, Piece.Color.WHITE, null));
+        squares[3][1].setPiece(new Piece(Piece.Type.PAWN, Piece.Color.WHITE, null));
+        squares[4][1].setPiece(new Piece(Piece.Type.PAWN, Piece.Color.WHITE, null));
+        squares[5][1].setPiece(new Piece(Piece.Type.PAWN, Piece.Color.WHITE, null));
+        squares[6][1].setPiece(new Piece(Piece.Type.PAWN, Piece.Color.WHITE, null));
+        squares[7][1].setPiece(new Piece(Piece.Type.PAWN, Piece.Color.WHITE, null));
+
+
+        squares[0][6].setPiece(new Piece(Piece.Type.PAWN, Piece.Color.BLACK, null));
+        squares[1][6].setPiece(new Piece(Piece.Type.PAWN, Piece.Color.BLACK, null));
+        squares[2][6].setPiece(new Piece(Piece.Type.PAWN, Piece.Color.BLACK, null));
+        squares[3][6].setPiece(new Piece(Piece.Type.PAWN, Piece.Color.BLACK, null));
+        squares[4][6].setPiece(new Piece(Piece.Type.PAWN, Piece.Color.BLACK, null));
+        squares[5][6].setPiece(new Piece(Piece.Type.PAWN, Piece.Color.BLACK, null));
+        squares[6][6].setPiece(new Piece(Piece.Type.PAWN, Piece.Color.BLACK, null));
+        squares[7][6].setPiece(new Piece(Piece.Type.PAWN, Piece.Color.BLACK, null));
+
+        squares[0][7].setPiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK, null));
+        squares[1][7].setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.BLACK, null));
+        squares[2][7].setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.BLACK, null));
+        squares[3][7].setPiece(new Piece(Piece.Type.QUEEN, Piece.Color.BLACK, null));
+        squares[4][7].setPiece(new Piece(Piece.Type.KING, Piece.Color.BLACK, null));
+        squares[5][7].setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.BLACK, null));
+        squares[6][7].setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.BLACK, null));
+        squares[7][7].setPiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK, null));
+
+
+
+
+
+    }
 
     public void setSquare(int col, int row, Square square)
     {

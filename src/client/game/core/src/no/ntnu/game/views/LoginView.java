@@ -69,7 +69,7 @@ public class LoginView extends AbstractView {
         testGameViewButton.addListener(new ChangeListener() {
             @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                controller.testGameview();
+                controller.testGameView();
             }
         });
 		

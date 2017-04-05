@@ -3,7 +3,6 @@ package no.ntnu.game.controllers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.JsonValue;
 
-import no.ntnu.game.MyGame;
 import no.ntnu.game.models.GameInfo;
 import no.ntnu.game.models.GameModel;
 import no.ntnu.game.models.User;
@@ -150,5 +149,9 @@ public class GameController implements NetworkObserver{
     @Override
     public void onError(String error) {
         Gdx.app.log("ANDYPANDY", "ERROR: " + error);
+    }
+
+    public void testGameView() {
+        viewController.setGameView();
     }
 }

@@ -52,7 +52,7 @@ public class Piece {
         return this.object;
     }
 
-    public List<Function<Square, List<Move>>> legalMoves() {
+    public List<Function<Square, List<Move> >> legalMoves() {
         return this.strategy.legalMoves();
     }
 }

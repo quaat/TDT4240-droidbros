@@ -5,12 +5,14 @@ import com.badlogic.gdx.Gdx;
 
 import no.ntnu.game.controllers.GameController;
 import no.ntnu.game.models.GameModel;
+import no.ntnu.game.models.Square;
 import no.ntnu.game.views.AbstractView;
+import no.ntnu.game.views.GameView;
 import no.ntnu.game.views.LoginView;
 import no.ntnu.game.views.TestView2;
 
 
-public class MyGame extends Game{
+public class MyGame extends Game {
 
     // model
     private GameModel model;
@@ -18,12 +20,13 @@ public class MyGame extends Game{
     // views
     private AbstractView loginView;
     private AbstractView testView2; // game room
+    private AbstractView gameView;
 
     // controllers
     private GameController controller;
 
     @Override
-    public void create () {
+    public void create() {
         Gdx.app.log("ANDYPANDY", "game init");
 
         createModel();
@@ -67,38 +70,13 @@ public class MyGame extends Game{
     }
 
     public void setGameView() {
-        Gdx.app.log("Even/ViewController","Changing view to testGameview");
+        Gdx.app.log("Even/ViewController", "Changing view to testGameview");
         //This is probably gonna take some more inputs
         gameView = new GameView(model, controller);
         setScreen(gameView);
     }
+
     //// TODO: 30.03.2017
-    public void setGameView(Square[][] squares) {
-
-    }
-import no.ntnu.game.models.Board;
-import no.ntnu.game.models.Message;
-import no.ntnu.game.models.Square;
-import no.ntnu.game.views.GameView;
-import no.ntnu.game.views.TestView2;
-public class ViewController extends Game{
-	private AbstractView testView;
-	private AbstractView gameView;
-	private AbstractView testView2; // game room
-		testView2 = new TestView2(model, controller);
-	public void setTestView2() {
-		setScreen(testView2);
-	// Getters view
-	public TestView2 getTestView2() {
-		return (TestView2) testView2;
-
-	public void setGameView() {
-		Gdx.app.log("Even/ViewController","Changing view to testGameview");
-        //This is probably gonna take some more inputs
-        gameView = new GameView(model, controller);
-        setScreen(gameView);
-    }
-	//// TODO: 30.03.2017
     public void setGameView(Square[][] squares) {
 
     }
