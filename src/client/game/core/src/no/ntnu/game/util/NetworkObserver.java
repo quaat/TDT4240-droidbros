@@ -1,9 +1,8 @@
 package no.ntnu.game.util;
 
-import java.util.List;
+import com.badlogic.gdx.utils.JsonValue;
 
-import no.ntnu.game.models.Message;
-import no.ntnu.game.models.Room;
+import no.ntnu.game.models.GameInfo;
 import no.ntnu.game.models.User;
 
 /**
@@ -15,9 +14,11 @@ public interface NetworkObserver {
     public void onLogin(User user);
 
     // socket
-    public void onConnected(Room room);
-    public void onMessage(Message message);
-    public void onUserJoined(List<String> users);
+    public void onConnected();
+    public void onUpdate(String users, String queue, String games);
+    public void onStartGame(JsonValue response);
+    public void onNewMove(String fen);
+    public void onGameOver();
     public void onDisconnected();
 
     // error

@@ -6,8 +6,9 @@ package no.ntnu.game.models;
 public class User {
 	private String userid;
 	private String password;
-
 	private String token;
+	private String fen;
+	private int level;
 
 	public User(String userid, String password) {
 		this.userid = userid;
@@ -18,18 +19,28 @@ public class User {
 		this.userid = user.userid;
 		this.password = user.password;
 		this.token = user.token;
+		this.fen = user.fen;
+		this.level = user.level;
 	}
 
 	public void setToken(String token) {
 		this.token = token;
 	}
 
-	public String getToken() {
+	public String token() {
 		return token;
 	}
 
-	public String getUserid() {
+	public String userid() {
 		return userid;
+	}
+
+	public String fen() {
+		return fen;
+	}
+
+	public int level() {
+		return level;
 	}
 
 }
