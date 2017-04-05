@@ -162,8 +162,13 @@ io.use(function(socket, next){
     socket.on('updateUserBoard', function(newFen) {
       var query = { userid: player.userid}
       console.log("update new fen", newFen);
-      User.findOneAndUpdate(query, {fen: newFen});
+      User.findOneAndUpdate(query, {fen: newFen}
+        , function(err, user) {  
+          if (err) throw err;
+          console.log("works");
+        });
       player.fen = newFen;
+      console.log("up", player);
     });
 
     // User request to find a game

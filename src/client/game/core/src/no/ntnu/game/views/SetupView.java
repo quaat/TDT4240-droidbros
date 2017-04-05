@@ -44,7 +44,7 @@ public class SetupView extends AbstractView {
         saveButton.addListener(new ChangeListener() {
             public void changed (ChangeEvent event, Actor actor) {
                 // TODO Check if fen is valid
-                String newFen = fen1Field + "/" + fen2Field;
+                String newFen = fen1Field.getText() + "/" + fen2Field.getText();
                 controller.updateUserBoard(newFen);
             }
         });
