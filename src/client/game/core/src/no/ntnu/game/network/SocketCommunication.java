@@ -3,13 +3,10 @@ package no.ntnu.game.network;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.JsonValue;
 
-import org.json.JSONObject;
-
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
-import no.ntnu.game.models.GameInfo;
 import no.ntnu.game.util.NetworkObserver;
 
 public class SocketCommunication extends NetworkCommunication {
@@ -52,6 +49,12 @@ public class SocketCommunication extends NetworkCommunication {
         socket.disconnect();
     }
 
+    /**
+     * Updates user board with new fen
+     */
+    public void updateUserBoard(String newFen) {
+        socket.emit("updateUserBoard", newFen);
+    }
     /**
      * Find another player to play against
      */

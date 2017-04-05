@@ -52,6 +52,7 @@ public class LoginView extends AbstractView {
 		registerButton.addListener(new ChangeListener() {
 			public void changed (ChangeEvent event, Actor actor) {
 				// Register call
+				// controller.register(usernameField.getText(), passwordField.getText());
 			}
 		});
 
@@ -72,9 +73,5 @@ public class LoginView extends AbstractView {
 		table.add(loginButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(registerButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(statusLabel).width(objectWidth).height(objectHeight);
-	}
-
-	@Override
-	public void onUpdate() {
 	}
 }

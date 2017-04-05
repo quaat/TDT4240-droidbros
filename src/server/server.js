@@ -78,7 +78,9 @@ apiRoutes.post('/authenticate', function(req, res) {
         res.json({
           success: true,
           message: 'Enjoy your token!',
-          token: token
+          token: token,
+          level: user.level,
+          fen: user.fen
         });
       }
     }
@@ -157,10 +159,11 @@ io.use(function(socket, next){
     io.sockets.emit("update", controller.getInfo());
 
     // Update user object after changes while in app
-    socket.on('updateUserFen', function(newFen) {
+    socket.on('updateUserBoard', function(newFen) {
       var query = { userid: player.userid}
       console.log("update new fen", newFen);
       User.findOneAndUpdate(query, {fen: newFen});
+      player.fen = newFen;
     });
 
     // User request to find a game
@@ -170,12 +173,13 @@ io.use(function(socket, next){
       var opponent = controller.matchmaking();
       if (opponent) { // Found opponent
         // Create game
-        currentGame = controller.createGame(player, opponent);
-        console.log("game created", currentGame.gameid);
+        var game = controller.createGame(player, opponent);
+        console.log("game created", game.gameid);
         // Find opponents socket id
-        socket.join(currentGame.gameid);
+        //socket.join(currentGame.gameid);
         // Tell other player that game is ready
-        socket.to(opponent.socketid).emit("gameReady", {gameid: currentGame.gameid});
+        socket.to(opponent.socketid).emit("gameReady", {gameid: game.gameid});
+        socket.emit("gameReady", {gameid: game.gameid})
       } else { // Did not find opponent
         controller.joinQueue(player); // Add player to queue
       }

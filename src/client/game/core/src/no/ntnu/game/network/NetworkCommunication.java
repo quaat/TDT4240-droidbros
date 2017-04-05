@@ -7,7 +7,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import no.ntnu.game.models.GameInfo;
 import no.ntnu.game.models.User;
 import no.ntnu.game.util.JsonSerializer;
 import no.ntnu.game.util.NetworkObserver;

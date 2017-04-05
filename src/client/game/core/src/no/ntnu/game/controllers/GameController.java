@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.JsonValue;
 
 import no.ntnu.game.MyGame;
-import no.ntnu.game.models.GameInfo;
 import no.ntnu.game.models.GameModel;
 import no.ntnu.game.models.User;
 import no.ntnu.game.network.HostInfo;
@@ -41,6 +40,27 @@ public class GameController implements NetworkObserver{
     public void login(String username, String password) {
         User user = new User(username, password);
         http.login(user);
+    }
+
+    /**
+     * Change to menu view
+     */
+    public void menu() {
+        viewController.setMenuView();
+    }
+
+    /**
+     * Change to setup view
+     */
+    public void setup() {
+        viewController.setSetupView();
+    }
+
+    /**
+     * Update start board position
+     */
+    public void updateUserBoard(String newFen) {
+        socket.updateUserBoard(newFen);
     }
 
     /**
@@ -81,7 +101,7 @@ public class GameController implements NetworkObserver{
     public void onLogin(User user) {
         model.setUser(user);
         socket.connect(user.token());
-        viewController.setTestView2();
+        viewController.setMenuView();
     }
 
     /**
@@ -111,7 +131,8 @@ public class GameController implements NetworkObserver{
     public void onStartGame(JsonValue gameInfo) {
         Gdx.app.log("ANDYPANDY", "start game");
         model.startGame(gameInfo);
-        viewController.getTestView2().gameJoined();
+        viewController.setTestView2(); // test game view
+        viewController.getTestView2().gameJoined(); // build this in somewhere else (in emitGameUpdate)
     }
 
     /**
@@ -134,6 +155,7 @@ public class GameController implements NetworkObserver{
         Gdx.app.log("ANDYPANDY", "game over");
         model.endGame();
         viewController.getTestView2().gameLeft();
+        viewController.setMenuView();
     }
 
     /**

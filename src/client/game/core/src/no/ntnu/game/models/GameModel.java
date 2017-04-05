@@ -25,7 +25,7 @@ public class GameModel extends ObservableModel {
     // set current user
     public void setUser(User user) {
         this.user = new User(user);
-        emitChanges();
+        emitUserUpdate();
     }
 
     // start a new game
@@ -34,14 +34,13 @@ public class GameModel extends ObservableModel {
         myTurn = (this.gameInfo.color()== Piece.Color.WHITE) ? true : false;
 
         //board = new Board();
-        Gdx.app.log("ANDYPANDY", user.userid());
-        emitChanges();
+        emitGameUpdate();
     }
 
     // update ongoing game
     public void updateGame(String fen) {
         gameInfo.update(fen);
-        onNewMove();
+        emitNewMove();
     }
 
     // end game
@@ -54,7 +53,7 @@ public class GameModel extends ObservableModel {
         currentUsers = users;
         currentQueue = queue;
         currentGames = games;
-        emitChanges();
+        emitServerUpdate();
     }
 
     public User user() {
