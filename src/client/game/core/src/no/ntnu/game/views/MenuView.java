@@ -14,6 +14,7 @@ public class MenuView extends AbstractView {
 	private final String usersText = "Users online: ";
 	private Label queueLabel;
 	private Label usersLabel;
+	private Label statusLabel;
 	
 	public MenuView(GameModel model, GameController controller) {
 		super(model, controller);
@@ -29,17 +30,19 @@ public class MenuView extends AbstractView {
 		// Label
 		queueLabel = new Label("", skin);
 		usersLabel = new Label("", skin);
+		statusLabel = new Label("", skin);
 		
 		// Listeners
 		playButton.addListener(new ChangeListener() {
 			public void changed (ChangeEvent event, Actor actor) {
 				controller.findGame();
+				statusLabel.setText("Searching for opponent...");
 			}
 		});
 
 		setupButton.addListener(new ChangeListener() {
 			public void changed (ChangeEvent event, Actor actor) {
-				controller.setup();
+				controller.toSetup();
 			}
 		});
 		
@@ -50,6 +53,7 @@ public class MenuView extends AbstractView {
 		});
 		table.add(queueLabel).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(usersLabel).width(objectWidth).height(objectHeight).padBottom(padY).row();
+		table.add(statusLabel).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(playButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(setupButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(creditsButton).width(objectWidth).height(objectHeight);
@@ -59,5 +63,10 @@ public class MenuView extends AbstractView {
 	public void onServerUpdate() {
 		queueLabel.setText(queueText + model.currentQueue());
 		usersLabel.setText(usersText + model.currentUsers());
+	}
+
+	@Override
+	public void onGameUpdate() {
+		statusLabel.setText("Winner is: " + model.winner());
 	}
 }

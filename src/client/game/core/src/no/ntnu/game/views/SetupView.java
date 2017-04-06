@@ -37,7 +37,7 @@ public class SetupView extends AbstractView {
         // Listeners
         backButton.addListener(new ChangeListener() {
             public void changed (ChangeEvent event, Actor actor) {
-                controller.menu();
+                controller.toMenu();
             }
         });
 
@@ -57,8 +57,6 @@ public class SetupView extends AbstractView {
 
     @Override
     public void onUserUpdate() {
-        Gdx.app.log("ANDYPANDY", "FUCK ME");
-        Gdx.app.log("ANDYPANDY", model.user().fen());
         fen1Field.setText(model.user().fen().substring(0, 8));
         fen2Field.setText(model.user().fen().substring(9, 17));
     }

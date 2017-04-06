@@ -45,15 +45,22 @@ public class GameController implements NetworkObserver{
     /**
      * Change to menu view
      */
-    public void menu() {
+    public void toMenu() {
         viewController.setMenuView();
     }
 
     /**
      * Change to setup view
      */
-    public void setup() {
+    public void toSetup() {
         viewController.setSetupView();
+    }
+
+    /**
+     * Change to game view
+     */
+    public void toGame() {
+        viewController.setTestView2();
     }
 
     /**
@@ -131,8 +138,7 @@ public class GameController implements NetworkObserver{
     public void onStartGame(JsonValue gameInfo) {
         Gdx.app.log("ANDYPANDY", "start game");
         model.startGame(gameInfo);
-        viewController.setTestView2(); // test game view
-        viewController.getTestView2().gameJoined(); // build this in somewhere else (in emitGameUpdate)
+        toGame(); // change view
     }
 
     /**
@@ -147,15 +153,15 @@ public class GameController implements NetworkObserver{
     }
 
     /**
-     * Gets game over message from other server
+     * Gets "game over" message from server
      * todo add game object with winner, and all moves, etc.
      */
     @Override
-    public void onGameOver() {
+    public void onGameOver(String winner) {
         Gdx.app.log("ANDYPANDY", "game over");
-        model.endGame();
-        viewController.getTestView2().gameLeft();
-        viewController.setMenuView();
+        model.endGame(winner);
+        // To winner screen / analysis ?
+        toMenu();
     }
 
     /**
@@ -163,7 +169,8 @@ public class GameController implements NetworkObserver{
      */
     @Override
     public void onDisconnected() {
-
+        Gdx.app.log("ANDYPANDY", "Server crash? reconnecting when up!");
+        toMenu();
     }
 
     /**

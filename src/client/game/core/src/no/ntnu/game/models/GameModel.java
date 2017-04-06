@@ -1,6 +1,5 @@
 package no.ntnu.game.models;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.JsonValue;
 
 public class GameModel extends ObservableModel {
@@ -44,7 +43,9 @@ public class GameModel extends ObservableModel {
     }
 
     // end game
-    public void endGame() {
+    public void endGame(String winner) {
+        gameInfo.setWinner(winner);
+        emitGameUpdate();
         // game over
     }
 
@@ -70,6 +71,10 @@ public class GameModel extends ObservableModel {
 
     public String gameid() {
         return gameInfo.gameid();
+    }
+
+    public String winner() {
+        return gameInfo.winner();
     }
 
     public String currentUsers() {

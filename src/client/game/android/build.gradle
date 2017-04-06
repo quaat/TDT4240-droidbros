@@ -22,7 +22,7 @@ android {
 	  enabled true
 	}
         applicationId "no.ntnu.game"
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 25
     }
     compileOptions {
