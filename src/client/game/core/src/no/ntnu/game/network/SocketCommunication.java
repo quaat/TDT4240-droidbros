@@ -162,8 +162,8 @@ public class SocketCommunication extends NetworkCommunication {
         public void call(Object... args) {
             JsonValue response = (JsonValue)serializer.read(args[0].toString());
             Gdx.app.log("ANDYPANDY", args[0].toString());
-            Gdx.app.log("ANDYPANDY", "Game over! I" + " win");
-            emitGameOver();
+            String winner = response.getString("winner");
+            emitGameOver(winner);
         }
     };
 }

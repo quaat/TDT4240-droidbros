@@ -90,9 +90,9 @@ public abstract class NetworkCommunication {
         }
     }
 
-    protected void emitGameOver() {
+    protected void emitGameOver(String winner) {
         for (NetworkObserver observer : observers) {
-            observer.onGameOver();
+            observer.onGameOver(winner);
         }
     }
 }
