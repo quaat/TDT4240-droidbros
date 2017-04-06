@@ -38,6 +38,19 @@ public class Square {
         this.board.setSquare(col, row, this);
     }
 
+    /**
+     * Overriding equals to handle cases where an instance of a square has the same coordinate
+     * @param obj the RHS object
+     * @return true if the Square is the same instance, or if coordinates matches.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Square)) return false;
+        if (obj == this) return true;
+        Square rhs = (Square)obj;
+        return (rhs.col == this.col && rhs.row == this.row);
+    }
+
     public Board board() {
         return this.board;
     }
