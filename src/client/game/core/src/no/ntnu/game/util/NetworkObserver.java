@@ -17,7 +17,7 @@ public interface NetworkObserver {
     public void onUpdate(String users, String queue, String games);
     public void onStartGame(JsonValue response);
     public void onNewMove(String fen);
-    public void onGameOver(String winner);
+    public void onGameOver(JsonValue gameInfo);
     public void onDisconnected();
 
     // error

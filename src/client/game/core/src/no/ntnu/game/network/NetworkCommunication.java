@@ -90,9 +90,9 @@ public abstract class NetworkCommunication {
         }
     }
 
-    protected void emitGameOver(String winner) {
+    protected void emitGameOver(JsonValue gameInfo) {
         for (NetworkObserver observer : observers) {
-            observer.onGameOver(winner);
+            observer.onGameOver(gameInfo);
         }
     }
 }

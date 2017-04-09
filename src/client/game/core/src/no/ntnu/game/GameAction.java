@@ -12,7 +12,7 @@ import no.ntnu.game.models.Square;
  */
 
 public class GameAction {
-    static Board movePiece(Board board, Move move) throws TypeErrorException {
+    public static Board movePiece(Board board, Move move) throws TypeErrorException {
         Square origin = board.square(move.from().col(), move.from().row());
         Square dest = board.square(move.to().col(), move.to().row());
         Piece piece = origin.piece();

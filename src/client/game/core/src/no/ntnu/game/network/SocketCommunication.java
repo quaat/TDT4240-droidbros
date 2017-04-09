@@ -51,6 +51,7 @@ public class SocketCommunication extends NetworkCommunication {
 
     /**
      * Updates user board with new fen
+     * @param newFen fen
      */
     public void updateUserBoard(String newFen) {
         socket.emit("updateUserBoard", newFen);
@@ -64,6 +65,7 @@ public class SocketCommunication extends NetworkCommunication {
 
     /**
      * Join a game that is ready for you
+     * @param gameid gameid
      */
     public void joinGame(String gameid) {
         socket.emit("joinGame", gameid);
@@ -161,9 +163,7 @@ public class SocketCommunication extends NetworkCommunication {
         @Override
         public void call(Object... args) {
             JsonValue response = (JsonValue)serializer.read(args[0].toString());
-            Gdx.app.log("ANDYPANDY", args[0].toString());
-            String winner = response.getString("winner");
-            emitGameOver(winner);
+            emitGameOver(response);
         }
     };
 }

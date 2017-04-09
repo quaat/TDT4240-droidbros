@@ -3,6 +3,7 @@ package no.ntnu.game.controllers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.JsonValue;
 
+import no.ntnu.game.FEN;
 import no.ntnu.game.MyGame;
 import no.ntnu.game.models.GameModel;
 import no.ntnu.game.models.User;
@@ -20,7 +21,7 @@ public class GameController implements NetworkObserver{
     private HostInfo hostInfo = new HostInfo("fast-crag-60223.herokuapp.com");
 
     /**
-     * Controller communicating with server
+     * Controller combining model with views and communicating with server
      * @param model - model
      * @param viewController - view controller
      */
@@ -37,9 +38,21 @@ public class GameController implements NetworkObserver{
      * @param username - username
      * @param password - password
      */
-    public void login(String username, String password) {
+    public boolean login(String username, String password) {
         User user = new User(username, password);
         http.login(user);
+        return true;
+    }
+
+    /**
+     * Register a new user with given params
+     * @param username - username
+     * @param password - password
+     */
+    public boolean register(String username, String password) {
+        User user = new User(username, password);
+        // http.register(user);
+        return true;
     }
 
     /**
@@ -67,6 +80,7 @@ public class GameController implements NetworkObserver{
      * Update start board position
      */
     public void updateUserBoard(String newFen) {
+        // Need a validation method to check if newFen is correct
         socket.updateUserBoard(newFen);
     }
 
@@ -79,15 +93,14 @@ public class GameController implements NetworkObserver{
 
     /**
      * todo change this, just for testing
-     * @param fen - fen string of game position
-     * @return
+     * @return boo
      */
-    public boolean doMove(String fen) {
-        if (model.isItMyTurn()) {
-            socket.doMove(fen);
-            model.updateGame(fen);
-            model.myTurn = false;
-            return true;
+    public boolean doMove(String from, String to) {
+        if (model.isItMyTurn()) { // Is it my turn?
+            if (model.updateGame(from, to)) { // Is the move valid? do move
+                socket.doMove(FEN.toFen(model.board())); // Send board after the update
+                return true; // tell view that move has been sent!
+            }
         }
         return false;
     }
@@ -149,7 +162,6 @@ public class GameController implements NetworkObserver{
     public void onNewMove(String fen) {
         Gdx.app.log("ANDYPANDY", "your turn");
         model.updateGame(fen);
-        model.myTurn = true;
     }
 
     /**
@@ -157,9 +169,9 @@ public class GameController implements NetworkObserver{
      * todo add game object with winner, and all moves, etc.
      */
     @Override
-    public void onGameOver(String winner) {
+    public void onGameOver(JsonValue gameInfo) {
         Gdx.app.log("ANDYPANDY", "game over");
-        model.endGame(winner);
+        model.endGame(gameInfo);
         // To winner screen / analysis ?
         toMenu();
     }

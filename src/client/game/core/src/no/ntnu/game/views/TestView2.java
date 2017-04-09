@@ -1,8 +1,10 @@
 package no.ntnu.game.views;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 import no.ntnu.game.controllers.GameController;
@@ -11,8 +13,6 @@ import no.ntnu.game.models.GameModel;
 
 public class TestView2 extends AbstractView {
 
-    String randFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-
     private TextButton doMoveButton;
     private TextButton resignButton;
 
@@ -20,6 +20,9 @@ public class TestView2 extends AbstractView {
     private Label player1Label;
     private Label player2Label;
     private Label statusLabel;
+
+    private TextField moveFrom;
+    private TextField moveTo;
 
     public TestView2(GameModel model, GameController controller) {
         super(model, controller);
@@ -37,11 +40,18 @@ public class TestView2 extends AbstractView {
         player2Label = new Label("", skin);
         statusLabel = new Label("", skin);
 
+        // Textfield
+        moveFrom = new TextField("", skin);
+        moveTo = new TextField("", skin);
 
         doMoveButton.addListener(new ChangeListener() {
             public void changed (ChangeEvent event, Actor actor) {
-                if (controller.doMove(randFen));
-                    doMove();
+                if (controller.doMove(moveFrom.getText(), moveTo.getText())) {
+                    statusLabel.setText("Wait for move...");
+                    doMoveButton.setVisible(false);
+                } else {
+                    statusLabel.setText("Illegal move, try again");
+                }
             }
         });
 
@@ -54,15 +64,18 @@ public class TestView2 extends AbstractView {
         table.add(gameLabel).width(objectWidth).height(objectHeight).padBottom(padY).row();
         table.add(player1Label).width(objectWidth).height(objectHeight).padBottom(padY);
         table.add(player2Label).width(objectWidth).height(objectHeight).padBottom(padY).row();
-        table.add(doMoveButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
+        table.add(doMoveButton).width(objectWidth).height(objectHeight).padBottom(padY);
         table.add(resignButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
-        table.add(statusLabel).width(objectWidth).height(objectHeight);
+        table.add(statusLabel).width(objectWidth).height(objectHeight).padBottom(padY).row();
+        table.add(moveFrom).width(objectWidth).height(objectHeight);
+        table.add(moveTo).width(objectWidth).height(objectHeight);
     }
 
     @Override
     public void onNewMove() {
         doMoveButton.setVisible(true);
         statusLabel.setText("Your move!");
+        Gdx.app.log("ANDYPANDY", model.fen());
     }
 
     @Override
@@ -73,10 +86,4 @@ public class TestView2 extends AbstractView {
         player2Label.setText("Opponent: " + model.opponent().toString());
         gameLabel.setText("gameid: "+ model.gameid());
     }
-
-    public void doMove() {
-        statusLabel.setText("Wait for move...");
-        doMoveButton.setVisible(false);
-    }
-
 }
