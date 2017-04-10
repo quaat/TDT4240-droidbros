@@ -77,7 +77,16 @@ public class FEN {
         }
     }
 
-    static public Board toBoard(String fenstring) throws TypeErrorException {
+    static public Board toBoardS(final String fen) {
+        Board board = null;
+        try {
+            board = toBoard(fen);
+        } finally {
+            return board;
+        }
+    }
+
+    static public Board toBoard(final String fenstring) throws TypeErrorException {
         // NOTE!! Assumes an 8x8 board
         Board board = new Board(8,8);
 

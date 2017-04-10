@@ -17,17 +17,42 @@ import no.ntnu.game.models.Square;
  */
 
 public class GameAction {
-    static Board movePiece(Board board, Move move) throws TypeErrorException {
+
+    /**
+     * Move a piece on a given board
+     * @param board
+     * @param move
+     * @return board
+     */
+    static Board movePiece(Board board, Move move) {
         Square origin = board.square(move.from().col(), move.from().row());
         Square dest = board.square(move.to().col(), move.to().row());
         Piece piece = origin.piece();
         dest.setPiece(piece);
         origin.setPiece(null);
+        if (piece.type() != Piece.Type.ROOK) {
+            board.incrementHalfmoveClock();
+        } else {
+            board.resetHalfmoveClock();
+        }
         if (board.activeColor() == Piece.Color.BLACK) {
             board.incrementFullmoveClock();
         }
         board.flipActiveColor();
         return board;
+    }
+
+    /**
+     * Overloaded version of movePiece where a FEN string is given as input
+     * @param fen
+     * @param move
+     * @return a new instance of Board
+     */
+    static Board movePiece(final String fen, Move move) {
+        Board board = FEN.toBoardS(fen);
+        if (board == null) return null;
+
+        return movePiece(board, move);
     }
 
     /**
@@ -41,6 +66,22 @@ public class GameAction {
             moves.addAll(legalMoves(square));
         }
         return moves;
+    }
+
+    static public boolean isDrawn(Board board) {
+        return (board.halfmoveClock() >= 50);
+    }
+
+    static public boolean isDrawn(final String fen) {
+        boolean isDrawn = false;
+        try {
+            Board board = FEN.toBoard(fen);
+            isDrawn = board.halfmoveClock() >= 50;
+        } catch (TypeErrorException ex){
+            System.out.println(ex.toString());
+        }
+
+        return isDrawn;
     }
 
     static public boolean isCheck(Board board, Piece.Color activeColor) {
@@ -62,6 +103,13 @@ public class GameAction {
         return isCheck;
     }
 
+    static public boolean isCheck(Board board, boolean pOppositeColor) {
+
+        Piece.Color color = board.activeColor();
+        if (pOppositeColor) color = board.activeColor() == Piece.Color.BLACK ? Piece.Color.WHITE: Piece.Color.BLACK;
+        return isCheck(board, color);
+    }
+
     static private Board copy(Board board) throws Exception {
         return FEN.toBoard(FEN.toFen(board));
     }
@@ -81,6 +129,33 @@ public class GameAction {
         }
         return moves;
     }
+
+    // Return a list of moves which doesn't set the king in check.
+    public static List<Move> legalMoves(final String fen) {
+
+        List<Move> moves = new ArrayList<Move>();
+        try {
+            Board board = FEN.toBoard(fen);
+            List<Square> pieces = board.allSquares().stream()
+                    .filter (s -> (s.piece() != null) && (s.piece().color() == board.activeColor()))
+                    .collect(Collectors.toList());
+
+            List<Move> candidateMoves = GameAction.legalMoves(pieces).stream()
+                    .filter (m -> (!GameAction.isCheck(GameAction.movePiece(fen, m), false)))
+                    .collect(Collectors.toList());
+            moves.addAll(candidateMoves);
+        } catch (TypeErrorException ex){
+            // Illegal setup
+            System.out.println(ex.toString());
+        }
+        return moves;
+    }
+
+    public static boolean isMate(final String fen) {
+        return legalMoves(fen).isEmpty();
+    }
+
+
     /**
      *
      * @param board

@@ -32,7 +32,7 @@ public class SingleForwardStrategyDecorator implements MoveStrategy {
             final int col = square.col();
             int forward = square.piece().color() == Piece.Color.BLACK ? -1 : 1;
             Square dest = b.square(col, rank+forward);
-            if (dest.piece() == null) {
+            if (dest != null && dest.piece() == null) {
                 movesArray.add(new Move(square, dest));
             }
 
