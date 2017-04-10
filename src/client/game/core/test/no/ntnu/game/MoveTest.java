@@ -232,6 +232,25 @@ public class MoveTest {
         return isCheck;
     }
 
+    static public boolean isLegal(String fen, Move move) throws Exception {
+        Board board = FEN.toBoard(fen);
+        GameAction.movePiece(board, move);
+        return isCheck(board, board.activeColor());
+    }
+
+    @Test
+    public void getOutOfCheck() throws Exception {
+        String fen = "1nbqk1nr/rp2bpp1/3pp2p/1N6/ppPP4/1K3P1N/P3P1PP/R1BQ1B1R w - - 0 11";
+        Board board = FEN.toBoard(fen);
+        List<Square> allActive = board.allSquares().stream()
+                .filter(s -> (s.piece() != null) && (s.piece().color() == Piece.Color.WHITE))
+                .collect(Collectors.toList());
+        List<Move> candidateMoves = GameAction.legalMoves(allActive).stream()
+                .filter(m -> isLegal(FEN.toFen(board), m))
+                .collect(Collectors.toList());
+
+    }
+
     @Test
     public void moveRandomPiece2() throws Exception {
         String standardStartPosition ="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1";
@@ -248,7 +267,7 @@ public class MoveTest {
                 GameAction.movePiece(boardCopy, move);
             }
 
-            List<Move> moves = GameAction.legalMoves(allActive).stream()
+            List<Move> moves = GameAction.legalMoves(allActive); /*.stream()
                     .filter(move -> {
                         try {
                             GameAction.movePiece(boardCopy, move);
@@ -262,7 +281,7 @@ public class MoveTest {
                         return false;
                     })
                     .collect(Collectors.toList());
-
+*/
             if (moves.size() == 0) {
                 System.out.println("Check Mate!");
                 String fen = FEN.toFen(board);
