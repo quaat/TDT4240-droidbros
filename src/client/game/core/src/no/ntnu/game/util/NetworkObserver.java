@@ -2,7 +2,6 @@ package no.ntnu.game.util;
 
 import com.badlogic.gdx.utils.JsonValue;
 
-import no.ntnu.game.models.GameInfo;
 import no.ntnu.game.models.User;
 
 /**
@@ -18,7 +17,7 @@ public interface NetworkObserver {
     public void onUpdate(String users, String queue, String games);
     public void onStartGame(JsonValue response);
     public void onNewMove(String fen);
-    public void onGameOver();
+    public void onGameOver(JsonValue gameInfo);
     public void onDisconnected();
 
     // error

@@ -3,8 +3,8 @@ package no.ntnu.game.controllers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.JsonValue;
 
+import no.ntnu.game.FEN;
 import no.ntnu.game.MyGame;
-import no.ntnu.game.models.GameInfo;
 import no.ntnu.game.models.GameModel;
 import no.ntnu.game.models.User;
 import no.ntnu.game.network.HostInfo;
@@ -21,7 +21,7 @@ public class GameController implements NetworkObserver{
     private HostInfo hostInfo = new HostInfo("fast-crag-60223.herokuapp.com");
 
     /**
-     * Controller communicating with server
+     * Controller combining model with views and communicating with server
      * @param model - model
      * @param viewController - view controller
      */
@@ -38,9 +38,50 @@ public class GameController implements NetworkObserver{
      * @param username - username
      * @param password - password
      */
-    public void login(String username, String password) {
+    public boolean login(String username, String password) {
         User user = new User(username, password);
         http.login(user);
+        return true;
+    }
+
+    /**
+     * Register a new user with given params
+     * @param username - username
+     * @param password - password
+     */
+    public boolean register(String username, String password) {
+        User user = new User(username, password);
+        // http.register(user);
+        return true;
+    }
+
+    /**
+     * Change to menu view
+     */
+    public void toMenu() {
+        viewController.setMenuView();
+    }
+
+    /**
+     * Change to setup view
+     */
+    public void toSetup() {
+        viewController.setSetupView();
+    }
+
+    /**
+     * Change to game view
+     */
+    public void toGame() {
+        viewController.setTestView2();
+    }
+
+    /**
+     * Update start board position
+     */
+    public void updateUserBoard(String newFen) {
+        // Need a validation method to check if newFen is correct
+        socket.updateUserBoard(newFen);
     }
 
     /**
@@ -52,15 +93,14 @@ public class GameController implements NetworkObserver{
 
     /**
      * todo change this, just for testing
-     * @param fen - fen string of game position
-     * @return
+     * @return boo
      */
-    public boolean doMove(String fen) {
-        if (model.isItMyTurn()) {
-            socket.doMove(fen);
-            model.updateGame(fen);
-            model.myTurn = false;
-            return true;
+    public boolean doMove(String from, String to) {
+        if (model.isItMyTurn()) { // Is it my turn?
+            if (model.updateGame(from, to)) { // Is the move valid? do move
+                socket.doMove(FEN.toFen(model.board())); // Send board after the update
+                return true; // tell view that move has been sent!
+            }
         }
         return false;
     }
@@ -81,7 +121,7 @@ public class GameController implements NetworkObserver{
     public void onLogin(User user) {
         model.setUser(user);
         socket.connect(user.token());
-        viewController.setTestView2();
+        viewController.setMenuView();
     }
 
     /**
@@ -111,7 +151,7 @@ public class GameController implements NetworkObserver{
     public void onStartGame(JsonValue gameInfo) {
         Gdx.app.log("ANDYPANDY", "start game");
         model.startGame(gameInfo);
-        viewController.getTestView2().gameJoined();
+        toGame(); // change view
     }
 
     /**
@@ -122,18 +162,18 @@ public class GameController implements NetworkObserver{
     public void onNewMove(String fen) {
         Gdx.app.log("ANDYPANDY", "your turn");
         model.updateGame(fen);
-        model.myTurn = true;
     }
 
     /**
-     * Gets game over message from other server
+     * Gets "game over" message from server
      * todo add game object with winner, and all moves, etc.
      */
     @Override
-    public void onGameOver() {
+    public void onGameOver(JsonValue gameInfo) {
         Gdx.app.log("ANDYPANDY", "game over");
-        model.endGame();
-        viewController.getTestView2().gameLeft();
+        model.endGame(gameInfo);
+        // To winner screen / analysis ?
+        toMenu();
     }
 
     /**
@@ -141,7 +181,8 @@ public class GameController implements NetworkObserver{
      */
     @Override
     public void onDisconnected() {
-
+        Gdx.app.log("ANDYPANDY", "Server crash? reconnecting when up!");
+        toMenu();
     }
 
     /**

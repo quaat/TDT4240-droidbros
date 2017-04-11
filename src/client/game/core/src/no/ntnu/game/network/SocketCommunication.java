@@ -3,13 +3,10 @@ package no.ntnu.game.network;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.JsonValue;
 
-import org.json.JSONObject;
-
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
-import no.ntnu.game.models.GameInfo;
 import no.ntnu.game.util.NetworkObserver;
 
 public class SocketCommunication extends NetworkCommunication {
@@ -53,6 +50,13 @@ public class SocketCommunication extends NetworkCommunication {
     }
 
     /**
+     * Updates user board with new fen
+     * @param newFen fen
+     */
+    public void updateUserBoard(String newFen) {
+        socket.emit("updateUserBoard", newFen);
+    }
+    /**
      * Find another player to play against
      */
     public void findGame() {
@@ -61,6 +65,7 @@ public class SocketCommunication extends NetworkCommunication {
 
     /**
      * Join a game that is ready for you
+     * @param gameid gameid
      */
     public void joinGame(String gameid) {
         socket.emit("joinGame", gameid);
@@ -158,9 +163,7 @@ public class SocketCommunication extends NetworkCommunication {
         @Override
         public void call(Object... args) {
             JsonValue response = (JsonValue)serializer.read(args[0].toString());
-            Gdx.app.log("ANDYPANDY", args[0].toString());
-            Gdx.app.log("ANDYPANDY", "Game over! I" + " win");
-            emitGameOver();
+            emitGameOver(response);
         }
     };
 }

@@ -1,47 +1,74 @@
-// global variables
 var Game = require('../models/game');
 
 var users = []; // users connected
 var games = []; // games running
 var queue = []; // users in game queue
 
+/**
+ * Add player to users list
+ * @param {Player} player
+ */
 exports.connect = function(player) {
   users.push(player);
 };
 
+/**
+ * Removes player from user list
+ * @param {Player} player
+ */
 exports.disconnect = function(player) {
-  // remove player from users list
   for (var i = 0; i < users.length; i++) {
     if (users[i].id == player.id)
       users.splice(i, 1);
   }
 };
 
+/**
+ * Reconnects player to his game after disconnect
+ * @param {Player} player
+ */
+exports.reconnect = function(player) {
+  // Todo, some more logic? :/
+  return this.findGameWithPlayer(player);
+}
+
+/**
+ * Add player to queue
+ * @param {Player} player
+ */
 exports.joinQueue = function(player) {
-  // Wont add same player to queue
   for (var i = 0; i < queue.length; i++) {
     if (queue[i].id == player.id) return;
   }
-  queue.push(player); // add user to queue
+  queue.push(player);
 };
 
+/**
+ * Remove player from queue
+ * @param {Player} player
+ */
 exports.leaveQueue = function(player) {
-  // remove player from queue
   for (var i = 0; i < queue.length; i++) {
     if (queue[i].id == player.id)
       queue.splice(i, 1);
   }
 };
 
-// Finds a player to play against
-// Very simple solution for now
+/**
+ * Finds an opponent to play against
+ * @return {Player} opponent
+ */
 exports.matchmaking = function() {
   if (queue.length >= 1) return queue.shift();
 }
 
-// Create game with players
+/**
+ * Create a new game with given players, adds new game to games list
+ * @param {Player} p1
+ * @param {Player} p2
+ * @return {Game} new game
+ */
 exports.createGame = function(p1, p2) {
-  // set random color on each player
   if (Math.floor(Math.random()*2)==0) {
     p1.color = "white";
     p2.color = "black";
@@ -51,20 +78,25 @@ exports.createGame = function(p1, p2) {
   }
 
   var game = {
-    gameid: (Math.random()+1).toString(36).slice(2, 18),
+    gameid: (Math.random()+1).toString(36).slice(2, 18), // random id
     player1: p1, // player1
     player2: p2, // player2
-    started: new Date().toLocaleString(), // date
+    started: new Date().toLocaleString(), // start date
     ended: "",
     moves: [], // history of all moves
     fen: this.createFen(p1, p2), // Starting fen string
     winner: ""
   };
-  games.push(game); // add game object to list
+  games.push(game);
   return game;
 };
 
-// Creates initial fen based on custom start moves of both players
+/**
+ * Creates initial fen based on custom start setup of both players
+ * @param {Player} p1
+ * @param {Player} p2
+ * @return {String} fen
+ */
 exports.createFen = function(p1, p2) {
   var fen = "";
   // TODO make pretty! :)
@@ -85,14 +117,23 @@ exports.createFen = function(p1, p2) {
   return fen;
 }
 
+/**
+ * Updates given game with new fen
+ * @param {Game} game
+ * @param {String} fen
+ */
 exports.updateGame = function(game, fen) {
   if (game) {
     game.moves.push(fen);
-    game.fen = fen; // Update fen
+    game.fen = fen;
   }
 }
 
-// Find game in list
+/**
+ * Finds and return game with given param
+ * @param {String} gameid
+ * @return {Game} game
+ */
 exports.findGame = function(gameid) {
   for (var i = 0; i < games.length; i++) {
     if (games[i].gameid == gameid)
@@ -100,7 +141,23 @@ exports.findGame = function(gameid) {
   }
 }
 
-// Find game in database
+/**
+ * Finds and return game if given player is in it
+ * @param {Player} player
+ * @return {Game} game
+ */
+exports.findGameWithPlayer = function(player) {
+  for (var i = 0; i < games.length; i++) {
+    if (games[i].player1.userid == player.userid || games[i].player2.userid == player.userid)
+      return games[i];
+  }
+}
+
+/**
+ * Finds and returns game from database given param
+ * @param {String} gameid
+ * @return {Game} game
+ */
 exports.findGameDB = function(gameid) {
   Game.findone({
     gameid: gameid
@@ -111,16 +168,23 @@ exports.findGameDB = function(gameid) {
   })
 }
 
+/**
+ * Ends given game, set end date and winner
+ * @param {Game} game
+ * @param {String} winner
+ */
 exports.endGame = function(game, winner) {
   if (game) {
-    // set winner
     game.winner = winner;
     game.ended = new Date().toLocaleString();
-    // Save to database
     this.saveGame(game);
   }
 };
 
+/**
+ * Stores game in database
+ * @param {Game} game
+ */
 exports.saveGame = function(game) {
   if (game) {
     var g = new Game({
@@ -137,9 +201,12 @@ exports.saveGame = function(game) {
       console.log('Game saved successfully');
     });
   }
-  console.log("game undefined");
 }
 
+/**
+ * Removes game from games list
+ * @param {String} gameid
+ */
 exports.removeGame = function(gameid) {
   // remove game from games list
   for (var i = 0; i < games.length; i++) {
@@ -148,10 +215,18 @@ exports.removeGame = function(gameid) {
   }
 };
 
+/**
+ * Removes game from games list
+ * @param {String} gameid
+ */
 exports.getOpponent = function(game, player) {
   if (game) return (player.id == game.player1.id) ? game.player2 : game.player1;
 };
 
+/**
+ * Returns length of users, queue, games
+ * @param {String} gameid
+ */
 exports.getInfo = function() {
   var ret = {
     users: users.length,

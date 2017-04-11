@@ -16,15 +16,29 @@ public abstract class ObservableModel {
         observers.add(observer);
     }
 
-    // Notify all views about change
-    protected void emitChanges() {
+    // New info from server
+    protected void emitServerUpdate() {
         for (ScreenObserver observer : observers) {
-            observer.onUpdate();
+            observer.onServerUpdate();
         }
     }
 
-    // New message in model
-    protected void onNewMove() {
+    // User info updated
+    protected void emitUserUpdate() {
+        for (ScreenObserver observer : observers) {
+            observer.onUserUpdate();
+        }
+    }
+
+    // User info updated
+    protected void emitGameUpdate() {
+        for (ScreenObserver observer : observers) {
+            observer.onGameUpdate();
+        }
+    }
+
+    // New move
+    protected void emitNewMove() {
         for (ScreenObserver observer : observers) {
             observer.onNewMove();
         }

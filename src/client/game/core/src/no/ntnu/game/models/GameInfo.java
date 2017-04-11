@@ -66,6 +66,10 @@ public class GameInfo {
         return winner;
     }
 
+    public void setWinner(String winner) {
+        this.winner = winner;
+    }
+
     public Piece.Color color() {
         return (player.color().equals("white")) ? Piece.Color.WHITE : Piece.Color.BLACK;
     }

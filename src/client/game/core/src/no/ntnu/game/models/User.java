@@ -1,5 +1,7 @@
 package no.ntnu.game.models;
 
+import com.badlogic.gdx.Gdx;
+
 /**
  *
  */
@@ -25,6 +27,14 @@ public class User {
 
 	public void setToken(String token) {
 		this.token = token;
+	}
+
+	public void setFen(String fen) {
+		this.fen = fen;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
 	}
 
 	public String token() {

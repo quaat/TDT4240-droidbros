@@ -7,6 +7,8 @@ import no.ntnu.game.controllers.GameController;
 import no.ntnu.game.models.GameModel;
 import no.ntnu.game.views.AbstractView;
 import no.ntnu.game.views.LoginView;
+import no.ntnu.game.views.MenuView;
+import no.ntnu.game.views.SetupView;
 import no.ntnu.game.views.TestView2;
 
 
@@ -17,6 +19,8 @@ public class MyGame extends Game{
 
 	// views
 	private AbstractView loginView;
+	private AbstractView menuView;
+	private AbstractView setupView;
 	private AbstractView testView2; // game room
 
 	// controllers
@@ -45,12 +49,22 @@ public class MyGame extends Game{
 
 	private void createViews() {
 		loginView = new LoginView(model, controller);
+		menuView = new MenuView(model, controller);
+		setupView = new SetupView(model, controller);
 		testView2 = new TestView2(model, controller);
 	}
 
 	// Setters view
 	public void setLoginView() {
 		setScreen(loginView);
+	}
+
+	public void setMenuView() {
+		setScreen(menuView);
+	}
+
+	public void setSetupView() {
+		setScreen(setupView);
 	}
 
 	public void setTestView2() {
@@ -60,6 +74,14 @@ public class MyGame extends Game{
 	// Getters view
 	public LoginView getLoginView() {
 		return (LoginView) loginView;
+	}
+
+	public MenuView getMenuView() {
+		return (MenuView) menuView;
+	}
+
+	public SetupView getSetupView() {
+		return (SetupView) setupView;
 	}
 
 	public TestView2 getTestView2() {

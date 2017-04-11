@@ -3,15 +3,19 @@ package no.ntnu.game.models;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.JsonValue;
 
+import no.ntnu.game.FEN;
+import no.ntnu.game.GameAction;
+import no.ntnu.game.Move;
+import no.ntnu.game.TypeErrorException;
+
 public class GameModel extends ObservableModel {
-    private User user; // user logged in as
+    // Client info
+    private User user; // User logged in as
+    private Boolean connected; // This socket connected to server socket
 
     // Current game
-    private GameInfo gameInfo;
-    private Board board;
-
-    // remove
-    public boolean myTurn;
+    private GameInfo gameInfo; // All info about current game
+    private Board board; // Board of current game
 
     // Statistics from server
     private String currentUsers; // Users online
@@ -22,39 +26,80 @@ public class GameModel extends ObservableModel {
 
     }
 
-    // set current user
-    public void setUser(User user) {
-        this.user = new User(user);
-        emitChanges();
-    }
-
-    // start a new game
+    /**
+     * Starts a new game
+     * @param gameInfo - information about new game
+     */
     public void startGame(JsonValue gameInfo) {
         this.gameInfo = new GameInfo(gameInfo, user);
-        myTurn = (this.gameInfo.color()== Piece.Color.WHITE) ? true : false;
-
-        //board = new Board();
-        Gdx.app.log("ANDYPANDY", user.userid());
-        emitChanges();
+        updateBoard();
+        emitGameUpdate();
     }
 
-    // update ongoing game
+    /**
+     * Ends current game
+     * @param gameInfo - information about new game
+     */
+    public void endGame(JsonValue gameInfo) {
+        this.gameInfo = new GameInfo(gameInfo, user);
+        updateBoard();
+        emitGameUpdate();
+    }
+
+    /**
+     * Updates board with fen string (from server)
+     * @param fen Updates fen string
+     */
     public void updateGame(String fen) {
         gameInfo.update(fen);
-        onNewMove();
+        updateBoard();
+        emitNewMove();
     }
 
-    // end game
-    public void endGame() {
-        // game over
+    /**
+     * Updates board with params fromMove and toMove (from client)
+     * todo - missing if it is a valid move.
+     * @param from From square
+     * @param to To square
+     * @return boolean
+     */
+    public boolean updateGame(String from, String to) {
+        try {
+            board = GameAction.movePiece(board, new Move(from, to));
+            return true;
+        }catch(TypeErrorException e) {
+            return false;
+        }
     }
 
-    // update queue size
+    /**
+     * Sets the board equal to fen string
+     */
+    private void updateBoard() {
+        try { board = FEN.toBoard(fen());
+        }catch(TypeErrorException e) {System.out.println(e);}
+    }
+
+    /**
+     * Updates list with params
+     * @param users users online
+     * @param queue users searching for games
+     * @param games games being played
+     */
     public void updateStatistics(String users, String queue, String games) {
         currentUsers = users;
         currentQueue = queue;
         currentGames = games;
-        emitChanges();
+        emitServerUpdate();
+    }
+
+    /**
+     * Gets update message from server
+     * @param user user
+     */
+    public void setUser(User user) {
+        this.user = new User(user);
+        emitUserUpdate();
     }
 
     public User user() {
@@ -73,6 +118,18 @@ public class GameModel extends ObservableModel {
         return gameInfo.gameid();
     }
 
+    public Board board() {
+        return board;
+    }
+
+    public String fen() {
+        return gameInfo.fen();
+    }
+
+    public String winner() {
+        return gameInfo.winner();
+    }
+
     public String currentUsers() {
         return currentUsers;
     }
@@ -86,7 +143,6 @@ public class GameModel extends ObservableModel {
     }
 
     public boolean isItMyTurn() {
-        return myTurn;
-        //return board.activeColor()==gameInfo.color();
+        return board.activeColor()==gameInfo.color();
     }
 }

@@ -5,6 +5,8 @@ package no.ntnu.game.util;
  */
 
 public interface ScreenObserver {
-    public void onUpdate();
+    public void onUserUpdate();
+    public void onServerUpdate();
     public void onNewMove();
+    public void onGameUpdate();
 }
