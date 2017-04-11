@@ -95,7 +95,13 @@ public abstract class AbstractView implements Screen, ScreenObserver {
 	}
 
 	@Override
-	public void onUpdate() { }
+	public void onServerUpdate() { }
+
+	@Override
+	public void onUserUpdate() { }
+
+	@Override
+	public void onGameUpdate() {}
 
 	@Override
 	public void onNewMove() { }

@@ -1,6 +1,7 @@
 package no.ntnu.game.network;
 
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
 import com.badlogic.gdx.net.HttpRequestBuilder;
 import com.badlogic.gdx.net.NetJavaImpl;
@@ -26,6 +27,8 @@ public class HttpCommunication extends NetworkCommunication {
                 JsonValue response = (JsonValue)serializer.read(httpResponse.getResultAsString());
                 if (response.getBoolean("success")) {
                     user.setToken(response.getString("token"));
+                    user.setFen(response.getString("fen"));
+                    user.setLevel(response.getInt("level"));
                     emitLogin(user);
                 } else {
                     emitError("Authentication failed");
