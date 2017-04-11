@@ -6,6 +6,7 @@ import no.ntnu.game.movestrategy.DoubleForwardStrategyDecorator;
 import no.ntnu.game.movestrategy.HorizontalStrategyDecorator;
 import no.ntnu.game.movestrategy.LJumpStrategyDecorator;
 import no.ntnu.game.movestrategy.MoveStrategy;
+import no.ntnu.game.movestrategy.MoveStrategyFactory;
 import no.ntnu.game.movestrategy.SingleForwardStrategyDecorator;
 import no.ntnu.game.movestrategy.ULDiagonalStrategyDecorator;
 import no.ntnu.game.movestrategy.URDiagonalStrategyDecorator;
@@ -17,28 +18,6 @@ import no.ntnu.game.movestrategy.AllSurroundingStrategyDecorator;
 
 public class FEN {
 
-    static private MoveStrategy getStrategy(Piece.Type type) {
-        switch (type) {
-            case ROOK:
-                return new HorizontalStrategyDecorator(
-                        new VerticalStrategyDecorator());
-            case KNIGHT:
-                return new LJumpStrategyDecorator();
-            case BISHOP:
-                return new ULDiagonalStrategyDecorator(
-                        new URDiagonalStrategyDecorator());
-            case QUEEN:
-                return new ULDiagonalStrategyDecorator(
-                        new URDiagonalStrategyDecorator(
-                        new HorizontalStrategyDecorator(
-                        new VerticalStrategyDecorator())));
-            case KING:
-                return new AllSurroundingStrategyDecorator();
-            case PAWN:
-            default:
-                return new DoubleForwardStrategyDecorator(new SingleForwardStrategyDecorator());
-        }
-    }
 
     static private Character getCharacterType(Piece.Type type) {
         switch (type) {
@@ -77,7 +56,16 @@ public class FEN {
         }
     }
 
-    static public Board toBoard(String fenstring) throws TypeErrorException {
+    static public Board toBoardS(final String fen) {
+        Board board = null;
+        try {
+            board = toBoard(fen);
+        } finally {
+            return board;
+        }
+    }
+
+    static public Board toBoard(final String fenstring) throws TypeErrorException {
         // NOTE!! Assumes an 8x8 board
         Board board = new Board(8,8);
 
@@ -112,7 +100,7 @@ public class FEN {
                         //
                         throw err;
                     }
-                    MoveStrategy moveStrategy = getStrategy(type);
+                    MoveStrategy moveStrategy = MoveStrategyFactory.getStrategy(type);
 
                     board.square(col, row).setPiece(new Piece(type, color, moveStrategy));
                 }

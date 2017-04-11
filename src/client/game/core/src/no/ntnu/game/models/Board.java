@@ -1,5 +1,9 @@
 package no.ntnu.game.models;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Created by thomash on 25.03.2017.
  */
@@ -93,6 +97,18 @@ public class Board {
             return this.squares[col][row];
         }
         return null;
+    }
+
+    /**
+     * Find all squares on the board
+     * @return a list containing all squares.
+     */
+    public List<Square> allSquares() {
+        List<Square> squareList = new ArrayList<Square>();
+        for (Square[] row : this.squares) {
+            squareList.addAll(Arrays.asList(row));
+        }
+        return squareList;
     }
 
     public int rows() {

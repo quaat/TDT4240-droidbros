@@ -1,12 +1,16 @@
 package no.ntnu.game;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import no.ntnu.game.models.Board;
 import no.ntnu.game.models.Square;
@@ -103,94 +107,6 @@ public class MoveTest {
         return moves;
     }
 
-    @Test
-    public void testPawnMoveStrategy() throws Exception {
-        MoveStrategy pawnStrategy = new SingleForwardStrategyDecorator(new DoubleForwardStrategyDecorator());
-        Piece piece = new Piece(Piece.Type.PAWN, Piece.Color.WHITE, pawnStrategy);
-        Board board = FEN.toBoard("rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1");
-        Square square  = board.square(0, 1);
-        square.setPiece(piece);
-        for (Move m : legalMoves(square)) {
-            String s = m.toString();
-            assertEquals(s, s);
-        }
-    }
-
-    @Test
-    public void testQueenMoveStrategy() throws Exception {
-        MoveStrategy queenStrategy = new HorizontalStrategyDecorator(
-                new VerticalStrategyDecorator(
-                        new ULDiagonalStrategyDecorator(
-                                new URDiagonalStrategyDecorator()
-                        )
-                )
-        );
-        Piece piece = new Piece(Piece.Type.QUEEN,Piece.Color.WHITE,queenStrategy);
-        Board board = FEN.toBoard("8/8/8/8/8/8/8/8 w - - 0 1");
-        Square square = board.square(4,4);
-        square.setPiece(piece);
-
-        List<Move> moves = legalMoves(square);
-        int numMoves = moves.size();
-        assertEquals(numMoves, 27);
-    }
-
-    @Test
-    public void testRookMoveStrategy() throws Exception {
-        MoveStrategy rookStrategy = new HorizontalStrategyDecorator(
-                new VerticalStrategyDecorator()
-        );
-        Piece piece = new Piece(Piece.Type.ROOK, Piece.Color.WHITE, rookStrategy);
-        Board board = FEN.toBoard("8/8/8/8/8/8/8/8 w - - 0 1");
-        Square square = board.square(4,4);
-        square.setPiece(piece);
-        List<Move> moves = legalMoves(square);
-        int numMoves = moves.size();
-        assertEquals(numMoves, 14);
-    }
-
-    @Test
-    public void testRookMoveStrategy2() throws Exception {
-        MoveStrategy rookStrategy = new HorizontalStrategyDecorator(
-                new VerticalStrategyDecorator()
-        );
-        Piece piece = new Piece(Piece.Type.ROOK, Piece.Color.WHITE, rookStrategy);
-        Board board = FEN.toBoard("8/pppppppp/8/8/8/8/PPPPPPPP/8 w - - 0 1");
-        Square square = board.square(4,4);
-        square.setPiece(piece);
-        List<Move> moves = legalMoves(square);
-        int numMoves = moves.size();
-        assertEquals(numMoves, 11);
-    }
-
-    @Test
-    public void testKnightMoveStrategy() throws Exception {
-        MoveStrategy ljump = new LJumpStrategyDecorator();
-        Piece knight = new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE, ljump);
-        Board board = FEN.toBoard("8/pppppppp/8/8/8/8/PPPPPPPP/8 w - - 0 1");
-        Square square = board.square(3,3);
-        square.setPiece(knight);
-        List<Move> moves = legalMoves(square);
-        int numMoves = moves.size();
-        assertEquals(numMoves, 6);
-
-        square = board.square(0, 2);
-        square.setPiece(knight);
-        moves = legalMoves(square);
-        numMoves = moves.size();
-        assertEquals(numMoves, 3);
-    }
-
-    @Test
-    public void bishopMoveStrategy() throws Exception {
-        String standardStartPosition ="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-        Board board = FEN.toBoard(standardStartPosition);
-        Square square = board.square(2, 0);
-        assertEquals(square.piece().type(),Piece.Type.BISHOP);
-        List<Move> moves = legalMoves(square);
-        int numMoves = moves.size();
-        assertEquals(numMoves, 0);
-    }
 
     @Test
     public void movePieceOnBoard() throws Exception {
@@ -210,31 +126,76 @@ public class MoveTest {
         assertEquals(fen, "rnbqkbnr/pp2pppp/2p5/3p4/3P4/2N5/PPP1PPPP/R1BQKBNR w KQkq - 0 3");
     }
 
+
     @Test
-    public void moveRandomPiece() throws Exception {
+    public void findKing() throws Exception {
         String standardStartPosition ="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1";
         Board board = FEN.toBoard(standardStartPosition);
-        int i = 0;
-        while (i++ < 20) {
-            Piece.Color activeColor = board.activeColor();
-            List<Move> moves = new ArrayList<Move>();
-            for (int row = 0; row < board.rows(); row++) {
-                for (int col = 0; col < board.cols(); col++) {
+        Square compare = board.square(4, 0);
+        List<Square> squares = GameAction.findAllPieces(board, Piece.Type.KING, Piece.Color.WHITE);
+        assertEquals(squares.size(), 1);
+        assertTrue(squares.get(0) == compare);
+    }
 
-                    Square square = board.square(col, row);
-                    if (square != null) {
-                        Piece piece = square.piece();
-                        if (piece != null && piece.color() == activeColor) {
-                            moves.addAll(legalMoves(square));
-                        }
-                    }
-                }
+    @Test
+    public void findCheck() throws Exception {
+        String standardStartPosition ="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1";
+        Board board = FEN.toBoard(standardStartPosition);
+        final Square kingSquare = GameAction.findAllPieces(board, Piece.Type.KING, Piece.Color.WHITE).get(0);
+        List<Square> allOpponents =  GameAction.findAllPieces(board, Piece.Color.BLACK);
+        boolean threat = false;
+        for (Square opponent : allOpponents) {
+            List<Move> threats = GameAction.legalMoves(opponent).stream()
+                    .filter(s -> s.to() == kingSquare)
+                    .collect(Collectors.toList());
+            if (threats.size() > 0) {
+                threat = true;
+                break;
             }
-            Random rand = new Random();
-            int randomMove = rand.nextInt(moves.size());
-            board = GameAction.movePiece(board, moves.get(randomMove));
-            String fen = FEN.toFen(board);
-            System.out.println(fen);
         }
+        assertEquals(threat, false);
+
+        board = FEN.toBoard("rnb1kbnr/pp1ppppp/2p5/q7/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 1 3");
+        final Square newKingSquare = GameAction.findAllPieces(board, Piece.Type.KING, Piece.Color.WHITE).get(0);
+        allOpponents =  GameAction.findAllPieces(board, Piece.Color.BLACK);
+        for (Square opponent : allOpponents) {
+            if (GameAction.legalMoves(opponent).stream()
+                    .filter(s -> s.to() == newKingSquare)
+                    .collect(Collectors.toList()).size() > 0) {
+                threat = true;
+                break;
+            }
+        }
+        assertEquals(threat, true);
+    }
+
+    @Test
+    public void checkMate() throws Exception {
+        // Check every move if king is still in check:
+        // For every move, check if there exist an opponent move that threatens the king
+        String position = "r7/2pQ4/p1Ppkr2/4p3/p3P3/8/PqPb1PPP/R4RK1 b - - 7 25";
+        assertTrue(GameAction.isMate(position));
+
+        position = "rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3";
+        assertTrue(GameAction.isMate(position));
+
+        position = "rnbq1rk1/ppp1ppbp/5np1/3p4/3P4/N1P2N1P/PP2PPP1/R1BQKB1R w KQ - 1 6";
+        assertFalse(GameAction.isMate(position));
+    }
+
+    @Test
+    public void boardAndPieces() throws Exception {
+        String standardStartPosition ="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1";
+        Board board = FEN.toBoard(standardStartPosition);
+        List<Square> whitePieces = board.allSquares().stream()
+                .filter(s ->
+                    ((s.piece() != null) && (s.piece().color() == Piece.Color.WHITE)))
+                .collect(Collectors.toList());
+        assertEquals(whitePieces.size(), 16);
+
+        List<Square> blackPawns = board.allSquares().stream()
+                .filter(s -> s.piece() != null && s.piece().color() == Piece.Color.BLACK && s.piece().type() == Piece.Type.PAWN)
+                .collect(Collectors.toList());
+        assertEquals(blackPawns.size(), 8);
     }
 }
