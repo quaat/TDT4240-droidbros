@@ -58,18 +58,14 @@ public class GameModel extends ObservableModel {
 
     /**
      * Updates board with params fromMove and toMove (from client)
-     * todo - missing if it is a valid move.
+     * todo - use correct method for updating board
      * @param from From square
      * @param to To square
      * @return boolean
      */
     public boolean updateGame(String from, String to) {
-        try {
-            board = GameAction.movePiece(board, new Move(from, to));
-            return true;
-        }catch(TypeErrorException e) {
-            return false;
-        }
+        //board = GameAction.movePiece(board, new Move(from, to));
+        return false;
     }
 
     /**
