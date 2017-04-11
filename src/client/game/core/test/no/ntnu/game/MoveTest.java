@@ -107,94 +107,6 @@ public class MoveTest {
         return moves;
     }
 
-    @Test
-    public void testPawnMoveStrategy() throws Exception {
-        MoveStrategy pawnStrategy = new SingleForwardStrategyDecorator(new DoubleForwardStrategyDecorator());
-        Piece piece = new Piece(Piece.Type.PAWN, Piece.Color.WHITE, pawnStrategy);
-        Board board = FEN.toBoard("rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1");
-        Square square  = board.square(0, 1);
-        square.setPiece(piece);
-        for (Move m : legalMoves(square)) {
-            String s = m.toString();
-            assertEquals(s, s);
-        }
-    }
-
-    @Test
-    public void testQueenMoveStrategy() throws Exception {
-        MoveStrategy queenStrategy = new HorizontalStrategyDecorator(
-                new VerticalStrategyDecorator(
-                        new ULDiagonalStrategyDecorator(
-                                new URDiagonalStrategyDecorator()
-                        )
-                )
-        );
-        Piece piece = new Piece(Piece.Type.QUEEN,Piece.Color.WHITE,queenStrategy);
-        Board board = FEN.toBoard("8/8/8/8/8/8/8/8 w - - 0 1");
-        Square square = board.square(4,4);
-        square.setPiece(piece);
-
-        List<Move> moves = legalMoves(square);
-        int numMoves = moves.size();
-        assertEquals(numMoves, 27);
-    }
-
-    @Test
-    public void testRookMoveStrategy() throws Exception {
-        MoveStrategy rookStrategy = new HorizontalStrategyDecorator(
-                new VerticalStrategyDecorator()
-        );
-        Piece piece = new Piece(Piece.Type.ROOK, Piece.Color.WHITE, rookStrategy);
-        Board board = FEN.toBoard("8/8/8/8/8/8/8/8 w - - 0 1");
-        Square square = board.square(4,4);
-        square.setPiece(piece);
-        List<Move> moves = legalMoves(square);
-        int numMoves = moves.size();
-        assertEquals(numMoves, 14);
-    }
-
-    @Test
-    public void testRookMoveStrategy2() throws Exception {
-        MoveStrategy rookStrategy = new HorizontalStrategyDecorator(
-                new VerticalStrategyDecorator()
-        );
-        Piece piece = new Piece(Piece.Type.ROOK, Piece.Color.WHITE, rookStrategy);
-        Board board = FEN.toBoard("8/pppppppp/8/8/8/8/PPPPPPPP/8 w - - 0 1");
-        Square square = board.square(4,4);
-        square.setPiece(piece);
-        List<Move> moves = legalMoves(square);
-        int numMoves = moves.size();
-        assertEquals(numMoves, 11);
-    }
-
-    @Test
-    public void testKnightMoveStrategy() throws Exception {
-        MoveStrategy ljump = new LJumpStrategyDecorator();
-        Piece knight = new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE, ljump);
-        Board board = FEN.toBoard("8/pppppppp/8/8/8/8/PPPPPPPP/8 w - - 0 1");
-        Square square = board.square(3,3);
-        square.setPiece(knight);
-        List<Move> moves = legalMoves(square);
-        int numMoves = moves.size();
-        assertEquals(numMoves, 6);
-
-        square = board.square(0, 2);
-        square.setPiece(knight);
-        moves = legalMoves(square);
-        numMoves = moves.size();
-        assertEquals(numMoves, 3);
-    }
-
-    @Test
-    public void bishopMoveStrategy() throws Exception {
-        String standardStartPosition ="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-        Board board = FEN.toBoard(standardStartPosition);
-        Square square = board.square(2, 0);
-        assertEquals(square.piece().type(),Piece.Type.BISHOP);
-        List<Move> moves = legalMoves(square);
-        int numMoves = moves.size();
-        assertEquals(numMoves, 0);
-    }
 
     @Test
     public void movePieceOnBoard() throws Exception {
@@ -214,16 +126,6 @@ public class MoveTest {
         assertEquals(fen, "rnbqkbnr/pp2pppp/2p5/3p4/3P4/2N5/PPP1PPPP/R1BQKBNR w KQkq - 0 3");
     }
 
-    @Test
-    public void playRandomGame() throws Exception {
-        String fen ="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1";
-        while (!GameAction.isMate(fen) && !GameAction.isDrawn(fen)) {
-            List<Move> candiateMoves = GameAction.legalMoves(fen);
-            int randomMove = ThreadLocalRandom.current().nextInt(0, candiateMoves.size());
-            fen = FEN.toFen(GameAction.movePiece(fen, candiateMoves.get(randomMove)));
-            System.out.println(fen);
-        }
-    }
 
     @Test
     public void findKing() throws Exception {
@@ -266,29 +168,6 @@ public class MoveTest {
         }
         assertEquals(threat, true);
     }
-/*
-    // Return a list of moves which doesn't set the king in check.
-    public static List<Move> newLegalMoves(final String fen) {
-        List<Move> moves = new ArrayList<Move>();
-        try {
-            Board board = FEN.toBoard(fen);
-            List<Square> pieces = board.allSquares().stream()
-                    .filter (s -> (s.piece() != null) && (s.piece().color() == board.activeColor()))
-                    .collect(Collectors.toList());
-
-            List<Move> candidateMoves = GameAction.legalMoves(pieces).stream()
-                    .filter (m -> (!GameAction.isCheck(GameAction.movePiece(fen, m), false)))
-                    .collect(Collectors.toList());
-            moves.addAll(candidateMoves);
-            for (Move m : moves) {
-                System.out.println(m.toString());
-            }
-        } catch (TypeErrorException ex){
-            System.out.println(ex.toString());
-        }
-        return moves;
-    }
-*/
 
     @Test
     public void checkMate() throws Exception {

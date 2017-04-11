@@ -11,6 +11,7 @@ import no.ntnu.game.TypeErrorException;
 import no.ntnu.game.models.Board;
 import no.ntnu.game.models.Piece;
 import no.ntnu.game.models.Square;
+import no.ntnu.game.movestrategy.MoveStrategyFactory;
 
 /**
  * Created by thomash on 28.03.2017.
@@ -18,6 +19,14 @@ import no.ntnu.game.models.Square;
 
 public class GameAction {
 
+    static private boolean hasReachedEigthRank(Square square) {
+        if (square.piece() != null) {
+            int rank = square.piece().color() == Piece.Color.WHITE ? square.row() + 1 :
+                    square.board().rows() - square.row();
+            return rank == 8;
+        }
+        return false;
+    }
     /**
      * Move a piece on a given board
      * @param board
@@ -30,13 +39,23 @@ public class GameAction {
         Piece piece = origin.piece();
         dest.setPiece(piece);
         origin.setPiece(null);
-        if (piece.type() != Piece.Type.ROOK) {
+        if (piece.type() != Piece.Type.PAWN) {
             board.incrementHalfmoveClock();
         } else {
             board.resetHalfmoveClock();
         }
         if (board.activeColor() == Piece.Color.BLACK) {
             board.incrementFullmoveClock();
+        }
+        // Automatically promote the pawn to queen if the opponent rank is reached
+        // TODO: Add user specific promotion type
+        if (piece.type() == Piece.Type.PAWN &&
+                hasReachedEigthRank(dest))
+        {
+            Piece queen = new Piece(Piece.Type.QUEEN,
+                    piece.color(),
+                    MoveStrategyFactory.getStrategy(Piece.Type.QUEEN));
+            dest.setPiece(queen);
         }
         board.flipActiveColor();
         return board;
@@ -68,10 +87,20 @@ public class GameAction {
         return moves;
     }
 
+    /**
+     * Check for technical draw.
+     * @param board
+     * @return
+     */
     static public boolean isDrawn(Board board) {
         return (board.halfmoveClock() >= 50);
     }
 
+    /**
+     * Check for technical draw.
+     * @param fen
+     * @return true if the position is a draw
+     */
     static public boolean isDrawn(final String fen) {
         boolean isDrawn = false;
         try {
@@ -84,6 +113,13 @@ public class GameAction {
         return isDrawn;
     }
 
+    /**
+     * This method inspects all piece movements and check if any pieces of activeColor can attack the
+     * opponent king.
+     * @param board
+     * @param activeColor
+     * @return
+     */
     static public boolean isCheck(Board board, Piece.Color activeColor) {
         // Find the square of the opponents king
         Square opponentKing =  board.allSquares().stream()
@@ -103,6 +139,13 @@ public class GameAction {
         return isCheck;
     }
 
+    /**
+     * Overloaded method where the predicate pOppositeColor identifies the the active
+     * color should be the boards' active player, or the opposite.
+     * @param board
+     * @param pOppositeColor - true if opposite color than active turn should be the attacker
+     * @return
+     */
     static public boolean isCheck(Board board, boolean pOppositeColor) {
 
         Piece.Color color = board.activeColor();
@@ -130,7 +173,11 @@ public class GameAction {
         return moves;
     }
 
-    // Return a list of moves which doesn't set the king in check.
+    /**
+     * Return a list of moves which doesn't set the king in check.
+     * @param fen
+     * @return
+     */
     public static List<Move> legalMoves(final String fen) {
 
         List<Move> moves = new ArrayList<Move>();
@@ -151,6 +198,11 @@ public class GameAction {
         return moves;
     }
 
+    /**
+     * Check if there is a mate situation on the board
+     * @param fen
+     * @return true if the king is mated
+     */
     public static boolean isMate(final String fen) {
         return legalMoves(fen).isEmpty();
     }
