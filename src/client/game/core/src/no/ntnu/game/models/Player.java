@@ -2,10 +2,6 @@ package no.ntnu.game.models;
 
 import com.badlogic.gdx.utils.JsonValue;
 
-/**
- * Created by Leppis on 02.04.2017.
- */
-
 public class Player {
     private String socketid;
     private String userid;

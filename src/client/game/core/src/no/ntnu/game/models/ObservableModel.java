@@ -6,7 +6,7 @@ import java.util.List;
 import no.ntnu.game.util.ScreenObserver;
 
 public abstract class ObservableModel {
-    protected List<ScreenObserver> observers = new ArrayList<ScreenObserver>();
+    private List<ScreenObserver> observers = new ArrayList<>();
 
     ObservableModel() {
         super();
@@ -16,31 +16,23 @@ public abstract class ObservableModel {
         observers.add(observer);
     }
 
-    // New info from server
+    /* Server info updated */
     protected void emitServerUpdate() {
-        for (ScreenObserver observer : observers) {
-            observer.onServerUpdate();
-        }
+        observers.forEach(ScreenObserver::onServerUpdate);
     }
 
-    // User info updated
+    /* User info updated */
     protected void emitUserUpdate() {
-        for (ScreenObserver observer : observers) {
-            observer.onUserUpdate();
-        }
+        observers.forEach(ScreenObserver::onUserUpdate);
     }
 
-    // User info updated
+    /* User info updated */
     protected void emitGameUpdate() {
-        for (ScreenObserver observer : observers) {
-            observer.onGameUpdate();
-        }
+        observers.forEach(ScreenObserver::onGameUpdate);
     }
 
-    // New move
+    /* New move */
     protected void emitNewMove() {
-        for (ScreenObserver observer : observers) {
-            observer.onNewMove();
-        }
+        observers.forEach(ScreenObserver::onNewMove);
     }
 }
