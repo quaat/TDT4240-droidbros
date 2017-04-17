@@ -312,10 +312,14 @@ public class BoardView extends AbstractView {
 
                         // Move opponent piece
                         String fen = FEN.toFen(board);
-                        System.out.println(" Position after move: " + fen);
                         List<Move> candiateMoves = GameAction.legalMoves(fen);
-                        int randomMove = ThreadLocalRandom.current().nextInt(0, candiateMoves.size());
-                        tryToExecuteMove(candiateMoves.get(randomMove));
+                        try {
+                            Move move = GameAction.bestMove(candiateMoves, fen);
+                            tryToExecuteMove(move);
+                        } catch (Exception ex) {
+                            System.out.println("Exception caught! " + ex.toString());
+                        }
+
                         //fen = FEN.toFen(GameAction.movePiece(fen, candiateMoves.get(randomMove)));
 
                     }
@@ -339,12 +343,13 @@ public class BoardView extends AbstractView {
 
                         // Move opponent piece
                         String fen = FEN.toFen(board);
-                        System.out.println(" Position after move: " + fen);
                         List<Move> candiateMoves = GameAction.legalMoves(fen);
-                        int randomMove = ThreadLocalRandom.current().nextInt(0, candiateMoves.size());
-                        tryToExecuteMove(candiateMoves.get(randomMove));
-                        //fen = FEN.toFen(GameAction.movePiece(fen, candiateMoves.get(randomMove)));
-
+                        try {
+                            Move move = GameAction.bestMove(candiateMoves, fen);
+                            tryToExecuteMove(move);
+                        } catch (Exception ex) {
+                            System.out.println("Exception caught! " + ex.toString());
+                        }
                     }
                     else{
                         infoString += "\n highlight off, not doing anything";

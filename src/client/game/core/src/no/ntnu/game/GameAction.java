@@ -2,12 +2,16 @@ package no.ntnu.game;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import no.ntnu.game.FEN;
 import no.ntnu.game.Move;
 import no.ntnu.game.TypeErrorException;
+import no.ntnu.game.evaluation.GameEvaluation;
+import no.ntnu.game.evaluation.PiecePosition;
+import no.ntnu.game.evaluation.PieceValue;
 import no.ntnu.game.models.Board;
 import no.ntnu.game.models.Piece;
 import no.ntnu.game.models.Square;
@@ -320,4 +324,53 @@ public class GameAction {
         return squares;
     }
 
+    /**
+     * Suggest the best move based on a list of legal moves and the current position
+     * @param moves
+     * @param fen
+     * @return
+     * @throws Exception
+     */
+    public static Move bestMove(List<Move> moves, final String fen) throws Exception{
+        final float delta = 1.0E-8f;
+        final float factor = FEN.toBoard(fen).activeColor() == Piece.Color.WHITE ? 1.0f : -1.0f;
+        float highScore = -99999.0f;
+        GameEvaluation eval = new PieceValue(new PiecePosition());
+        List<Move>goodMoves = new ArrayList<Move>();
+        for (Move move : moves) {
+            float score = factor * eval.score(GameAction.movePiece(fen, move));
+            if (score > highScore+delta) {
+                highScore = score;
+                goodMoves.add(0,move);
+            } else if (score < highScore+delta && score > highScore-delta) {
+                goodMoves.add(0,move);
+            }
+        }
+
+        // evaluate further maximum 10 candidate moves
+        if (goodMoves.size() > 10) {
+            goodMoves.subList(10, goodMoves.size()).clear();
+        }
+        List<Move>candidateMoves = new ArrayList<Move>();
+        candidateMoves.addAll(goodMoves);
+        if (goodMoves.size() > 1) { // Find the best move that gives the lowest opponents score
+            float lowScore= 999999.0f;
+            for (Move move : goodMoves) {
+                float score = factor * eval.score(GameAction.movePiece(fen, move));
+                if (score < highScore-delta) {
+                    lowScore = score;
+                    candidateMoves.add(0,move);
+                } else if (score < lowScore+delta && score > lowScore-delta) {
+                    candidateMoves.add(0,move);
+                }
+            }
+        }
+
+        // Pick a random move of the best 3 possible moves.
+        if (candidateMoves.size() > 3) {
+            candidateMoves.subList(3, candidateMoves.size()).clear();
+        }
+        int randomMove = ThreadLocalRandom.current().nextInt(0, candidateMoves.size());
+        return candidateMoves.get(randomMove);
+    }
 }
