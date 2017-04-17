@@ -7,7 +7,8 @@ module.exports = {
 		return output;
     },
     checkPassword: function(cleartext, hash) {
-		return (bcrypt.hashSync(cleartext, salt) == hash);
+    	return bcrypt.compareSync(cleartext, hash);
+		//return (bcrypt.hashSync(cleartext, salt) == hash);
     }
 };
     
