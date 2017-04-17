@@ -74,6 +74,7 @@ public class LoginView extends AbstractView {
 		table.add(passwordField).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(loginButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(registerButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
+		table.add(playComputerButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(statusLabel).width(objectWidth).height(objectHeight);
 	}
 

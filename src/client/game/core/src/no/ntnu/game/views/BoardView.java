@@ -12,9 +12,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadLocalRandom;
 
 import no.ntnu.game.FEN;
+import no.ntnu.game.GameAction;
 import no.ntnu.game.Move;
 import no.ntnu.game.TypeErrorException;
 import no.ntnu.game.controllers.GameController;
@@ -101,7 +104,7 @@ public class BoardView extends AbstractView {
 
         try {
             //Only for testing purposes,
-            board = FEN.toBoard("ppbqkbnr/prpppppp/8/8/8/8/RPPPPPPP/PNBQKBNR w KQkq - 0 1");
+            board = FEN.toBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1");
         } catch (TypeErrorException ex) {
             Gdx.app.log("BoardView","exception caught " + ex.toString());
         }
@@ -154,6 +157,15 @@ public class BoardView extends AbstractView {
 
 
     private boolean isMoveLegal(Move move) {
+        List<Move> candiateMoves = GameAction.legalMoves(move.from());
+        for (Move candidate : candiateMoves) {
+            if (candidate.equals(move)) {
+                return true;
+            }
+        }
+
+        return false;
+    /*
         //// TODO: 05.04.2017 Needs to check the model
         Piece piece = move.from().piece();
         if (piece.color() != playerColor || move.to().piece()!=null && piece.color()==move.to().piece().color()) {
@@ -167,6 +179,7 @@ public class BoardView extends AbstractView {
             return false;
         }
         return true;
+        */
     }
     private int screenToXBoardPosition(float screenPos){
         for(int pieceX=0;pieceX<board.rows();pieceX++) {
@@ -294,8 +307,17 @@ public class BoardView extends AbstractView {
                     infoString +="\npiece clicked";
                     if (highlightMode) {
                         //Already highlighting the possible moves for a piece
-                        tryToExecuteMove(xPos,yPos);
+                        tryToExecuteMove(new Move(squareLastClicked, board.square(xPos,yPos)));
                         infoString += "\n highlight on, trying to execute move1";
+
+                        // Move opponent piece
+                        String fen = FEN.toFen(board);
+                        System.out.println(" Position after move: " + fen);
+                        List<Move> candiateMoves = GameAction.legalMoves(fen);
+                        int randomMove = ThreadLocalRandom.current().nextInt(0, candiateMoves.size());
+                        tryToExecuteMove(candiateMoves.get(randomMove));
+                        //fen = FEN.toFen(GameAction.movePiece(fen, candiateMoves.get(randomMove)));
+
                     }
                     else{
                         highlightMode = true;
@@ -311,8 +333,17 @@ public class BoardView extends AbstractView {
                 else{
                     infoString += "\nempty square clicked";
                     if (highlightMode) {
-                        tryToExecuteMove(xPos,yPos);
+                        tryToExecuteMove(new Move(squareLastClicked, board.square(xPos,yPos)));
+
                         infoString += "\n highlight on, trying to execute move";
+
+                        // Move opponent piece
+                        String fen = FEN.toFen(board);
+                        System.out.println(" Position after move: " + fen);
+                        List<Move> candiateMoves = GameAction.legalMoves(fen);
+                        int randomMove = ThreadLocalRandom.current().nextInt(0, candiateMoves.size());
+                        tryToExecuteMove(candiateMoves.get(randomMove));
+                        //fen = FEN.toFen(GameAction.movePiece(fen, candiateMoves.get(randomMove)));
 
                     }
                     else{
@@ -324,9 +355,12 @@ public class BoardView extends AbstractView {
                 }
             } else if (!isYourTurn) {
                 infoString += "\n not your turn";
-                //Do something when it's the opponents turn
+
             }
             log(infoString);
+
+
+
 
 
             super.clicked(event, x, y);
@@ -334,24 +368,24 @@ public class BoardView extends AbstractView {
         }
     };
 
-    private void tryToExecuteMove(int xPos, int yPos) {
-        Move move = new Move(squareLastClicked, board.square(xPos, yPos));
+    private void tryToExecuteMove(Move move) {
         if (isMoveLegal(move)) {
-            executeMove(xPos, yPos);
+            executeMove(move);
         }
         else{
             //Todo Maybe indicate visually that the move is not allowed
         }
     }
-    private void executeMove(int xPos, int yPos){
-        Actor pieceActor = getActorAt(squareLastClicked.col(), squareLastClicked.row());
-        Piece piece = board.square(squareLastClicked.col(),squareLastClicked.row()).piece();
 
-
-
-
+    private void executeMove(Move move){
+        int xPos = move.to.col();
+        int yPos = move.to.row();
+        Actor pieceActor = getActorAt(move.from.col(), move.from.row());
+        Square fromSquare= move.from();
+        Square destSquare = move.to();
+        Piece piece = fromSquare.piece();
         pieceActor.setZIndex(stage.getActors().size);
-        if (board.square(xPos, yPos).piece() != null) {
+        if (destSquare.piece() != null) {
             //Todo create animation for this
 
             removePiece(xPos, yPos);
@@ -360,11 +394,37 @@ public class BoardView extends AbstractView {
         }
 
         pieceActor.addAction(Actions.moveTo(squareWidth*xPos,startHeight+squareHeight*yPos,moveDuration));
+        board = GameAction.movePiece(board, new Move(fromSquare, destSquare));
+        highlightMode = false;
+    }
 
+    private void executeMove(int xPos, int yPos){
+        Actor pieceActor = getActorAt(squareLastClicked.col(), squareLastClicked.row());
+        Square fromSquare= board.square(squareLastClicked.col(),squareLastClicked.row());
+        Square destSquare = board.square(xPos, yPos);
+        Piece piece = fromSquare.piece();
+
+
+        pieceActor.setZIndex(stage.getActors().size);
+        if (destSquare.piece() != null) {
+            //Todo create animation for this
+
+            removePiece(xPos, yPos);
+        } else if (getActorAt(xPos, yPos) != null) {
+            log("BOARD AND VIEW NOT SYNCED");
+        }
+
+        pieceActor.addAction(Actions.moveTo(squareWidth*xPos,startHeight+squareHeight*yPos,moveDuration));
+        board = GameAction.movePiece(board, new Move(fromSquare, destSquare));
+
+        /*
         //todo Update model
         //this is done for testing, should probably be implemented in another way
         board.square(squareLastClicked.col(),squareLastClicked.row()).setPiece(null);
         board.square(xPos,yPos).setPiece(piece);
+
+
+        */
         highlightMode = false;
         //todo Set yourTurn to false
 

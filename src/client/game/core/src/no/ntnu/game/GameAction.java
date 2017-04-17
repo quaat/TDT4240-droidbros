@@ -33,7 +33,7 @@ public class GameAction {
      * @param move
      * @return board
      */
-    static Board movePiece(Board board, Move move) {
+    static public Board movePiece(Board board, Move move) {
         Square origin = board.square(move.from().col(), move.from().row());
         Square dest = board.square(move.to().col(), move.to().row());
         Piece piece = origin.piece();
@@ -67,7 +67,7 @@ public class GameAction {
      * @param move
      * @return a new instance of Board
      */
-    static Board movePiece(final String fen, Move move) {
+    static public Board movePiece(final String fen, Move move) {
         Board board = FEN.toBoardS(fen);
         if (board == null) return null;
 

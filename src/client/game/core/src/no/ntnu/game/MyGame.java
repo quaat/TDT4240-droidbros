@@ -54,7 +54,7 @@ public class MyGame extends Game{
 		menuView = new MenuView(model, controller);
 		setupView = new SetupView(model, controller);
 		testView2 = new TestView2(model, controller);
-//		boardView = new BoardView(model, controller);
+		boardView = new BoardView(model, controller);
 	}
 
 	// Setters view
