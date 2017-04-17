@@ -46,11 +46,9 @@ public class TestView2 extends AbstractView {
 
         doMoveButton.addListener(new ChangeListener() {
             public void changed (ChangeEvent event, Actor actor) {
-                if (controller.doMove(moveFrom.getText(), moveTo.getText())) {
+                if (controller.doMove("", "")) {
                     statusLabel.setText("Wait for move...");
                     doMoveButton.setVisible(false);
-                } else {
-                    statusLabel.setText("Illegal move, try again");
                 }
             }
         });
@@ -67,8 +65,8 @@ public class TestView2 extends AbstractView {
         table.add(doMoveButton).width(objectWidth).height(objectHeight).padBottom(padY);
         table.add(resignButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
         table.add(statusLabel).width(objectWidth).height(objectHeight).padBottom(padY).row();
-        table.add(moveFrom).width(objectWidth).height(objectHeight);
-        table.add(moveTo).width(objectWidth).height(objectHeight);
+        //table.add(moveFrom).width(objectWidth).height(objectHeight);
+        //table.add(moveTo).width(objectWidth).height(objectHeight);
     }
 
     @Override

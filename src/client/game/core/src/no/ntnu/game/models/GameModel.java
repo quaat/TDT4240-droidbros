@@ -1,17 +1,19 @@
 package no.ntnu.game.models;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.JsonValue;
 
 import no.ntnu.game.FEN;
-import no.ntnu.game.GameAction;
-import no.ntnu.game.Move;
 import no.ntnu.game.TypeErrorException;
 
+/**
+ * Model of the game
+ * Notifies observers when model has changed
+ */
+
 public class GameModel extends ObservableModel {
+    // todo rewrite, uglyfugly
     // Client info
     private User user; // User logged in as
-    private Boolean connected; // This socket connected to server socket
 
     // Current game
     private GameInfo gameInfo; // All info about current game
@@ -58,7 +60,7 @@ public class GameModel extends ObservableModel {
 
     /**
      * Updates board with params fromMove and toMove (from client)
-     * todo - use correct method for updating board
+     * todo use correct method for updating board
      * @param from From square
      * @param to To square
      * @return boolean
@@ -72,8 +74,9 @@ public class GameModel extends ObservableModel {
      * Sets the board equal to fen string
      */
     private void updateBoard() {
-        try { board = FEN.toBoard(fen());
-        }catch(TypeErrorException e) {System.out.println(e);}
+        // todo do this correct
+        //try { board = FEN.toBoard(fen());
+        //}catch(TypeErrorException e) {}
     }
 
     /**
@@ -90,54 +93,65 @@ public class GameModel extends ObservableModel {
     }
 
     /**
-     * Gets update message from server
+     * Set user
      * @param user user
      */
     public void setUser(User user) {
-        this.user = new User(user);
+        this.user = user;
         emitUserUpdate();
     }
 
+    /* User logged in as*/
     public User user() {
         return user;
     }
 
+    /* Object that opponent has recieved of you*/
     public Player player() {
         return gameInfo.player();
     }
 
+    /* Player playing against*/
     public Player opponent() {
         return gameInfo.opponent();
     }
 
+    /* Uniqe gameid */
     public String gameid() {
         return gameInfo.gameid();
     }
 
+    /* Current board */
     public Board board() {
         return board;
     }
 
+    /* Current or last position as fen string*/
     public String fen() {
         return gameInfo.fen();
     }
 
+    /* Winner when game has ended*/
     public String winner() {
         return gameInfo.winner();
     }
 
+    /* Users connected to server */
     public String currentUsers() {
         return currentUsers;
     }
 
+    /* Users searching for game */
     public String currentQueue() {
         return currentQueue;
     }
 
+    /* Games being played in real time*/
     public String currentGames() {
         return currentGames;
     }
 
+    /* Returns if it is this clients turn*/
     public boolean isItMyTurn() {
         return board.activeColor()==gameInfo.color();
     }

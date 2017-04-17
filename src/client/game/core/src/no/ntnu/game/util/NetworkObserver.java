@@ -10,7 +10,13 @@ import no.ntnu.game.models.User;
 
 public interface NetworkObserver {
     // http
+    public void onRegister();
     public void onLogin(User user);
+    public void onGetUser(User user);
+    public void onGetGames(/* something */);
+    public void onChangedPassword();
+    public void onChangedFen();
+    public void onDeletedUser();
 
     // socket
     public void onConnected();

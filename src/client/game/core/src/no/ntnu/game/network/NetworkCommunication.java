@@ -11,21 +11,20 @@ import no.ntnu.game.models.User;
 import no.ntnu.game.util.JsonSerializer;
 import no.ntnu.game.util.NetworkObserver;
 
-/**
- * Created by thomash on 19.03.2017.
- */
-
 public abstract class NetworkCommunication {
     final String apiPath = "api";
     final String protocol = "http";
 
     JsonSerializer serializer = new JsonSerializer();
 
-    protected List<NetworkObserver> observers = new ArrayList<NetworkObserver>();
+    protected List<NetworkObserver> observers = new ArrayList<>();
     private HostInfo hostInfo;
 
-    NetworkCommunication(NetworkObserver observer, HostInfo hostInfo){
+    NetworkCommunication(HostInfo hostInfo){
         this.hostInfo = hostInfo;
+    }
+
+    public void addObserver(NetworkObserver observer) {
         observers.add(observer);
     }
 
@@ -47,10 +46,11 @@ public abstract class NetworkCommunication {
         return this.hostInfo;
     }
 
-    protected void emitConnected() {
-        for (NetworkObserver observer : observers) {
-            observer.onConnected();
-        }
+    // Http
+
+
+    protected void emitRegister() {
+        observers.forEach(NetworkObserver::onRegister);
     }
 
     protected void emitLogin(User user) {
@@ -59,11 +59,38 @@ public abstract class NetworkCommunication {
         }
     }
 
-    protected void emitDisconnected()
-    {
+    protected void emitGetUser(User user) {
         for (NetworkObserver observer : observers) {
-            observer.onDisconnected();
+            observer.onGetUser(user);
         }
+    }
+
+    protected void emitGetGames(/* something */) {
+        for (NetworkObserver observer : observers) {
+            observer.onGetGames(/* something */);
+        }
+    }
+
+    protected void emitChangedPassword() {
+        observers.forEach(NetworkObserver::onChangedPassword);
+    }
+
+    protected void emitChangedFen() {
+        observers.forEach(NetworkObserver::onChangedFen);
+    }
+
+    protected void emitDeletedUser() {
+        observers.forEach(NetworkObserver::onDeletedUser);
+    }
+
+    // Sockets
+
+    protected void emitConnected() {
+        observers.forEach(NetworkObserver::onConnected);
+    }
+
+    protected void emitDisconnected() {
+        observers.forEach(NetworkObserver::onDisconnected);
     }
 
     protected void emitError(String error){

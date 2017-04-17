@@ -1,8 +1,6 @@
 package no.ntnu.game.views;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -45,7 +43,7 @@ public class SetupView extends AbstractView {
             public void changed (ChangeEvent event, Actor actor) {
                 // TODO Check if fen is valid
                 String newFen = fen1Field.getText() + "/" + fen2Field.getText();
-                controller.updateUserBoard(newFen);
+                controller.changeFen(newFen);
             }
         });
 
