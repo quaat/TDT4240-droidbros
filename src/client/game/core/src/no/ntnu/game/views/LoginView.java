@@ -35,9 +35,11 @@ public class LoginView extends AbstractView {
 		passwordField.setAlignment(1);
 		
 		// Button
+
 		TextButton loginButton = new TextButton("LOGIN", skin);
 		TextButton registerButton = new TextButton("REGISTER", skin);
-		
+		TextButton playComputerButton = new TextButton("Play Computer", skin);
+
 		// Label
 		statusLabel = new Label("", skin);
 
@@ -46,6 +48,12 @@ public class LoginView extends AbstractView {
 			public void clicked(InputEvent e, float x, float y) {
 				statusLabel.setText(loginWaitText);
 				controller.login(usernameField.getText(), passwordField.getText());
+			}
+		});
+
+		playComputerButton.addListener(new ClickListener() {
+			public void clicked(InputEvent e, float x, float y) {
+				controller.playComputer();
 			}
 		});
 

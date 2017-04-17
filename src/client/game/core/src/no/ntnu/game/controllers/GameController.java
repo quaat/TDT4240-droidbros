@@ -264,4 +264,8 @@ public class GameController implements NetworkObserver{
     public void onError(String error) {
         System.out.println(error);
     }
+
+    public void playComputer() {
+        viewController.playComputer();
+    }
 }

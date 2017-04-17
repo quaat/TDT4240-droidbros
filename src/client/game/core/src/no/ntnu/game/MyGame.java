@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import no.ntnu.game.controllers.GameController;
 import no.ntnu.game.models.GameModel;
 import no.ntnu.game.views.AbstractView;
+import no.ntnu.game.views.BoardView;
 import no.ntnu.game.views.LoginView;
 import no.ntnu.game.views.MenuView;
 import no.ntnu.game.views.SetupView;
@@ -22,6 +23,7 @@ public class MyGame extends Game{
 	private AbstractView menuView;
 	private AbstractView setupView;
 	private AbstractView testView2; // game room
+	private AbstractView boardView;
 
 	// controllers
 	private GameController controller;
@@ -52,6 +54,7 @@ public class MyGame extends Game{
 		menuView = new MenuView(model, controller);
 		setupView = new SetupView(model, controller);
 		testView2 = new TestView2(model, controller);
+//		boardView = new BoardView(model, controller);
 	}
 
 	// Setters view
@@ -69,6 +72,10 @@ public class MyGame extends Game{
 
 	public void setTestView2() {
 		setScreen(testView2);
+	}
+
+	public void playComputer() {
+		setScreen(boardView);
 	}
 
 	// Getters view
