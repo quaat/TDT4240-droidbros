@@ -346,31 +346,11 @@ public class GameAction {
                 goodMoves.add(0,move);
             }
         }
-
         // evaluate further maximum 10 candidate moves
         if (goodMoves.size() > 10) {
             goodMoves.subList(10, goodMoves.size()).clear();
         }
-        List<Move>candidateMoves = new ArrayList<Move>();
-        candidateMoves.addAll(goodMoves);
-        if (goodMoves.size() > 1) { // Find the best move that gives the lowest opponents score
-            float lowScore= 999999.0f;
-            for (Move move : goodMoves) {
-                float score = factor * eval.score(GameAction.movePiece(fen, move));
-                if (score < highScore-delta) {
-                    lowScore = score;
-                    candidateMoves.add(0,move);
-                } else if (score < lowScore+delta && score > lowScore-delta) {
-                    candidateMoves.add(0,move);
-                }
-            }
-        }
 
-        // Pick a random move of the best 3 possible moves.
-        if (candidateMoves.size() > 3) {
-            candidateMoves.subList(3, candidateMoves.size()).clear();
-        }
-        int randomMove = ThreadLocalRandom.current().nextInt(0, candidateMoves.size());
-        return candidateMoves.get(randomMove);
+        return goodMoves.get(0);
     }
 }
