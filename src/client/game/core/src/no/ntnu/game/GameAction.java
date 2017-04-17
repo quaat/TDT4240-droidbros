@@ -324,6 +324,7 @@ public class GameAction {
         return squares;
     }
 
+
     /**
      * Suggest the best move based on a list of legal moves and the current position
      * @param moves
@@ -334,9 +335,9 @@ public class GameAction {
     public static Move bestMove(List<Move> moves, final String fen) throws Exception{
         final float delta = 1.0E-8f;
         final float factor = FEN.toBoard(fen).activeColor() == Piece.Color.WHITE ? 1.0f : -1.0f;
-        float highScore = -99999.0f;
+        float highScore = -Float.MAX_VALUE;
         GameEvaluation eval = new PieceValue(new PiecePosition());
-        List<Move>goodMoves = new ArrayList<Move>();
+        List<Move>goodMoves = new ArrayList<>();
         for (Move move : moves) {
             float score = factor * eval.score(GameAction.movePiece(fen, move));
             if (score > highScore+delta) {

@@ -103,7 +103,8 @@ public class BoardView extends AbstractView {
         Gdx.input.setInputProcessor(stage);
 
         try {
-            //Only for testing purposes,
+
+            //board = FEN.toBoard("ppppkppp/pppppppp/8/8/8/8/PPPPPPPP/PPPPKPPP w - - 0 1");
             board = FEN.toBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1");
         } catch (TypeErrorException ex) {
             Gdx.app.log("BoardView","exception caught " + ex.toString());
@@ -318,6 +319,8 @@ public class BoardView extends AbstractView {
                             tryToExecuteMove(move);
                         } catch (Exception ex) {
                             System.out.println("Exception caught! " + ex.toString());
+                        } finally {
+                            highlightMode = false;
                         }
 
                         //fen = FEN.toFen(GameAction.movePiece(fen, candiateMoves.get(randomMove)));
@@ -329,7 +332,6 @@ public class BoardView extends AbstractView {
 
                         highlightPossibleMoves(pieceClicked);
                         infoString += "\n highlight off, highlighting for piece";
-
                     }
 
                 }
@@ -349,6 +351,8 @@ public class BoardView extends AbstractView {
                             tryToExecuteMove(move);
                         } catch (Exception ex) {
                             System.out.println("Exception caught! " + ex.toString());
+                        } finally {
+                            highlightMode = false;
                         }
                     }
                     else{
