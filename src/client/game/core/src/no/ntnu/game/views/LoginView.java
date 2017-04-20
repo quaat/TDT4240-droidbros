@@ -37,8 +37,8 @@ public class LoginView extends AbstractView {
 		TextButton loginButton = new TextButton("LOGIN", skin);
 		TextButton registerButton = new TextButton("REGISTER", skin);
 
-		loginButton.setColor(new Color(0x7fff00ff));
-		registerButton.setColor(new Color(0x7fff00ff));
+		loginButton.setColor(buttonColor);
+		registerButton.setColor(buttonColor);
 		
 		// Label
 		statusLabel = new Label("", skin);

@@ -15,6 +15,9 @@ import no.ntnu.game.models.GameModel;
 import no.ntnu.game.util.ScreenObserver;
 
 public abstract class AbstractView implements Screen, ScreenObserver {
+
+	Color buttonColor = new Color(0x7fff00ff);
+
 	GameModel model;
 	GameController controller;
 

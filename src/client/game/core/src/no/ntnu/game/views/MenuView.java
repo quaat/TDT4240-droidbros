@@ -24,10 +24,10 @@ public class MenuView extends AbstractView {
 		final TextButton settingsButton = new TextButton("OPTIONS", skin);
 		final TextButton aboutButton = new TextButton("ABOUT", skin);
 
-		playButton.setColor(new Color(0x7fff00ff));
-		tutorialButton.setColor(new Color(0x7fff00ff));
-		settingsButton.setColor(new Color(0x7fff00ff));
-		aboutButton.setColor(new Color(0x7fff00ff));
+		playButton.setColor(buttonColor);
+		tutorialButton.setColor(buttonColor);
+		settingsButton.setColor(buttonColor);
+		aboutButton.setColor(buttonColor);
 
 		// Listeners
 		playButton.addListener(new ChangeListener() {
