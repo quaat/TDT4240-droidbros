@@ -55,6 +55,13 @@ public class SocketCommunication extends NetworkCommunication {
     }
 
     /**
+     * Find another player to play against
+     */
+    public void leaveQueue() {
+        socket.emit("leaveQueue");
+    }
+
+    /**
      * Join a game that is ready for you
      * @param gameid gameid
      */

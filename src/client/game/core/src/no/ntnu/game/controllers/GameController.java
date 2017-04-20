@@ -36,6 +36,20 @@ public class GameController implements NetworkObserver{
     }
 
     /**
+     * Change to register view
+     */
+    public void toLogin() {
+        viewController.setLoginView();
+    }
+
+    /**
+     * Change to register view
+     */
+    public void toRegister() {
+        viewController.setRegisterView();
+    }
+
+    /**
      * Change to menu view
      */
     public void toMenu() {
@@ -45,15 +59,34 @@ public class GameController implements NetworkObserver{
     /**
      * Change to setup view
      */
-    public void toSetup() {
-        viewController.setSetupView();
+    public void toTutorial() {
+        viewController.setTutorialView();
     }
 
+    /**
+     * Change to register view
+     */
+    public void toSetting() {
+        viewController.setSettingView();
+    }
+
+    /**
+     * Change to register view
+     */
+    public void toAbout() {
+        viewController.setAboutView();
+    }
     /**
      * Change to game view
      */
     public void toGame() {
-        viewController.setTestView2();
+        viewController.setGameView();
+    }
+    /**
+     * Change to game view
+     */
+    public void toFen() {
+        viewController.setFenView();
     }
 
     /**
@@ -123,6 +156,13 @@ public class GameController implements NetworkObserver{
     }
 
     /**
+     * Leave queue
+     */
+    public void leaveQueue() {
+        socket.leaveQueue();
+    }
+
+    /**
      * todo something like this ?
      * @return boo
      */
@@ -148,7 +188,7 @@ public class GameController implements NetworkObserver{
      */
     @Override
     public void onRegister() {
-        // todo
+        toLogin();
     }
 
     /**
@@ -169,7 +209,8 @@ public class GameController implements NetworkObserver{
      */
     @Override
     public void onGetUser(User user) {
-        // todo save
+        model.setUser(user);
+        socket.connect(user.token());
     }
 
     /**
@@ -193,7 +234,9 @@ public class GameController implements NetworkObserver{
      */
     @Override
     public void onChangedFen() {
-        // todo visual (send new fen here?)
+        // reset socket to update info.
+        socket.disconnect();
+        http.getUserInformation(model.user().token());
     }
 
     @Override
@@ -262,6 +305,6 @@ public class GameController implements NetworkObserver{
      */
     @Override
     public void onError(String error) {
-        System.out.println(error);
+        model.updateError(error);
     }
 }

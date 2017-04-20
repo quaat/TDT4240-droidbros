@@ -24,8 +24,11 @@ public class GameModel extends ObservableModel {
     private String currentQueue; // Users searching for game
     private String currentGames; // Games in progress
 
-    public GameModel() {
+    // Error
+    private String error;
 
+    public GameModel() {
+        currentUsers = currentQueue = currentGames = error = "";
     }
 
     /**
@@ -92,6 +95,11 @@ public class GameModel extends ObservableModel {
         emitServerUpdate();
     }
 
+    public void updateError(String error) {
+        this.error = error;
+        emitError();
+    }
+
     /**
      * Set user
      * @param user user
@@ -154,5 +162,10 @@ public class GameModel extends ObservableModel {
     /* Returns if it is this clients turn*/
     public boolean isItMyTurn() {
         return board.activeColor()==gameInfo.color();
+    }
+
+    /* Returns error message */
+    public String error() {
+        return error;
     }
 }

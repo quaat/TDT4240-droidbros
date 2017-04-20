@@ -48,9 +48,10 @@ public abstract class NetworkCommunication {
 
     // Http
 
-
     protected void emitRegister() {
-        observers.forEach(NetworkObserver::onRegister);
+        for (NetworkObserver observer : observers) {
+            observer.onRegister();
+        }
     }
 
     protected void emitLogin(User user) {
@@ -72,26 +73,37 @@ public abstract class NetworkCommunication {
     }
 
     protected void emitChangedPassword() {
-        observers.forEach(NetworkObserver::onChangedPassword);
+        for (NetworkObserver observer : observers) {
+            observer.onChangedPassword();
+        }
     }
 
     protected void emitChangedFen() {
-        observers.forEach(NetworkObserver::onChangedFen);
+        for (NetworkObserver observer : observers) {
+            observer.onChangedFen();
+        }
     }
 
     protected void emitDeletedUser() {
-        observers.forEach(NetworkObserver::onDeletedUser);
+        for (NetworkObserver observer : observers) {
+            observer.onDeletedUser();
+        }
     }
 
     // Sockets
 
     protected void emitConnected() {
-        observers.forEach(NetworkObserver::onConnected);
+        for (NetworkObserver observer : observers) {
+            observer.onConnected();
+        }
     }
 
     protected void emitDisconnected() {
-        observers.forEach(NetworkObserver::onDisconnected);
+        for (NetworkObserver observer : observers) {
+            observer.onDisconnected();
+        }
     }
+
 
     protected void emitError(String error){
         for (NetworkObserver observer : observers) {

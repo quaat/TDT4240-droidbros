@@ -5,11 +5,16 @@ import com.badlogic.gdx.Gdx;
 
 import no.ntnu.game.controllers.GameController;
 import no.ntnu.game.models.GameModel;
+import no.ntnu.game.views.AboutView;
 import no.ntnu.game.views.AbstractView;
+import no.ntnu.game.views.GameView;
 import no.ntnu.game.views.LoginView;
+import no.ntnu.game.views.RegisterView;
 import no.ntnu.game.views.MenuView;
-import no.ntnu.game.views.SetupView;
+import no.ntnu.game.views.FenView;
+import no.ntnu.game.views.SettingView;
 import no.ntnu.game.views.TestView2;
+import no.ntnu.game.views.TutorialView;
 
 
 public class MyGame extends Game{
@@ -19,8 +24,14 @@ public class MyGame extends Game{
 
 	// views
 	private AbstractView loginView;
+	private AbstractView registerView;
 	private AbstractView menuView;
-	private AbstractView setupView;
+	private AbstractView settingView;
+	private AbstractView tutorialView;
+	private AbstractView aboutView;
+	private AbstractView fenView;
+	private AbstractView gameView;
+
 	private AbstractView testView2; // game room
 
 	// controllers
@@ -35,7 +46,7 @@ public class MyGame extends Game{
 		createViews();
 
 		// Set start screen of application
-		setScreen(loginView);
+		setLoginView();
 	}
 
 	// Creators
@@ -49,8 +60,14 @@ public class MyGame extends Game{
 
 	private void createViews() {
 		loginView = new LoginView(model, controller);
+		registerView = new RegisterView(model, controller);
 		menuView = new MenuView(model, controller);
-		setupView = new SetupView(model, controller);
+		tutorialView = new TutorialView(model, controller);
+		settingView = new SettingView(model, controller);
+		aboutView = new AboutView(model, controller);
+		fenView = new FenView(model, controller);
+		gameView = new GameView(model, controller);
+
 		testView2 = new TestView2(model, controller);
 	}
 
@@ -59,32 +76,34 @@ public class MyGame extends Game{
 		setScreen(loginView);
 	}
 
+	public void setRegisterView() {
+		setScreen(registerView);
+	}
+
 	public void setMenuView() {
 		setScreen(menuView);
 	}
 
-	public void setSetupView() {
-		setScreen(setupView);
+	public void setTutorialView() {
+		setScreen(tutorialView);
+	}
+
+	public void setSettingView() {setScreen(settingView);}
+
+	public void setAboutView() {
+		setScreen(aboutView);
+	}
+
+	public void setFenView() {
+		setScreen(fenView);
+	}
+
+	public void setGameView() {
+		setScreen(gameView);
 	}
 
 	public void setTestView2() {
 		setScreen(testView2);
 	}
 
-	// Getters view
-	public LoginView getLoginView() {
-		return (LoginView) loginView;
-	}
-
-	public MenuView getMenuView() {
-		return (MenuView) menuView;
-	}
-
-	public SetupView getSetupView() {
-		return (SetupView) setupView;
-	}
-
-	public TestView2 getTestView2() {
-		return (TestView2) testView2;
-	}
 }

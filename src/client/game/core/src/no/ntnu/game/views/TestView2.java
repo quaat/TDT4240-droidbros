@@ -70,6 +70,11 @@ public class TestView2 extends AbstractView {
     }
 
     @Override
+    public void reset() {
+
+    }
+
+    @Override
     public void onNewMove() {
         doMoveButton.setVisible(true);
         statusLabel.setText("Your move!");

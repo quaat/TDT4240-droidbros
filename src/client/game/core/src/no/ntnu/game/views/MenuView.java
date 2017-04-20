@@ -1,5 +1,7 @@
 package no.ntnu.game.views;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -10,12 +12,6 @@ import no.ntnu.game.models.GameModel;
 
 public class MenuView extends AbstractView {
 
-	private final String queueText = "Users in queue: ";
-	private final String usersText = "Users online: ";
-	private Label queueLabel;
-	private Label usersLabel;
-	private Label statusLabel;
-	
 	public MenuView(GameModel model, GameController controller) {
 		super(model, controller);
 	}
@@ -24,49 +20,48 @@ public class MenuView extends AbstractView {
 	public void build() {
 		// Button
 		final TextButton playButton = new TextButton("PLAY", skin);
-		final TextButton setupButton = new TextButton("BOARD SETUP", skin);
-		final TextButton creditsButton = new TextButton("DUMMY", skin);
+		final TextButton tutorialButton = new TextButton("TUTORIAL", skin);
+		final TextButton settingsButton = new TextButton("OPTIONS", skin);
+		final TextButton aboutButton = new TextButton("ABOUT", skin);
 
-		// Label
-		queueLabel = new Label("", skin);
-		usersLabel = new Label("", skin);
-		statusLabel = new Label("", skin);
-		
+		playButton.setColor(new Color(0x7fff00ff));
+		tutorialButton.setColor(new Color(0x7fff00ff));
+		settingsButton.setColor(new Color(0x7fff00ff));
+		aboutButton.setColor(new Color(0x7fff00ff));
+
 		// Listeners
 		playButton.addListener(new ChangeListener() {
 			public void changed (ChangeEvent event, Actor actor) {
-				controller.findGame();
-				statusLabel.setText("Searching for opponent...");
+				controller.toGame();
 			}
 		});
 
-		setupButton.addListener(new ChangeListener() {
+		tutorialButton.addListener(new ChangeListener() {
 			public void changed (ChangeEvent event, Actor actor) {
-				controller.toSetup();
+				controller.toTutorial();
 			}
 		});
-		
-		creditsButton.addListener(new ChangeListener() {
-			public void changed (ChangeEvent event, Actor actor) {
 
+		settingsButton.addListener(new ChangeListener() {
+			public void changed (ChangeEvent event, Actor actor) {
+				controller.toSetting();
 			}
 		});
-		table.add(queueLabel).width(objectWidth).height(objectHeight).padBottom(padY).row();
-		table.add(usersLabel).width(objectWidth).height(objectHeight).padBottom(padY).row();
-		table.add(statusLabel).width(objectWidth).height(objectHeight).padBottom(padY).row();
+
+		aboutButton.addListener(new ChangeListener() {
+			public void changed (ChangeEvent event, Actor actor) {
+				controller.toAbout();
+			}
+		});
+
 		table.add(playButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
-		table.add(setupButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
-		table.add(creditsButton).width(objectWidth).height(objectHeight);
+		table.add(tutorialButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
+		table.add(settingsButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
+		table.add(aboutButton).width(objectWidth).height(objectHeight);
 	}
 
 	@Override
-	public void onServerUpdate() {
-		queueLabel.setText(queueText + model.currentQueue());
-		usersLabel.setText(usersText + model.currentUsers());
-	}
+	public void reset() {
 
-	@Override
-	public void onGameUpdate() {
-		statusLabel.setText("Winner is: " + model.winner());
 	}
 }
