@@ -79,7 +79,7 @@ public class GameInfo {
     /* Update gameinfo object with new fen*/
     public void update(String fen) {
         this.fen = fen;
-        this.moves.add(fen);
+        //this.moves.add(fen);
     }
 
     /* Print */

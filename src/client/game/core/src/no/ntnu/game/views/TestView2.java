@@ -83,10 +83,13 @@ public class TestView2 extends AbstractView {
         return FEN.toFen(board);
     }
 
-
     @Override
     public void reset() {
-
+        gameLabel = new Label("", skin);
+        player1Label = new Label("", skin);
+        player2Label = new Label("", skin);
+        fenLabel = new Label("", skin);
+        statusLabel = new Label("", skin);
     }
 
     @Override

@@ -76,12 +76,14 @@ public class GameController implements NetworkObserver{
     public void toAbout() {
         viewController.setAboutView();
     }
+
     /**
      * Change to game view
      */
     public void toGame() {
         viewController.setGameView();
     }
+
     /**
      * Change to game view
      */
@@ -94,6 +96,13 @@ public class GameController implements NetworkObserver{
      */
     public void toBoard() {
         viewController.setTestView2();
+    }
+
+    /**
+     * Change to game ended view
+     */
+    public void toGameEnded() {
+        viewController.setGameEndedView();
     }
 
     /**
@@ -152,6 +161,7 @@ public class GameController implements NetworkObserver{
      */
     public void changeFen(String newFen) {
         // todo validate input
+        System.out.println("to server token before change: " +model.user().token());
         http.changeFen(model.user().token(), newFen);
     }
 
@@ -174,7 +184,7 @@ public class GameController implements NetworkObserver{
      * @param fen String
      */
     public void doMove(String fen) {
-        model.addMove(fen);
+        //model.addMove(fen);
         socket.doMove(fen);
     }
 
@@ -210,9 +220,10 @@ public class GameController implements NetworkObserver{
      * @param user User
      */
     @Override
-    public void onGetUser(User user) {
+    public void onGetUser(String token, User user) {
         model.setUser(user);
-        socket.connect(user.token());
+        model.user().setToken(token);
+        System.out.println("after end game: " );
     }
 
     /**
@@ -235,10 +246,13 @@ public class GameController implements NetworkObserver{
      * Gets changed fen confirmation
      */
     @Override
-    public void onChangedFen() {
+    public void onChangedFen(String token, String fen) {
+        System.out.println("incomming token: " + token);
+        model.user().setFen(fen);
+        model.user().setToken(token);
         // reset socket to update info.
         socket.disconnect();
-        http.getUserInformation(model.user().token());
+        socket.connect(model.user().token());
     }
 
     @Override
@@ -291,7 +305,8 @@ public class GameController implements NetworkObserver{
     public void onGameOver(JsonValue gameInfo) {
         model.endGame(gameInfo);
         // To winner screen / analysis ?
-        toMenu();
+        http.getUserInformation(model.user().token());
+        toGameEnded();
     }
 
     /**

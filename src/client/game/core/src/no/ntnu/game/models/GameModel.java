@@ -137,6 +137,10 @@ public class GameModel extends ObservableModel {
         return gameInfo.color();
     }
 
+    public GameInfo gameInfo()  {
+        return gameInfo;
+    }
+
     /* Returns error message */
     public String error() {
         return error;

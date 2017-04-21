@@ -31,6 +31,8 @@ module.exports = (req, res) => {
       email: _email,
       fen: '4p3/3pkp2',
       level: 15,
+      games: 0,
+      wins: 0,
       hash: passwordHash,
       admin: false
     }).save(function(err) {

@@ -15,6 +15,11 @@ import no.ntnu.game.models.GameModel;
 
 public class GameView extends AbstractView{
 
+    private TextButton findButton;
+    private TextButton computerButton;
+    private TextButton fenButton;
+    private TextButton backButton;
+
     private Label useridLabel;
     private Label statsLabel;
     private Label levelLabel;
@@ -29,11 +34,11 @@ public class GameView extends AbstractView{
     @Override
     public void build() {
         // Buttons
-        final TextButton findButton = new TextButton("FIND OPPONENT", skin);
-        final TextButton computerButton = new TextButton("VS COMPUTER", skin);
-        final TextButton fenButton = new TextButton("MY BOARD", skin);
+        findButton = new TextButton("FIND OPPONENT", skin);
+        computerButton = new TextButton("VS COMPUTER", skin);
+        fenButton = new TextButton("MY BOARD", skin);
         //final TextButton gamesButton = new TextButton("GAMES", skin);
-        final TextButton backButton = new TextButton("BACK", skin);
+        backButton = new TextButton("BACK", skin);
 
         findButton.setColor(buttonColor);
         computerButton.setColor(buttonColor);
@@ -102,6 +107,12 @@ public class GameView extends AbstractView{
 
     @Override
     public void reset() {
+        findButton.setText("FIND OPPONENT");
+        controller.leaveQueue();
+        searching = false;
+        computerButton.setDisabled(false);
+        fenButton.setDisabled(false);
+        backButton.setDisabled(false);
     }
 
     @Override
@@ -111,7 +122,8 @@ public class GameView extends AbstractView{
 
     @Override
     public void onUserUpdate() {
+        System.out.println(model.user());
         useridLabel.setText(model.user().userid() + " (" + model.user().level() + ")");
-        statsLabel.setText("Games: " + model.user().games() + "       Wins: " + model.user().games());
+        statsLabel.setText("Games: " + model.user().games() + "       Wins: " + model.user().wins());
     }
 }

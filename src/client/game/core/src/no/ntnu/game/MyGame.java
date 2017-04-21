@@ -7,6 +7,7 @@ import no.ntnu.game.controllers.GameController;
 import no.ntnu.game.models.GameModel;
 import no.ntnu.game.views.AboutView;
 import no.ntnu.game.views.AbstractView;
+import no.ntnu.game.views.GameEndedView;
 import no.ntnu.game.views.GameView;
 import no.ntnu.game.views.LoginView;
 import no.ntnu.game.views.RegisterView;
@@ -31,6 +32,7 @@ public class MyGame extends Game{
 	private AbstractView aboutView;
 	private AbstractView fenView;
 	private AbstractView gameView;
+	private AbstractView gameEndedView;
 
 	private AbstractView testView2; // game room
 
@@ -67,6 +69,7 @@ public class MyGame extends Game{
 		aboutView = new AboutView(model, controller);
 		fenView = new FenView(model, controller);
 		gameView = new GameView(model, controller);
+		gameEndedView = new GameEndedView(model, controller);
 
 		testView2 = new TestView2(model, controller);
 	}
@@ -100,6 +103,10 @@ public class MyGame extends Game{
 
 	public void setGameView() {
 		setScreen(gameView);
+	}
+
+	public void setGameEndedView() {
+		setScreen(gameEndedView);
 	}
 
 	public void setTestView2() {

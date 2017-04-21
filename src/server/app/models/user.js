@@ -7,6 +7,8 @@ module.exports = mongoose.model('User', new Schema({
     email: String,
     fen: String,
     level: Number,
+    games: Number,
+    wins: Number,
     hash: String,
     admin: Boolean
 }));

@@ -77,10 +77,10 @@ public class User {
 	}
 
 	public int games() {
-		return wins;
+		return games;
 	}
 
 	public String toString() {
-		return "userid: " + userid;
+		return "userid: " + userid + ", " + level + ", " + wins + ", " + games;
 	}
 }

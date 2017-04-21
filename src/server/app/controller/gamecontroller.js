@@ -179,7 +179,7 @@ module.exports.endGame = function(game, player) {
     game.winner = (player.userid == game.player1.userid) ? game.player2.userid : game.player1.userid;
     game.ended = new Date().toLocaleString();
     this.saveGame(game);
-    this.updatePoints(game.winner, player);
+    this.updatePoints(game.winner, player.userid);
   }
 };
 
@@ -189,19 +189,27 @@ module.exports.endGame = function(game, player) {
  * @param {String} winners userid
  * @param {String} loosers userid
  */
-module.exports.updatePoints = function (winner, looser) {
+module.exports.updatePoints = function (winnerid, looserid) {
+
   User.findOneAndUpdate({
-    userid: winner.userid
+    userid: winnerid
   }, {
-    $inc: {level: 3}
+    $inc: {
+      level: 3,
+      games: 1,
+      wins: 1
+    }
   }, function (err, data) {
     if (err) throw err;
   });
 
   User.findOneAndUpdate({
-    userid: looser.userid
+    userid: looserid
   }, {
-    $inc: {level: 1}
+    $inc: {
+      level: 1,
+      games: 1,
+    }
   }, function (err, data) {
     if (err) throw err;
   });

@@ -60,9 +60,9 @@ public abstract class NetworkCommunication {
         }
     }
 
-    protected void emitGetUser(User user) {
+    protected void emitGetUser(String token, User user) {
         for (NetworkObserver observer : observers) {
-            observer.onGetUser(user);
+            observer.onGetUser(token, user);
         }
     }
 
@@ -78,9 +78,9 @@ public abstract class NetworkCommunication {
         }
     }
 
-    protected void emitChangedFen() {
+    protected void emitChangedFen(String token, String fen) {
         for (NetworkObserver observer : observers) {
-            observer.onChangedFen();
+            observer.onChangedFen(token, fen);
         }
     }
 
