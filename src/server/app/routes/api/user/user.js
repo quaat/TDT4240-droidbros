@@ -12,10 +12,12 @@ module.exports.get = function (req, res) {
     userid: req.decoded._doc.userid
   }, function(err, user) {
     if (err) res.json({success: false, message: 'Database find user error  -- ' + err});
+    var token = jwt.sign(user, req.app.get('superSecret'));
     res.json({
       success: true, 
       message: 'User delivered', 
-      user: user
+      user: user,
+      token: token
     });
   });
 };

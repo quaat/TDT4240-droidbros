@@ -48,9 +48,10 @@ public abstract class NetworkCommunication {
 
     // Http
 
-
     protected void emitRegister() {
-        observers.forEach(NetworkObserver::onRegister);
+        for (NetworkObserver observer : observers) {
+            observer.onRegister();
+        }
     }
 
     protected void emitLogin(User user) {
@@ -59,9 +60,9 @@ public abstract class NetworkCommunication {
         }
     }
 
-    protected void emitGetUser(User user) {
+    protected void emitGetUser(String token, User user) {
         for (NetworkObserver observer : observers) {
-            observer.onGetUser(user);
+            observer.onGetUser(token, user);
         }
     }
 
@@ -72,26 +73,37 @@ public abstract class NetworkCommunication {
     }
 
     protected void emitChangedPassword() {
-        observers.forEach(NetworkObserver::onChangedPassword);
+        for (NetworkObserver observer : observers) {
+            observer.onChangedPassword();
+        }
     }
 
-    protected void emitChangedFen() {
-        observers.forEach(NetworkObserver::onChangedFen);
+    protected void emitChangedFen(String token, String fen) {
+        for (NetworkObserver observer : observers) {
+            observer.onChangedFen(token, fen);
+        }
     }
 
     protected void emitDeletedUser() {
-        observers.forEach(NetworkObserver::onDeletedUser);
+        for (NetworkObserver observer : observers) {
+            observer.onDeletedUser();
+        }
     }
 
     // Sockets
 
     protected void emitConnected() {
-        observers.forEach(NetworkObserver::onConnected);
+        for (NetworkObserver observer : observers) {
+            observer.onConnected();
+        }
     }
 
     protected void emitDisconnected() {
-        observers.forEach(NetworkObserver::onDisconnected);
+        for (NetworkObserver observer : observers) {
+            observer.onDisconnected();
+        }
     }
+
 
     protected void emitError(String error){
         for (NetworkObserver observer : observers) {
@@ -120,6 +132,12 @@ public abstract class NetworkCommunication {
     protected void emitGameOver(JsonValue gameInfo) {
         for (NetworkObserver observer : observers) {
             observer.onGameOver(gameInfo);
+        }
+    }
+
+    protected void emitReconnect(JsonValue gameInfo) {
+        for (NetworkObserver observer : observers) {
+            observer.onReconnect(gameInfo);
         }
     }
 }

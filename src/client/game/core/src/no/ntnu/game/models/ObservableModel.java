@@ -18,21 +18,36 @@ public abstract class ObservableModel {
 
     /* Server info updated */
     protected void emitServerUpdate() {
-        observers.forEach(ScreenObserver::onServerUpdate);
+        for (ScreenObserver observer : observers) {
+            observer.onServerUpdate();
+        }
     }
 
     /* User info updated */
     protected void emitUserUpdate() {
-        observers.forEach(ScreenObserver::onUserUpdate);
+        for (ScreenObserver observer : observers) {
+            observer.onUserUpdate();
+        }
     }
 
     /* User info updated */
     protected void emitGameUpdate() {
-        observers.forEach(ScreenObserver::onGameUpdate);
+        for (ScreenObserver observer : observers) {
+            observer.onGameUpdate();
+        }
     }
 
     /* New move */
     protected void emitNewMove() {
-        observers.forEach(ScreenObserver::onNewMove);
+        for (ScreenObserver observer : observers) {
+            observer.onNewMove();
+        }
+    }
+
+    /* Error */
+    protected void emitError() {
+        for (ScreenObserver observer : observers) {
+            observer.onError();
+        }
     }
 }

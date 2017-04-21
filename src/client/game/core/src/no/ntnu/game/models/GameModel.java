@@ -11,21 +11,22 @@ import no.ntnu.game.TypeErrorException;
  */
 
 public class GameModel extends ObservableModel {
-    // todo rewrite, uglyfugly
     // Client info
     private User user; // User logged in as
 
     // Current game
     private GameInfo gameInfo; // All info about current game
-    private Board board; // Board of current game
 
     // Statistics from server
     private String currentUsers; // Users online
     private String currentQueue; // Users searching for game
     private String currentGames; // Games in progress
 
-    public GameModel() {
+    // Error message
+    private String error;
 
+    public GameModel() {
+        currentUsers = currentQueue = currentGames = error = "";
     }
 
     /**
@@ -34,7 +35,6 @@ public class GameModel extends ObservableModel {
      */
     public void startGame(JsonValue gameInfo) {
         this.gameInfo = new GameInfo(gameInfo, user);
-        updateBoard();
         emitGameUpdate();
     }
 
@@ -44,7 +44,6 @@ public class GameModel extends ObservableModel {
      */
     public void endGame(JsonValue gameInfo) {
         this.gameInfo = new GameInfo(gameInfo, user);
-        updateBoard();
         emitGameUpdate();
     }
 
@@ -54,29 +53,11 @@ public class GameModel extends ObservableModel {
      */
     public void updateGame(String fen) {
         gameInfo.update(fen);
-        updateBoard();
         emitNewMove();
     }
 
-    /**
-     * Updates board with params fromMove and toMove (from client)
-     * todo use correct method for updating board
-     * @param from From square
-     * @param to To square
-     * @return boolean
-     */
-    public boolean updateGame(String from, String to) {
-        //board = GameAction.movePiece(board, new Move(from, to));
-        return false;
-    }
-
-    /**
-     * Sets the board equal to fen string
-     */
-    private void updateBoard() {
-        // todo do this correct
-        //try { board = FEN.toBoard(fen());
-        //}catch(TypeErrorException e) {}
+    public void addMove(String fen) {
+        gameInfo.update(fen);
     }
 
     /**
@@ -90,6 +71,11 @@ public class GameModel extends ObservableModel {
         currentQueue = queue;
         currentGames = games;
         emitServerUpdate();
+    }
+
+    public void updateError(String error) {
+        this.error = error;
+        emitError();
     }
 
     /**
@@ -121,11 +107,6 @@ public class GameModel extends ObservableModel {
         return gameInfo.gameid();
     }
 
-    /* Current board */
-    public Board board() {
-        return board;
-    }
-
     /* Current or last position as fen string*/
     public String fen() {
         return gameInfo.fen();
@@ -152,7 +133,16 @@ public class GameModel extends ObservableModel {
     }
 
     /* Returns if it is this clients turn*/
-    public boolean isItMyTurn() {
-        return board.activeColor()==gameInfo.color();
+    public Piece.Color color() {
+        return gameInfo.color();
+    }
+
+    public GameInfo gameInfo()  {
+        return gameInfo;
+    }
+
+    /* Returns error message */
+    public String error() {
+        return error;
     }
 }

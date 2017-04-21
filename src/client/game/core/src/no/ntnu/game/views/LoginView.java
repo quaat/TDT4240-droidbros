@@ -1,5 +1,6 @@
 package no.ntnu.game.views;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -11,17 +12,15 @@ import no.ntnu.game.models.GameModel;
 
 public class LoginView extends AbstractView {
 
-	private static final String usernamePlaceholder = "nick";
-	private static final String passwordPlaceholder = "password";
+	private static final String usernamePlaceholder = "Username";
+	private static final String passwordPlaceholder = "Password";
 
 	private static final String loginWaitText = "Logging in...";
-	private static final String loginPasswordFailText = "Password incorrect";
-	private static final String loginUsernameFailText = "Could not find username";
 
-	private Label statusLabel;
 	private TextField usernameField;
 	private TextField passwordField;
-	
+	private Label statusLabel;
+
 	public LoginView(GameModel model, GameController controller) {
 		super(model, controller);
 	}
@@ -33,39 +32,52 @@ public class LoginView extends AbstractView {
 		passwordField = new TextField(passwordPlaceholder, skin);
 		usernameField.setAlignment(1);
 		passwordField.setAlignment(1);
-		
+
 		// Button
 
 		TextButton loginButton = new TextButton("LOGIN", skin);
 		TextButton registerButton = new TextButton("REGISTER", skin);
-		TextButton playComputerButton = new TextButton("Play Computer", skin);
-
+		loginButton.setColor(buttonColor);
+		registerButton.setColor(buttonColor);
 		// Label
 		statusLabel = new Label("", skin);
 
 		// Listeners
 		loginButton.addListener(new ClickListener() {
 			public void clicked(InputEvent e, float x, float y) {
-				statusLabel.setText(loginWaitText);
-				controller.login(usernameField.getText(), passwordField.getText());
+				if (usernameField.getText().equals("")) statusLabel.setText("Missing username");
+				else if (passwordField.getText().equals("")) statusLabel.setText("Missing password");
+				else {
+					statusLabel.setText(loginWaitText);
+					System.out.println("LOGIN");
+					controller.login(usernameField.getText(), passwordField.getText());
+				}
 			}
 		});
 
+		registerButton.addListener(new ClickListener() {
+			public void clicked(InputEvent e, float x, float y) {
+				controller.toRegister();
+			}
+		});
+
+		/*
 		playComputerButton.addListener(new ClickListener() {
 			public void clicked(InputEvent e, float x, float y) {
 				controller.playComputer();
 			}
 		});
+		*/
 
 		usernameField.addListener(new ClickListener() {
 			public void clicked(InputEvent e, float x, float y) {
-				usernameField.setText("");
+				if (usernameField.getText().equals(usernamePlaceholder)) usernameField.setText("");
 			}
 		});
 
 		passwordField.addListener(new ClickListener() {
 			public void clicked(InputEvent e, float x, float y) {
-				passwordField.setText("");
+				if (passwordField.getText().equals(passwordPlaceholder)) passwordField.setText("");
 			}
 		});
 
@@ -74,16 +86,17 @@ public class LoginView extends AbstractView {
 		table.add(passwordField).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(loginButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(registerButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
-		table.add(playComputerButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
+		//table.add(playComputerButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
 		table.add(statusLabel).width(objectWidth).height(objectHeight);
 	}
 
-	public void loginPasswordFailed() {
-		statusLabel.setText(loginPasswordFailText);
+	@Override
+	public void reset() {
+		statusLabel.setText("");
 	}
 
-	public void loginUsernameFailed() {
-		statusLabel.setText(loginUsernameFailText);
+	@Override
+	public void onError() {
+		statusLabel.setText(model.error());
 	}
-
 }

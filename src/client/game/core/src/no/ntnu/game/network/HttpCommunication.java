@@ -52,10 +52,10 @@ public class HttpCommunication extends NetworkCommunication {
         sendGetRequest("/user", token, new Net.HttpResponseListener() {
             public void handleHttpResponse (Net.HttpResponse httpResponse) {
                 JsonValue response = (JsonValue)serializer.read(httpResponse.getResultAsString());
-                System.out.println(httpResponse.getResultAsString());
                 if (response.getBoolean("success")) {
                     User user = new User(response.get("user"));
-                    emitGetUser(user);
+                    String token = response.getString("token");
+                    emitGetUser(token, user);
                 } else {
                     emitError("Get user fail");
                 }
@@ -104,7 +104,9 @@ public class HttpCommunication extends NetworkCommunication {
             public void handleHttpResponse (Net.HttpResponse httpResponse) {
                 JsonValue response = (JsonValue)serializer.read(httpResponse.getResultAsString());
                 if (response.getBoolean("success")) {
-                    emitChangedFen();
+                    String fen = response.getString("fen");
+                    String token = response.getString("token");
+                    emitChangedFen(token, fen);
                 } else {
                     emitError("Change fen failed");
                 }

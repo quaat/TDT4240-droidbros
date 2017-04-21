@@ -1,35 +1,23 @@
 package no.ntnu.game;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import no.ntnu.game.models.Board;
 import no.ntnu.game.models.Square;
 import no.ntnu.game.models.Piece;
-import no.ntnu.game.movestrategy.DoubleForwardStrategyDecorator;
-import no.ntnu.game.movestrategy.HorizontalStrategyDecorator;
-import no.ntnu.game.movestrategy.LJumpStrategyDecorator;
-import no.ntnu.game.movestrategy.MoveStrategy;
-import no.ntnu.game.movestrategy.SingleForwardStrategyDecorator;
-import no.ntnu.game.movestrategy.StandardChessPawnMovement;
-import no.ntnu.game.movestrategy.ULDiagonalStrategyDecorator;
-import no.ntnu.game.movestrategy.URDiagonalStrategyDecorator;
-import no.ntnu.game.movestrategy.VerticalStrategyDecorator;
 
 import static org.junit.Assert.*;
 
 /**
  * Created by thomash on 26.03.2017.
  */
+
+/*
 public class MoveTest {
     private Board createBoard() {
         Board board = new Board();
@@ -56,19 +44,6 @@ public class MoveTest {
         board.square(5, 7).setPiece(new Piece(Piece.Type.BISHOP, Piece.Color.BLACK, null));
         board.square(6, 7).setPiece(new Piece(Piece.Type.KNIGHT, Piece.Color.BLACK, null));
         board.square(7, 7).setPiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK, null));
-        return board;
-    }
-
-    private Board createBoardWithStrategy() {
-
-
-        Board board = new Board();
-        for (int col = 0; col < board.cols(); col++) {
-            board.square(col, 1).setPiece(new Piece(Piece.Type.PAWN, Piece.Color.WHITE, new StandardChessPawnMovement()));
-        }
-        for (int col = 0; col < board.cols(); col++) {
-            board.square(col, board.rows()-2).setPiece(new Piece(Piece.Type.PAWN, Piece.Color.BLACK, new StandardChessPawnMovement()));
-        }
         return board;
     }
 
@@ -199,3 +174,4 @@ public class MoveTest {
         assertEquals(blackPawns.size(), 8);
     }
 }
+*/

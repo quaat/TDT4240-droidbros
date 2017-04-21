@@ -39,12 +39,12 @@ public class PieceValue implements GameEvaluation {
     @Override
     public float score(final Board board) {
         float score = 0.0f;
-        List<Square> squaresWithPiece = board.allSquares().stream()
-                .filter(s -> s.piece() != null)
-                .collect(Collectors.toList());
-        for (Square square : squaresWithPiece) {
-            float pieceValue = value(square.piece().type());
-            score += (square.piece().color() == Piece.Color.WHITE ? pieceValue : -pieceValue);
+
+        for (Square square : board.allSquares()) {
+            if (square.piece ()!= null) {
+                float pieceValue = value(square.piece().type());
+                score += (square.piece().color() == Piece.Color.WHITE ? pieceValue : -pieceValue);
+            }
         }
 
         if (this.gameEvaluation != null)

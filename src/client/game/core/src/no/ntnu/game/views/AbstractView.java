@@ -2,6 +2,7 @@ package no.ntnu.game.views;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -14,6 +15,9 @@ import no.ntnu.game.models.GameModel;
 import no.ntnu.game.util.ScreenObserver;
 
 public abstract class AbstractView implements Screen, ScreenObserver {
+
+	Color buttonColor = new Color(0x7fff00ff);
+
 	GameModel model;
 	GameController controller;
 
@@ -62,14 +66,18 @@ public abstract class AbstractView implements Screen, ScreenObserver {
 	// Put all the objects on the screen!
 	public abstract void build();
 
+	// Resets all text to inital values
+	public abstract void reset();
+
 	@Override
 	public void show() {
+		this.reset();
 		Gdx.input.setInputProcessor(stage);
 	}
 
 	@Override
 	public void render(float delta) {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClearColor(1, 1, 0.9f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
 		stage.draw();
@@ -101,8 +109,11 @@ public abstract class AbstractView implements Screen, ScreenObserver {
 	public void onUserUpdate() { }
 
 	@Override
-	public void onGameUpdate() {}
+	public void onGameUpdate() { }
 
 	@Override
 	public void onNewMove() { }
+
+	@Override
+	public void onError() { System.out.println(model.error());}
 }

@@ -43,7 +43,7 @@ module.exports = function (app, server) {
   /**
   * Io listens for incomming emits from connected sockets 
   */
-  io.use(function (socket, next){
+  io.use(function(socket, next){
     if (socket.handshake.query && socket.handshake.query.token){
       jwt.verify(socket.handshake.query.token, app.get('superSecret'), function(err, decoded) {
         if(err) return next(new Error('Authentication error'));
@@ -53,7 +53,7 @@ module.exports = function (app, server) {
     }
     next(new Error('Authentication error'));
   })
-  .on('connection', function (socket) {
+  .on('connection', function(socket) {
 
       var currentGame;
       var player = {
@@ -62,38 +62,48 @@ module.exports = function (app, server) {
         fen:    socket.decoded._doc.fen, // fen
         level:  socket.decoded._doc.level // level
       };
-
+      console.log(player.userid, 'connected');
       gameController.connect(player); // Connect user to controller
       startUpdate(); // start updating
 
       /* Reconnect to game if it exists */
-      // todo
       currentGame = gameController.reconnect(player);
       if (currentGame) {
+        console.log(player.userid, 'reconncet');
         socket.join(currentGame.gameid);
         socket.emit('reconnect', currentGame); // reconnect
       }
 
       /* Search for new game */
       socket.on('findGame', function () {
+        console.log(player.userid, 'join queue');
         gameController.joinQueue(player);
       });
 
+      /* Leave queue */
+      socket.on('leaveQueue', function () {
+        console.log(player.userid, 'leave queue');
+        gameController.leaveQueue(player);
+      });
+
       /* If game exists, join room and emit start */
-      socket.on('joinGame', function (gameid) {
+      socket.on('joinGame', function(gameid) {
+        console.log(player.userid, 'join game', gameid);
         currentGame = gameController.findGame(gameid);
         socket.join(gameid);
         socket.emit('startGame', currentGame);
       });
 
       /* New move, send to opponent*/
-      socket.on('newMove', function (fen) {
+      socket.on('newMove', function(fen) {
+        console.log(player.userid, 'new move');
         gameController.updateGame(currentGame, fen);
         socket.to(currentGame.gameid).emit('newMove', {fen: fen});
       });
 
       /* Resign */
-      socket.on('resign', function () {
+      socket.on('resign', function() {
+        console.log(player.userid, 'resign');
         gameController.endGame(currentGame, player);
         io.in(currentGame.gameid).emit('gameOver', currentGame);
         gameController.removeGame(currentGame.gameid);
@@ -101,6 +111,7 @@ module.exports = function (app, server) {
 
       /* Disconnect */
       socket.on('disconnect', function() {
+        console.log(player.userid, 'disconnect');
         gameController.disconnect(player);
         stopUpdate();
       });

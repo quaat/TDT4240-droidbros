@@ -500,6 +500,11 @@ public class BoardView extends AbstractView {
     }
 
     @Override
+    public void reset() {
+        // TODO Reset something
+    }
+
+    @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
         if ((screenWidth != width || screenHeight != height)) {

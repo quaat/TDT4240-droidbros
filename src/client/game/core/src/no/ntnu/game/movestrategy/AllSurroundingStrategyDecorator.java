@@ -10,6 +10,8 @@ import no.ntnu.game.Move;
 import no.ntnu.game.models.Board;
 import no.ntnu.game.models.Square;
 
+import static com.badlogic.gdx.graphics.g2d.ParticleEmitter.SpawnShape.square;
+
 /**
  * Created by thomash on 28.03.2017.
  */
@@ -24,39 +26,36 @@ public class AllSurroundingStrategyDecorator implements MoveStrategy {
     }
 
     @Override
-    public List<Function<Square, List<Move>>> legalMoves() {
-        List<Function<Square, List<Move>>> moves = new ArrayList<>();
+    public List<Move> legalMoves(Square square)
+    {
+        List<Move> moves = new ArrayList<>();
+        if (square.piece() == null) return null;
 
-        moves.add(square -> {
-            List<Move> movesList = new ArrayList<Move>();
-            Board b = square.board();
-            final int rank = square.row();
-            final int col = square.col();
-            List<Square> targetSquares = Arrays.asList(
-                    b.square(col-1, rank-1),
-                    b.square(col-1, rank),
-                    b.square(col-1, rank+1),
-                    b.square(col, rank+1),
-                    b.square(col+1, rank-1),
-                    b.square(col+1, rank),
-                    b.square(col+1, rank+1),
-                    b.square(col, rank-1));
-            for (Iterator it = targetSquares.iterator(); it.hasNext();) {
-                Square dest = (Square) it.next();
+        Board b = square.board();
+        final int rank = square.row();
+        final int col = square.col();
+        List<Square> targetSquares = Arrays.asList(
+                b.square(col-1, rank-1),
+                b.square(col-1, rank),
+                b.square(col-1, rank+1),
+                b.square(col, rank+1),
+                b.square(col+1, rank-1),
+                b.square(col+1, rank),
+                b.square(col+1, rank+1),
+                b.square(col, rank-1));
+        for (Iterator it = targetSquares.iterator(); it.hasNext();) {
+            Square dest = (Square) it.next();
 
-                if (dest != null
-                        && (dest.piece() == null
-                        || (dest.piece() != null
-                        && (dest.piece().color() != square.piece().color())))) {
-                    movesList.add(new Move(square, dest));
-                }
+            if (dest != null
+                    && (dest.piece() == null
+                    || (dest.piece() != null
+                    && (dest.piece().color() != square.piece().color())))) {
+                moves.add(new Move(square, dest));
             }
-            return movesList;
-        });
-
+        }
 
         if (this.moveStrategy != null)
-            moves.addAll(this.moveStrategy.legalMoves());
+            moves.addAll(this.moveStrategy.legalMoves(square));
         return moves;
     }
 }

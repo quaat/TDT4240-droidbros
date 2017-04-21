@@ -1,5 +1,6 @@
 package no.ntnu.game.evaluation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,13 +34,13 @@ public class PiecePosition implements GameEvaluation{
     }
     @Override
     public float score(final Board board) {
+        // Compute a score for all squares that contains a piece
         float score = 0.0f;
-        List<Square> squaresWithPiece = board.allSquares().stream()
-                .filter(s -> s.piece() != null)
-                .collect(Collectors.toList());
-        for (Square square : squaresWithPiece) {
-            float pieceValue = value(square);
-            score += (square.piece().color() == Piece.Color.WHITE ? pieceValue : -pieceValue);
+        for (Square square : board.allSquares()) {
+            if (square.piece ()!= null) {
+                float pieceValue = value(square);
+                score += (square.piece().color() == Piece.Color.WHITE ? pieceValue : -pieceValue);
+            }
         }
 
         if (this.gameEvaluation != null) {
