@@ -108,9 +108,6 @@ public class TestView2 extends AbstractView {
     @Override
     public void onGameUpdate() {
         playerColor = model.color();
-        if (playerColor== Piece.Color.WHITE) doMoveButton.setDisabled(false);
-        else doMoveButton.setDisabled(true);
-
         player1Label.setText("You: " + model.player().toString());
         player2Label.setText("Opponent: " + model.opponent().toString());
         gameLabel.setText("gameid: "+ model.gameid());
@@ -121,5 +118,8 @@ public class TestView2 extends AbstractView {
         } catch (TypeErrorException ex) {
             System.out.println("board fuckup");
         }
+
+        if (playerColor == board.activeColor()) doMoveButton.setDisabled(false);
+        else doMoveButton.setDisabled(true);
     }
 }

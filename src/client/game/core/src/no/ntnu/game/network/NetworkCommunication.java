@@ -134,4 +134,10 @@ public abstract class NetworkCommunication {
             observer.onGameOver(gameInfo);
         }
     }
+
+    protected void emitReconnect(JsonValue gameInfo) {
+        for (NetworkObserver observer : observers) {
+            observer.onReconnect(gameInfo);
+        }
+    }
 }

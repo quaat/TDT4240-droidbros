@@ -24,6 +24,7 @@ public interface NetworkObserver {
     public void onStartGame(JsonValue response);
     public void onNewMove(String fen);
     public void onGameOver(JsonValue gameInfo);
+    public void onReconnect(JsonValue gameInfo);
     public void onDisconnected();
 
     // error

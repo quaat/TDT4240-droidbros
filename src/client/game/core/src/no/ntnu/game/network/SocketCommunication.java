@@ -34,6 +34,7 @@ public class SocketCommunication extends NetworkCommunication {
             socket.on("startGame", onStartGame);
             socket.on("newMove", onNewMove);
             socket.on("gameOver", onGameOver);
+            socket.on("reconnect", onReconnect);
 
             socket.connect();
         } catch(Exception e){
@@ -166,6 +167,18 @@ public class SocketCommunication extends NetworkCommunication {
         public void call(Object... args) {
             JsonValue response = (JsonValue)serializer.read(args[0].toString());
             emitGameOver(response);
+        }
+    };
+
+    /**
+     * Called when server emits that the game is over
+     */
+
+    private Emitter.Listener onReconnect = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            JsonValue response = (JsonValue)serializer.read(args[0].toString());
+            emitReconnect(response);
         }
     };
 }

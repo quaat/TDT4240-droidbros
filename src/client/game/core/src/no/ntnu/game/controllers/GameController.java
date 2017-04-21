@@ -309,6 +309,12 @@ public class GameController implements NetworkObserver{
         toGameEnded();
     }
 
+    @Override
+    public void onReconnect(JsonValue gameInfo) {
+        model.startGame(gameInfo);
+        toBoard();
+    }
+
     /**
      * Gets disconnect (from socket) message
      */
