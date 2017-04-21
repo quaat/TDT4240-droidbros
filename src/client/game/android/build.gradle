@@ -19,8 +19,8 @@ android {
     }
     defaultConfig {
         jackOptions {
-	  enabled true
-	}
+	        enabled true
+	    }
         applicationId "no.ntnu.game"
         minSdkVersion 24
         targetSdkVersion 25

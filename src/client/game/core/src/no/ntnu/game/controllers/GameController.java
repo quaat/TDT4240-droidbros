@@ -90,6 +90,13 @@ public class GameController implements NetworkObserver{
     }
 
     /**
+     * Change to game view
+     */
+    public void toBoard() {
+        viewController.setTestView2();
+    }
+
+    /**
      * Sends request for register a new user
      * @param userid - String
      * @param password - String
@@ -163,17 +170,12 @@ public class GameController implements NetworkObserver{
     }
 
     /**
-     * todo something like this ?
-     * @return boo
+     * New move (fen string) from client
+     * @param fen String
      */
-    public boolean doMove(String from, String to) {
-        if (model.isItMyTurn()) { // Is it my turn?
-            if (model.updateGame(from, to)) { // Is the move valid? do move
-                socket.doMove(FEN.toFen(model.board())); // Send board after the update
-                return true; // tell view that move has been sent!
-            }
-        }
-        return false;
+    public void doMove(String fen) {
+        model.addMove(fen);
+        socket.doMove(fen);
     }
 
     /**
@@ -270,7 +272,7 @@ public class GameController implements NetworkObserver{
     @Override
     public void onStartGame(JsonValue gameInfo) {
         model.startGame(gameInfo);
-        toGame(); // change view
+        toBoard(); // change view
     }
 
     /**

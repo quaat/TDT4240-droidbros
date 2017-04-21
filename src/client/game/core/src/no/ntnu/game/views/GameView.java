@@ -55,7 +55,7 @@ public class GameView extends AbstractView{
         findButton.addListener(new ChangeListener() {
             public void changed (ChangeEvent event, Actor actor) {
                 if (!searching) {
-                    // controller.findGame();
+                    controller.findGame();
                     findButton.setText("LEAVE QUEUE");
                     searching = true;
                     computerButton.setDisabled(true);
@@ -63,7 +63,7 @@ public class GameView extends AbstractView{
                     backButton.setDisabled(true);
                 } else {
                     findButton.setText("FIND OPPONENT");
-                    // controller.leaveQueue();
+                    controller.leaveQueue();
                     searching = false;
                     computerButton.setDisabled(false);
                     fenButton.setDisabled(false);
