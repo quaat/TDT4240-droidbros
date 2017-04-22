@@ -11,7 +11,6 @@ import no.ntnu.game.controllers.GameController;
 import no.ntnu.game.models.GameModel;
 
 public class FenView extends AbstractView {
-
     private TextButton backButton;
     private TextButton saveButton;
 

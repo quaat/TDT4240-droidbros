@@ -13,16 +13,15 @@ import no.ntnu.game.models.GameModel;
  */
 
 public class GameEndedView extends AbstractView {
-
     private Label winnerLabel;
     private Label fenLabel;
     private Label startedLabel;
     private Label endedLabel;
-
     private TextButton continueButton;
 
     public GameEndedView(GameModel model, GameController controller) {
         super(model, controller);
+        this.controller = controller;
     }
 
     @Override

@@ -21,7 +21,6 @@ import no.ntnu.game.models.Piece;
 
 
 public class TestView2 extends AbstractView {
-
     private Board board;
     private Piece.Color playerColor;
 
@@ -36,6 +35,7 @@ public class TestView2 extends AbstractView {
 
     public TestView2(GameModel model, GameController controller) {
         super(model, controller);
+        this.controller = controller;
     }
 
     @Override

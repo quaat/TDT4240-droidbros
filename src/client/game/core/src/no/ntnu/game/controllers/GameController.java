@@ -1,8 +1,8 @@
 package no.ntnu.game.controllers;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.utils.JsonValue;
 
-import no.ntnu.game.FEN;
 import no.ntnu.game.MyGame;
 import no.ntnu.game.models.GameModel;
 import no.ntnu.game.models.User;
@@ -11,9 +11,8 @@ import no.ntnu.game.network.HttpCommunication;
 import no.ntnu.game.network.SocketCommunication;
 import no.ntnu.game.util.NetworkObserver;
 
-public class GameController implements NetworkObserver{
-    private GameModel model;
-    private MyGame viewController;
+public class GameController extends AbstractController implements NetworkObserver{
+    private MyGame myGame;
 
     private HttpCommunication http;
     private SocketCommunication socket;
@@ -22,11 +21,11 @@ public class GameController implements NetworkObserver{
     /**
      * Controller combining model with views, plus communicating with server
      * @param model - model
-     * @param viewController - view controller
+     * @param myGame - view controller
      */
-    public GameController(GameModel model, MyGame viewController) {
-        this.model = model;
-        this.viewController = viewController;
+    public GameController(GameModel model, MyGame myGame) {
+        super(model);
+        this.myGame = myGame;
 
         http = new HttpCommunication(hostInfo);
         socket = new SocketCommunication(hostInfo);
@@ -39,72 +38,73 @@ public class GameController implements NetworkObserver{
      * Change to register view
      */
     public void toLogin() {
-        viewController.setLoginView();
+        myGame.setLoginView();
     }
 
     /**
      * Change to register view
      */
     public void toRegister() {
-        viewController.setRegisterView();
+        myGame.setRegisterView();
     }
 
     /**
      * Change to menu view
      */
     public void toMenu() {
-        viewController.setMenuView();
+        myGame.setMenuView();
     }
 
     /**
      * Change to setup view
      */
     public void toTutorial() {
-        viewController.setTutorialView();
+        myGame.setTutorialView();
     }
 
     /**
      * Change to register view
      */
     public void toSetting() {
-        viewController.setSettingView();
+        myGame.setSettingView();
     }
 
     /**
      * Change to register view
      */
     public void toAbout() {
-        viewController.setAboutView();
+        myGame.setAboutView();
     }
 
     /**
      * Change to game view
      */
     public void toGame() {
-        viewController.setGameView();
+        myGame.setGameView();
     }
 
     /**
      * Change to game view
      */
     public void toFen() {
-        viewController.setFenView();
+        myGame.setFenView();
     }
 
     /**
      * Change to game view
      */
     public void toBoard() {
-        viewController.setTestView2();
+        myGame.setTestView2();
     }
 
     /**
      * Change to game ended view
      */
     public void toGameEnded() {
-        viewController.setGameEndedView();
+        myGame.setGameEndedView();
     }
 
+    public Game game() {return myGame;}
     /**
      * Sends request for register a new user
      * @param userid - String
@@ -212,7 +212,7 @@ public class GameController implements NetworkObserver{
     public void onLogin(User user) {
         model.setUser(user);
         socket.connect(user.token());
-        viewController.setMenuView();
+        myGame.setMenuView();
     }
 
     /**
@@ -333,6 +333,6 @@ public class GameController implements NetworkObserver{
 
 
     public void playComputer() {
-        viewController.playComputer();
+        myGame.playComputer();
     }
 }

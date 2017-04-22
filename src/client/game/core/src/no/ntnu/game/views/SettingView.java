@@ -10,7 +10,6 @@ import no.ntnu.game.controllers.GameController;
 import no.ntnu.game.models.GameModel;
 
 public class SettingView extends AbstractView {
-
     private boolean music = true;
     private boolean sound = true;
     private boolean notis = true;

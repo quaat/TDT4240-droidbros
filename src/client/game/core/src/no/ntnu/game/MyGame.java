@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 
 import no.ntnu.game.controllers.GameController;
+import no.ntnu.game.controllers.PlayComputerController;
 import no.ntnu.game.models.GameModel;
 import no.ntnu.game.views.AboutView;
 import no.ntnu.game.views.AbstractView;
@@ -77,7 +78,7 @@ public class MyGame extends Game{
 		gameEndedView = new GameEndedView(model, controller);
 
 		testView2 = new TestView2(model, controller);
-		boardView = new BoardView(model, controller);
+		boardView = new BoardView(model);
 	}
 
 	// Setters view
@@ -105,6 +106,7 @@ public class MyGame extends Game{
 
 
 	public void playComputer() {
+
 		setScreen(boardView);
 	}
 /*

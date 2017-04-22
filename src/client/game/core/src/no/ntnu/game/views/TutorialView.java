@@ -14,9 +14,9 @@ import no.ntnu.game.models.GameModel;
  */
 
 public class TutorialView extends AbstractView {
-
     public TutorialView(GameModel model, GameController controller) {
         super(model, controller);
+        this.controller = controller;
     }
 
     @Override

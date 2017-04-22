@@ -9,9 +9,11 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
@@ -20,11 +22,11 @@ import no.ntnu.game.FEN;
 import no.ntnu.game.GameAction;
 import no.ntnu.game.Move;
 import no.ntnu.game.TypeErrorException;
-import no.ntnu.game.controllers.GameController;
 import no.ntnu.game.models.Board;
 import no.ntnu.game.models.GameModel;
 import no.ntnu.game.models.Piece;
 import no.ntnu.game.models.Square;
+import no.ntnu.game.util.GameObserver;
 
 /**
  * Created by Even on 27.03.2017.
@@ -32,6 +34,7 @@ import no.ntnu.game.models.Square;
 
 public class BoardView extends AbstractView {
 
+    private List<GameObserver> observers;
     private OrthographicCamera camera;
     private Board board;
     private Piece.Color playerColor;
@@ -41,7 +44,7 @@ public class BoardView extends AbstractView {
     private int highlightedX;
     private int highlightedY;
     private Square squareLastClicked;
-    private float moveDuration=1;
+    private float moveDuration = 1;
 
     private Texture tile1Texture;
     private Texture tile2Texture;
@@ -67,19 +70,37 @@ public class BoardView extends AbstractView {
     private float squareHeight;
     private float startHeight;
 
-    public BoardView(GameModel model, GameController controller) {
-        this(model, controller, new Board(), Piece.Color.WHITE);
+    public BoardView(GameModel model) {
+        this(model, new Board(), Piece.Color.WHITE);
     }
+
     //The method that will actually be used to create this view
-    public BoardView(GameModel model, GameController controller, Board board, Piece.Color playerColor) {
-        super(model, controller);
+    public BoardView(GameModel model, Board board, Piece.Color playerColor) {
+        super(model, null);
+        this.observers = new ArrayList<>();
         this.board = board;
         this.playerColor = playerColor;
         loadTextures();
-        setupView();
     }
-    private void loadTextures(){
-        tile1Texture =  new Texture("tile1.png");
+
+    public void registerObserver(GameObserver observer) {
+        this.observers.add(observer);
+    }
+
+    public void emitUpdate() {
+        for (GameObserver observer : observers) {
+            observer.onUpdate();
+        }
+    }
+
+    public void emitRenderFinished() {
+        for (GameObserver observer : observers) {
+            observer.onReady();
+        }
+    }
+
+    private void loadTextures() {
+        tile1Texture = new Texture("tile1.png");
         tile2Texture = new Texture("tile2.png");
 
         pawnTexture = new Texture("pawn.png");
@@ -91,60 +112,100 @@ public class BoardView extends AbstractView {
 
         bPawnTexture = new Texture("bpawn.png");
         bRookTexture = new Texture("brook.png");
-        bKingTexture= new Texture("bking.png");
+        bKingTexture = new Texture("bking.png");
         bQueenTexture = new Texture("bqueen.png");
         bBishopTexture = new Texture("bbishop.png");
         bKnightTexture = new Texture("bhorse.png");
 
     }
 
-    private void setupView() {
-        Gdx.app.log("BoardView","building boardView");
+    public void resetBoard(final String fen) {
+        stage.getActors().clear();
+        try {
+            board = FEN.toBoard(fen);
+            //Rendering of the background in individual squares
+            squareWidth = screenWidth / board.cols();
+            squareHeight = screenWidth / board.rows();
+
+            //the position which we will start to draw chess squares on, the other space will be used to display other stuff
+            startHeight = (screenHeight - screenWidth) / 2;
+
+
+            for (int x = 0; x < board.cols(); x++) {
+                for (int y = 0; y < board.rows(); y++) {
+                    float xPos = squareWidth * x;
+                    float yPos = startHeight + squareHeight * y;
+                    Actor squareActor = (y % 2 == 0 && x % 2 == 1 || y % 2 == 1 && x % 2 == 0) ? new Image(tile1Texture) : new Image(tile2Texture);
+                    squareActor.setPosition(xPos, yPos);
+                    squareActor.setSize(squareWidth, squareHeight);
+                    squareActor.setZIndex(0);
+
+                    stage.addActor(squareActor);
+                    Piece piece = board.square(x, y).piece();
+                    if (piece != null) {
+                        Texture actorTexture = getPieceTexture(piece);
+                        PieceActor pieceActor = null;
+                        if (playerColor.equals(Piece.Color.BLACK)) {
+                            Sprite flippedPiece = new Sprite(getPieceTexture(piece));
+                            flippedPiece.flip(false, true);
+                            pieceActor = new PieceActor(flippedPiece);
+                        } else {
+                            pieceActor = new PieceActor(actorTexture);
+                        }
+                        pieceActor.setZIndex(1);
+                        pieceActor.setPosition(xPos, yPos);
+                        pieceActor.setSize(squareWidth, squareHeight);
+                        stage.addActor(pieceActor);
+                    }
+                }
+            }
+        } catch (TypeErrorException ex) {
+            Gdx.app.log("TypeErrorException", ex.toString());
+        }
+    }
+
+    public void setup(final String fen) {
+        Gdx.app.log("BoardView", "building boardView");
         Gdx.input.setInputProcessor(stage);
 
         try {
-
-            //board = FEN.toBoard("ppppkppp/pppppppp/8/8/8/8/PPPPPPPP/PPPPKPPP w - - 0 1");
-            board = FEN.toBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1");
+            board = FEN.toBoard(fen);
         } catch (TypeErrorException ex) {
-            Gdx.app.log("BoardView","exception caught " + ex.toString());
+            Gdx.app.log("BoardView", "exception caught " + ex.toString());
         }
 
-        //board.setToDefault8x8Start();
-
         //Rendering of the background in individual squares
-        squareWidth =  screenWidth/board.cols();
-        squareHeight = screenWidth/board.rows();
+        squareWidth = screenWidth / board.cols();
+        squareHeight = screenWidth / board.rows();
 
         //the position which we will start to draw chess squares on, the other space will be used to display other stuff
-        startHeight = (screenHeight-screenWidth)/2;
+        startHeight = (screenHeight - screenWidth) / 2;
 
 
-        for(int x = 0; x < board.cols(); x++){
-            for(int y = 0; y < board.rows(); y++){
+        for (int x = 0; x < board.cols(); x++) {
+            for (int y = 0; y < board.rows(); y++) {
                 float xPos = squareWidth * x;
                 float yPos = startHeight + squareHeight * y;
                 Actor squareActor = (y % 2 == 0 && x % 2 == 1 || y % 2 == 1 && x % 2 == 0) ? new Image(tile1Texture) : new Image(tile2Texture);
-                squareActor.setPosition(xPos,yPos);
-                squareActor.setSize(squareWidth,squareHeight);
+                squareActor.setPosition(xPos, yPos);
+                squareActor.setSize(squareWidth, squareHeight);
                 squareActor.setZIndex(0);
 
                 stage.addActor(squareActor);
                 Piece piece = board.square(x, y).piece();
-                if (piece!=null) {
+                if (piece != null) {
                     Texture actorTexture = getPieceTexture(piece);
                     PieceActor pieceActor = null;
                     if (playerColor.equals(Piece.Color.BLACK)) {
                         Sprite flippedPiece = new Sprite(getPieceTexture(piece));
-                        flippedPiece.flip(false,true);
+                        flippedPiece.flip(false, true);
                         pieceActor = new PieceActor(flippedPiece);
-                    }
-                    else{
+                    } else {
                         pieceActor = new PieceActor(actorTexture);
                     }
                     pieceActor.setZIndex(1);
-                    pieceActor.setPosition(xPos,yPos);
-                    pieceActor.setSize(squareWidth,squareHeight);
+                    pieceActor.setPosition(xPos, yPos);
+                    pieceActor.setSize(squareWidth, squareHeight);
                     stage.addActor(pieceActor);
                 }
             }
@@ -154,6 +215,7 @@ public class BoardView extends AbstractView {
             isYourTurn = false;
         }
         stage.addListener(onOwnPieceClickedListener);
+        stage.addListener(onChangeListener);
     }
 
 
@@ -182,25 +244,22 @@ public class BoardView extends AbstractView {
         return true;
         */
     }
-    private int screenToXBoardPosition(float screenPos){
-        for(int pieceX=0;pieceX<board.rows();pieceX++) {
-            if(screenPos<squareWidth){
+
+    private int screenToXBoardPosition(float screenPos) {
+        for (int pieceX = 0; pieceX < board.rows(); pieceX++) {
+            if (screenPos < squareWidth) {
                 return pieceX;
             }
-            screenPos-=squareWidth;
+            screenPos -= squareWidth;
         }
-        return board.cols()-1;
+        return board.cols() - 1;
     }
 
     //To be called when the opponent performs a move
 
-    private void executeOpponentMove(Move move) {
+    public void executeOpponentMove(Move move) {
         Actor pieceActor = getActorAt(move.from.col(), move.from.row());
-        Piece piece = board.square(move.from.col(),move.from().row()).piece();
-
-
-
-
+        Piece piece = board.square(move.from.col(), move.from().row()).piece();
         pieceActor.setZIndex(stage.getActors().size);
         if (board.square(move.to.col(), move.to.row()).piece() != null) {
             //Todo create animation for removal of pieces
@@ -210,12 +269,8 @@ public class BoardView extends AbstractView {
             log("BOARD AND VIEW NOT SYNCED");
         }
 
-        pieceActor.addAction(Actions.moveTo(squareWidth*move.to().col(),startHeight+squareHeight*move.to.row(),moveDuration));
-
-        //todo Update model
-        //this is done for testing, should probably be implemented in another way
-        board.square(squareLastClicked.col(),squareLastClicked.row()).setPiece(null);
-        board.square(move.to().col(),move.to().row()).setPiece(piece);
+        pieceActor.addAction(Actions.moveTo(squareWidth * move.to().col(), startHeight + squareHeight * move.to.row(), moveDuration));
+        GameAction.movePiece(board, move);
         isYourTurn = true;
     }
 
@@ -225,22 +280,22 @@ public class BoardView extends AbstractView {
         }
         screenPos -= startHeight;
 
-        for(int pieceY=0;pieceY<board.rows();pieceY++) {
-            if(screenPos<squareHeight){
+        for (int pieceY = 0; pieceY < board.rows(); pieceY++) {
+            if (screenPos < squareHeight) {
                 return pieceY;
             }
-            screenPos-=squareHeight;
+            screenPos -= squareHeight;
         }
-        return board.rows()-1;
+        return board.rows() - 1;
     }
 
     private void highlightPossibleMoves(Piece piece) {
         //// TODO: 05.04.2017 For example draw a dot(actor) over the possible squares to move to
     }
-    private void log(String msg) {
-        Gdx.app.log("Even/GameView",msg);
-    }
 
+    private void log(String msg) {
+        Gdx.app.log("Even/GameView", msg);
+    }
 
 
     private Texture getPieceTexture(Piece piece) {
@@ -287,6 +342,22 @@ public class BoardView extends AbstractView {
         throw new RuntimeException("Unable to find texture");
     }
 
+    public String fen() {
+        return FEN.toFen(board);
+    }
+
+    public void performMove(Move move) {
+        tryToExecuteMove(move);
+    }
+
+    private ChangeListener onChangeListener = new
+            ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    emitRenderFinished();
+                }
+            };
+
     private ClickListener onOwnPieceClickedListener = new
 
     ClickListener() {
@@ -299,79 +370,25 @@ public class BoardView extends AbstractView {
                 //Handle click outside board
                 return;
             }
-            Piece pieceClicked = board.square(xPos, yPos).piece();
-            //Checks if click was outside the board
+            Square square = board.square(xPos, yPos);
+            Piece pieceClicked = square.piece();
+
             String infoString = "Your turn: "+ Boolean.toString(isYourTurn);
             if (isYourTurn) {
-                if (pieceClicked != null) {
-                    //A square with a piece was clicked
-                    infoString +="\npiece clicked";
-                    if (highlightMode) {
-                        //Already highlighting the possible moves for a piece
-                        tryToExecuteMove(new Move(squareLastClicked, board.square(xPos,yPos)));
-                        infoString += "\n highlight on, trying to execute move1";
-
-                        // Move opponent piece
-                        String fen = FEN.toFen(board);
-                        List<Move> candiateMoves = GameAction.legalMoves(fen);
-                        try {
-                            Move move = GameAction.bestMove(candiateMoves, fen);
-                            tryToExecuteMove(move);
-                        } catch (Exception ex) {
-                            System.out.println("Exception caught! " + ex.toString());
-                        } finally {
-                            highlightMode = false;
-                        }
-
-                        //fen = FEN.toFen(GameAction.movePiece(fen, candiateMoves.get(randomMove)));
-
-                    }
-                    else{
-                        highlightMode = true;
-                        squareLastClicked = board.square(xPos, yPos);
-
-                        highlightPossibleMoves(pieceClicked);
-                        infoString += "\n highlight off, highlighting for piece";
-                    }
-
-                }
-                //A square without a piece was clicked
-                else{
-                    infoString += "\nempty square clicked";
-                    if (highlightMode) {
-                        tryToExecuteMove(new Move(squareLastClicked, board.square(xPos,yPos)));
-
-                        infoString += "\n highlight on, trying to execute move";
-
-                        // Move opponent piece
-                        String fen = FEN.toFen(board);
-                        List<Move> candiateMoves = GameAction.legalMoves(fen);
-                        try {
-                            Move move = GameAction.bestMove(candiateMoves, fen);
-                            tryToExecuteMove(move);
-                        } catch (Exception ex) {
-                            System.out.println("Exception caught! " + ex.toString());
-                        } finally {
-                            highlightMode = false;
-                        }
-                    }
-                    else{
-                        infoString += "\n highlight off, not doing anything";
-
-                        //Clicking on an empty square shouldn't trigger any actions
-                    }
-
+                if (pieceClicked != null && pieceClicked.color() == playerColor) {
+                    highlightMode = true;
+                    squareLastClicked = square;
+                } else if (highlightMode) {
+                    tryToExecuteMove(new Move(squareLastClicked, square));
+                    infoString += "\n highlight on, trying to execute move1";
+                    squareLastClicked = null;
+                    highlightMode = false;
+                    emitUpdate();
                 }
             } else if (!isYourTurn) {
                 infoString += "\n not your turn";
-
             }
             log(infoString);
-
-
-
-
-
             super.clicked(event, x, y);
 
         }
@@ -392,11 +409,10 @@ public class BoardView extends AbstractView {
         Actor pieceActor = getActorAt(move.from.col(), move.from.row());
         Square fromSquare= move.from();
         Square destSquare = move.to();
-        Piece piece = fromSquare.piece();
+
         pieceActor.setZIndex(stage.getActors().size);
         if (destSquare.piece() != null) {
             //Todo create animation for this
-
             removePiece(xPos, yPos);
         } else if (getActorAt(xPos, yPos) != null) {
             log("BOARD AND VIEW NOT SYNCED");
@@ -405,38 +421,6 @@ public class BoardView extends AbstractView {
         pieceActor.addAction(Actions.moveTo(squareWidth*xPos,startHeight+squareHeight*yPos,moveDuration));
         board = GameAction.movePiece(board, new Move(fromSquare, destSquare));
         highlightMode = false;
-    }
-
-    private void executeMove(int xPos, int yPos){
-        Actor pieceActor = getActorAt(squareLastClicked.col(), squareLastClicked.row());
-        Square fromSquare= board.square(squareLastClicked.col(),squareLastClicked.row());
-        Square destSquare = board.square(xPos, yPos);
-        Piece piece = fromSquare.piece();
-
-
-        pieceActor.setZIndex(stage.getActors().size);
-        if (destSquare.piece() != null) {
-            //Todo create animation for this
-
-            removePiece(xPos, yPos);
-        } else if (getActorAt(xPos, yPos) != null) {
-            log("BOARD AND VIEW NOT SYNCED");
-        }
-
-        pieceActor.addAction(Actions.moveTo(squareWidth*xPos,startHeight+squareHeight*yPos,moveDuration));
-        board = GameAction.movePiece(board, new Move(fromSquare, destSquare));
-
-        /*
-        //todo Update model
-        //this is done for testing, should probably be implemented in another way
-        board.square(squareLastClicked.col(),squareLastClicked.row()).setPiece(null);
-        board.square(xPos,yPos).setPiece(piece);
-
-
-        */
-        highlightMode = false;
-        //todo Set yourTurn to false
-
     }
 
     private Actor getActorAt(int x, int y) {
@@ -496,7 +480,10 @@ public class BoardView extends AbstractView {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(delta);
         stage.draw();
-
+    }
+    @Override
+    public void resume () {
+        int i = 0;
     }
 
     @Override

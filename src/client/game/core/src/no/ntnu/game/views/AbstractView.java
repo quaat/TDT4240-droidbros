@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import no.ntnu.game.controllers.AbstractController;
 import no.ntnu.game.controllers.GameController;
 import no.ntnu.game.models.GameModel;
 import no.ntnu.game.util.ScreenObserver;
@@ -18,9 +19,8 @@ public abstract class AbstractView implements Screen, ScreenObserver {
 
 	Color buttonColor = new Color(0x7fff00ff);
 
-	GameModel model;
-	GameController controller;
-
+	protected GameModel model;
+	protected GameController controller;
 	SpriteBatch batch;
 	Stage stage;
 	Skin skin;
@@ -35,7 +35,7 @@ public abstract class AbstractView implements Screen, ScreenObserver {
 
 	private boolean changeInData;
 	
-	public AbstractView(GameModel model, GameController controller) {
+	public AbstractView(GameModel model, GameController controller){
 		this.model = model;
 		this.controller = controller;
 		model.addObserver(this);

@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 import no.ntnu.game.controllers.GameController;
+import no.ntnu.game.controllers.PlayComputerController;
 import no.ntnu.game.models.GameModel;
 
 /**
@@ -14,7 +15,7 @@ import no.ntnu.game.models.GameModel;
  */
 
 public class GameView extends AbstractView{
-
+    private PlayComputerController playCPUController;
     private TextButton findButton;
     private TextButton computerButton;
     private TextButton fenButton;
@@ -79,7 +80,8 @@ public class GameView extends AbstractView{
 
         computerButton.addListener(new ChangeListener() {
             public void changed (ChangeEvent event, Actor actor) {
-                controller.playComputer();
+                playCPUController = new PlayComputerController(model, controller.game());
+                playCPUController.startGame();
             }
         });
 
