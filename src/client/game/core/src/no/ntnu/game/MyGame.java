@@ -4,7 +4,6 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 
 import no.ntnu.game.controllers.GameController;
-import no.ntnu.game.controllers.PlayComputerController;
 import no.ntnu.game.models.GameModel;
 import no.ntnu.game.views.AboutView;
 import no.ntnu.game.views.AbstractView;
@@ -41,6 +40,7 @@ public class MyGame extends Game{
 
 	private AbstractView testView2; // game room
 	private AbstractView boardView;
+
 
 	// controllers
 	private GameController controller;

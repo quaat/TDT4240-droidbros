@@ -270,7 +270,8 @@ public class BoardView extends AbstractView {
         }
 
         pieceActor.addAction(Actions.moveTo(squareWidth * move.to().col(), startHeight + squareHeight * move.to.row(), moveDuration));
-        GameAction.movePiece(board, move);
+        board = GameAction.movePiece(board, move);
+        resetBoard(FEN.toFen(board));
         isYourTurn = true;
     }
 
@@ -420,6 +421,7 @@ public class BoardView extends AbstractView {
 
         pieceActor.addAction(Actions.moveTo(squareWidth*xPos,startHeight+squareHeight*yPos,moveDuration));
         board = GameAction.movePiece(board, new Move(fromSquare, destSquare));
+        resetBoard(FEN.toFen(board));
         highlightMode = false;
     }
 

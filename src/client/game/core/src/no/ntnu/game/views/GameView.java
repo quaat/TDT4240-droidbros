@@ -80,7 +80,7 @@ public class GameView extends AbstractView{
 
         computerButton.addListener(new ChangeListener() {
             public void changed (ChangeEvent event, Actor actor) {
-                playCPUController = new PlayComputerController(model, controller.game());
+                playCPUController = new PlayComputerController(model, controller);
                 playCPUController.startGame();
             }
         });

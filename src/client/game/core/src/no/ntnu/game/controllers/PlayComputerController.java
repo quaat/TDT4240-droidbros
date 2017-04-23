@@ -16,16 +16,18 @@ import no.ntnu.game.views.BoardView;
 
 public class PlayComputerController extends AbstractController implements GameObserver {
     private BoardView boardView;
-    private Game game;
-    private final String stdOpening = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1";
+    private final Game game;
+    private final GameController gameController;
+    private final String stdOpening = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 
-    public PlayComputerController(GameModel model, Game game) {
+    public PlayComputerController(GameModel model, GameController controller) {
         super(model);
+        this.gameController = controller;
         boardView = new BoardView(model);
         boardView.registerObserver(this);
         boardView.setup(stdOpening);
-        this.game = game;
+        this.game = controller.game();
 
     }
 
@@ -43,11 +45,15 @@ public class PlayComputerController extends AbstractController implements GameOb
     @Override
     public void onUpdate() {
         String fen = boardView.fen();
-        boardView.resetBoard(fen);
+        if (GameAction.isMate(fen)) {
+            gameController.toMenu();
+        }
+
         List<Move> candiateMoves = GameAction.legalMoves(fen);
         try {
             Move move = GameAction.bestMove(candiateMoves, fen);
             boardView.executeOpponentMove(move);
+
         } catch (Exception ex) {
             System.out.println("Exception caught! " + ex.toString());
         }
