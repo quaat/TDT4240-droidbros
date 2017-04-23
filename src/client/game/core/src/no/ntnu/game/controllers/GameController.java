@@ -1,8 +1,8 @@
 package no.ntnu.game.controllers;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.utils.JsonValue;
 
-import no.ntnu.game.FEN;
 import no.ntnu.game.MyGame;
 import no.ntnu.game.models.GameModel;
 import no.ntnu.game.models.User;
@@ -11,9 +11,8 @@ import no.ntnu.game.network.HttpCommunication;
 import no.ntnu.game.network.SocketCommunication;
 import no.ntnu.game.util.NetworkObserver;
 
-public class GameController implements NetworkObserver{
-    private GameModel model;
-    private MyGame viewController;
+public class GameController extends AbstractController implements NetworkObserver{
+    private MyGame myGame;
 
     private HttpCommunication http;
     private SocketCommunication socket;
@@ -22,11 +21,11 @@ public class GameController implements NetworkObserver{
     /**
      * Controller combining model with views, plus communicating with server
      * @param model - model
-     * @param viewController - view controller
+     * @param myGame - view controller
      */
-    public GameController(GameModel model, MyGame viewController) {
-        this.model = model;
-        this.viewController = viewController;
+    public GameController(GameModel model, MyGame myGame) {
+        super(model);
+        this.myGame = myGame;
 
         http = new HttpCommunication(hostInfo);
         socket = new SocketCommunication(hostInfo);
@@ -36,26 +35,76 @@ public class GameController implements NetworkObserver{
     }
 
     /**
+     * Change to register view
+     */
+    public void toLogin() {
+        myGame.setLoginView();
+    }
+
+    /**
+     * Change to register view
+     */
+    public void toRegister() {
+        myGame.setRegisterView();
+    }
+
+    /**
      * Change to menu view
      */
     public void toMenu() {
-        viewController.setMenuView();
+        myGame.setMenuView();
     }
 
     /**
      * Change to setup view
      */
-    public void toSetup() {
-        viewController.setSetupView();
+    public void toTutorial() {
+        myGame.setTutorialView();
+    }
+
+    /**
+     * Change to register view
+     */
+    public void toSetting() {
+        myGame.setSettingView();
+    }
+
+    /**
+     * Change to register view
+     */
+    public void toAbout() {
+        myGame.setAboutView();
     }
 
     /**
      * Change to game view
      */
     public void toGame() {
-        viewController.setTestView2();
+        myGame.setGameView();
     }
 
+    /**
+     * Change to game view
+     */
+    public void toFen() {
+        myGame.setFenView();
+    }
+
+    /**
+     * Change to game view
+     */
+    public void toBoard() {
+        myGame.setTestView2();
+    }
+
+    /**
+     * Change to game ended view
+     */
+    public void toGameEnded() {
+        myGame.setGameEndedView();
+    }
+
+    public Game game() {return myGame;}
     /**
      * Sends request for register a new user
      * @param userid - String
@@ -112,6 +161,7 @@ public class GameController implements NetworkObserver{
      */
     public void changeFen(String newFen) {
         // todo validate input
+        System.out.println("to server token before change: " +model.user().token());
         http.changeFen(model.user().token(), newFen);
     }
 
@@ -123,17 +173,19 @@ public class GameController implements NetworkObserver{
     }
 
     /**
-     * todo something like this ?
-     * @return boo
+     * Leave queue
      */
-    public boolean doMove(String from, String to) {
-        if (model.isItMyTurn()) { // Is it my turn?
-            if (model.updateGame(from, to)) { // Is the move valid? do move
-                socket.doMove(FEN.toFen(model.board())); // Send board after the update
-                return true; // tell view that move has been sent!
-            }
-        }
-        return false;
+    public void leaveQueue() {
+        socket.leaveQueue();
+    }
+
+    /**
+     * New move (fen string) from client
+     * @param fen String
+     */
+    public void doMove(String fen) {
+        //model.addMove(fen);
+        socket.doMove(fen);
     }
 
     /**
@@ -148,7 +200,7 @@ public class GameController implements NetworkObserver{
      */
     @Override
     public void onRegister() {
-        // todo
+        toLogin();
     }
 
     /**
@@ -160,7 +212,7 @@ public class GameController implements NetworkObserver{
     public void onLogin(User user) {
         model.setUser(user);
         socket.connect(user.token());
-        viewController.setMenuView();
+        myGame.setMenuView();
     }
 
     /**
@@ -168,8 +220,10 @@ public class GameController implements NetworkObserver{
      * @param user User
      */
     @Override
-    public void onGetUser(User user) {
-        // todo save
+    public void onGetUser(String token, User user) {
+        model.setUser(user);
+        model.user().setToken(token);
+        System.out.println("after end game: " );
     }
 
     /**
@@ -192,8 +246,13 @@ public class GameController implements NetworkObserver{
      * Gets changed fen confirmation
      */
     @Override
-    public void onChangedFen() {
-        // todo visual (send new fen here?)
+    public void onChangedFen(String token, String fen) {
+        System.out.println("incomming token: " + token);
+        model.user().setFen(fen);
+        model.user().setToken(token);
+        // reset socket to update info.
+        socket.disconnect();
+        socket.connect(model.user().token());
     }
 
     @Override
@@ -227,7 +286,7 @@ public class GameController implements NetworkObserver{
     @Override
     public void onStartGame(JsonValue gameInfo) {
         model.startGame(gameInfo);
-        toGame(); // change view
+        toBoard(); // change view
     }
 
     /**
@@ -246,7 +305,14 @@ public class GameController implements NetworkObserver{
     public void onGameOver(JsonValue gameInfo) {
         model.endGame(gameInfo);
         // To winner screen / analysis ?
-        toMenu();
+        http.getUserInformation(model.user().token());
+        toGameEnded();
+    }
+
+    @Override
+    public void onReconnect(JsonValue gameInfo) {
+        model.startGame(gameInfo);
+        toBoard();
     }
 
     /**
@@ -262,6 +328,11 @@ public class GameController implements NetworkObserver{
      */
     @Override
     public void onError(String error) {
-        System.out.println(error);
+        model.updateError(error);
+    }
+
+
+    public void playComputer() {
+        myGame.playComputer();
     }
 }

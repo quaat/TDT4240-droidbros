@@ -7,11 +7,22 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
+import no.ntnu.game.FEN;
+import no.ntnu.game.GameAction;
+import no.ntnu.game.Move;
+import no.ntnu.game.TypeErrorException;
 import no.ntnu.game.controllers.GameController;
+import no.ntnu.game.models.Board;
 import no.ntnu.game.models.GameModel;
+import no.ntnu.game.models.Piece;
 
 
 public class TestView2 extends AbstractView {
+    private Board board;
+    private Piece.Color playerColor;
 
     private TextButton doMoveButton;
     private TextButton resignButton;
@@ -19,13 +30,12 @@ public class TestView2 extends AbstractView {
     private Label gameLabel;
     private Label player1Label;
     private Label player2Label;
+    private Label fenLabel;
     private Label statusLabel;
-
-    private TextField moveFrom;
-    private TextField moveTo;
 
     public TestView2(GameModel model, GameController controller) {
         super(model, controller);
+        this.controller = controller;
     }
 
     @Override
@@ -38,18 +48,14 @@ public class TestView2 extends AbstractView {
         gameLabel = new Label("", skin);
         player1Label = new Label("", skin);
         player2Label = new Label("", skin);
+        fenLabel = new Label("", skin);
         statusLabel = new Label("", skin);
-
-        // Textfield
-        moveFrom = new TextField("", skin);
-        moveTo = new TextField("", skin);
 
         doMoveButton.addListener(new ChangeListener() {
             public void changed (ChangeEvent event, Actor actor) {
-                if (controller.doMove("", "")) {
-                    statusLabel.setText("Wait for move...");
-                    doMoveButton.setVisible(false);
-                }
+                controller.doMove(randomMove());
+                statusLabel.setText("Wait for move...");
+                doMoveButton.setDisabled(true);
             }
         });
 
@@ -60,28 +66,60 @@ public class TestView2 extends AbstractView {
         });
 
         table.add(gameLabel).width(objectWidth).height(objectHeight).padBottom(padY).row();
-        table.add(player1Label).width(objectWidth).height(objectHeight).padBottom(padY);
+        table.add(player1Label).width(objectWidth).height(objectHeight).padBottom(padY).row();
         table.add(player2Label).width(objectWidth).height(objectHeight).padBottom(padY).row();
-        table.add(doMoveButton).width(objectWidth).height(objectHeight).padBottom(padY);
+        table.add(fenLabel).width(objectWidth).height(objectHeight).padBottom(padY).row();
+        table.add(doMoveButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
         table.add(resignButton).width(objectWidth).height(objectHeight).padBottom(padY).row();
         table.add(statusLabel).width(objectWidth).height(objectHeight).padBottom(padY).row();
-        //table.add(moveFrom).width(objectWidth).height(objectHeight);
-        //table.add(moveTo).width(objectWidth).height(objectHeight);
+    }
+
+    public String randomMove() {
+        String fen = model.fen();
+        List<Move> candiateMoves = GameAction.legalMoves(fen);
+        int randomMove = ThreadLocalRandom.current().nextInt(0, candiateMoves.size());
+        Move move = candiateMoves.get(randomMove);
+        board = GameAction.movePiece(board, move);
+        return FEN.toFen(board);
+    }
+
+    @Override
+    public void reset() {
+        gameLabel = new Label("", skin);
+        player1Label = new Label("", skin);
+        player2Label = new Label("", skin);
+        fenLabel = new Label("", skin);
+        statusLabel = new Label("", skin);
     }
 
     @Override
     public void onNewMove() {
-        doMoveButton.setVisible(true);
+        doMoveButton.setDisabled(false);
+        fenLabel.setText(model.fen());
         statusLabel.setText("Your move!");
-        Gdx.app.log("ANDYPANDY", model.fen());
+        try {
+            board = FEN.toBoard(model.fen());
+        } catch (TypeErrorException e) {
+            e.printStackTrace();
+        }
+        System.out.println(model.fen());
     }
 
     @Override
     public void onGameUpdate() {
-        if (model.isItMyTurn()) doMoveButton.setVisible(true);
-        else doMoveButton.setVisible(false);
+        playerColor = model.color();
         player1Label.setText("You: " + model.player().toString());
         player2Label.setText("Opponent: " + model.opponent().toString());
         gameLabel.setText("gameid: "+ model.gameid());
+
+        try {
+            System.out.println(model.fen());
+            board = FEN.toBoard(model.fen());
+        } catch (TypeErrorException ex) {
+            System.out.println("board fuckup");
+        }
+
+        if (playerColor == board.activeColor()) doMoveButton.setDisabled(false);
+        else doMoveButton.setDisabled(true);
     }
 }

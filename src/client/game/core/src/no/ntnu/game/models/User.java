@@ -8,6 +8,8 @@ public class User {
 	private String email;
 	private String token;
 	private String fen;
+	private int wins;
+	private int games;
 	private int level;
 
 	/**
@@ -21,7 +23,8 @@ public class User {
 		if (json.has("token")) token = json.getString("token");
 		if (json.has("fen")) fen = json.getString("fen");
 		if (json.has("level")) level = json.getInt("level");
-
+		if (json.has("wins")) wins = json.getInt("wins");
+		if (json.has("games")) games = json.getInt("games");
 	}
 
 	public void setToken(String token) {
@@ -69,7 +72,15 @@ public class User {
 		return level;
 	}
 
+	public int wins() {
+		return wins;
+	}
+
+	public int games() {
+		return games;
+	}
+
 	public String toString() {
-		return "userid: " + userid;
+		return "userid: " + userid + ", " + level + ", " + wins + ", " + games;
 	}
 }

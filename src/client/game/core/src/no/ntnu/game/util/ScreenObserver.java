@@ -9,4 +9,5 @@ public interface ScreenObserver {
     public void onServerUpdate();
     public void onNewMove();
     public void onGameUpdate();
+    public void onError();
 }

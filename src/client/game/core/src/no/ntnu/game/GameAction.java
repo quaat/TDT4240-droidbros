@@ -1,13 +1,18 @@
 package no.ntnu.game;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import no.ntnu.game.FEN;
 import no.ntnu.game.Move;
 import no.ntnu.game.TypeErrorException;
+import no.ntnu.game.evaluation.GameEvaluation;
+import no.ntnu.game.evaluation.PiecePosition;
+import no.ntnu.game.evaluation.PieceValue;
 import no.ntnu.game.models.Board;
 import no.ntnu.game.models.Piece;
 import no.ntnu.game.models.Square;
@@ -33,7 +38,7 @@ public class GameAction {
      * @param move
      * @return board
      */
-    static Board movePiece(Board board, Move move) {
+    static public Board movePiece(Board board, Move move) {
         Square origin = board.square(move.from().col(), move.from().row());
         Square dest = board.square(move.to().col(), move.to().row());
         Piece piece = origin.piece();
@@ -67,7 +72,7 @@ public class GameAction {
      * @param move
      * @return a new instance of Board
      */
-    static Board movePiece(final String fen, Move move) {
+    static public Board movePiece(final String fen, Move move) {
         Board board = FEN.toBoardS(fen);
         if (board == null) return null;
 
@@ -122,19 +127,30 @@ public class GameAction {
      */
     static public boolean isCheck(Board board, Piece.Color activeColor) {
         // Find the square of the opponents king
-        Square opponentKing =  board.allSquares().stream()
-                .filter(s -> s.piece() != null && s.piece().color() != activeColor && s.piece().type() == Piece.Type.KING)
-                .collect(Collectors.toList()).get(0);
+        Square opponentKing = null;
+        for (Square square : board.allSquares()) {
+            if (square.piece() != null && square.piece().color() != activeColor && square.piece().type() == Piece.Type.KING) {
+                opponentKing = square;
+                break;
+            }
+        }
 
         // Update all active players pieces
-        List<Square> allActive = board.allSquares().stream()
-                .filter(s -> s.piece() != null && s.piece().color() == activeColor)
-                .collect(Collectors.toList());
+        List<Square> allActive = new ArrayList<Square>();
+        for (Square square : board.allSquares()) {
+            if (square.piece() != null && square.piece().color() == activeColor) {
+                allActive.add(square);
+            }
+        }
 
         // If any pieces may move to the opponent king square, it is check.
-        boolean isCheck = GameAction.legalMoves(allActive).stream()
-                .filter(s -> s.to() == opponentKing)
-                .collect(Collectors.toList()).size() > 0;
+        boolean isCheck = false;
+        for (Move move : GameAction.legalMoves(allActive)) {
+            if (move.to() == opponentKing) {
+                isCheck = true;
+                break;
+            }
+        }
 
         return isCheck;
     }
@@ -164,13 +180,8 @@ public class GameAction {
     static public List<Move> legalMoves(Square square) {
         Piece piece = square.piece();
         if (piece == null) return null;
-        List<Move> moves = new ArrayList<Move>();
 
-        for (Function<Square, List<Move>> fn : piece.legalMoves())
-        {
-            moves.addAll(fn.apply(square));
-        }
-        return moves;
+        return piece.legalMoves(square);
     }
 
     /**
@@ -183,14 +194,23 @@ public class GameAction {
         List<Move> moves = new ArrayList<Move>();
         try {
             Board board = FEN.toBoard(fen);
-            List<Square> pieces = board.allSquares().stream()
-                    .filter (s -> (s.piece() != null) && (s.piece().color() == board.activeColor()))
-                    .collect(Collectors.toList());
+            List<Square> squares = new ArrayList<>();
+            for (Square square : board.allSquares()) {
+                if (square.piece() != null && square.piece().color() == board.activeColor()) {
+                    squares.add(square);
+                }
+            }
 
-            List<Move> candidateMoves = GameAction.legalMoves(pieces).stream()
-                    .filter (m -> (!GameAction.isCheck(GameAction.movePiece(fen, m), false)))
-                    .collect(Collectors.toList());
+            // Filter out only the legal candidate moves that does not set its own king in check
+            List<Move> candidateMoves  = new ArrayList<>();
+            for (Move move : GameAction.legalMoves(squares)) {
+                if (!GameAction.isCheck(GameAction.movePiece(fen, move), false)) {
+                    candidateMoves.add(move);
+                }
+            }
+
             moves.addAll(candidateMoves);
+
         } catch (TypeErrorException ex){
             // Illegal setup
             System.out.println(ex.toString());
@@ -320,4 +340,34 @@ public class GameAction {
         return squares;
     }
 
+
+    /**
+     * Suggest the best move based on a list of legal moves and the current position
+     * @param moves
+     * @param fen
+     * @return
+     * @throws Exception
+     */
+    public static Move bestMove(List<Move> moves, final String fen) throws Exception{
+        final float delta = 1.0E-8f;
+        final float factor = FEN.toBoard(fen).activeColor() == Piece.Color.WHITE ? 1.0f : -1.0f;
+        float highScore = -Float.MAX_VALUE;
+        GameEvaluation eval = new PieceValue(new PiecePosition());
+        List<Move>goodMoves = new ArrayList<>();
+        for (Move move : moves) {
+            float score = factor * eval.score(GameAction.movePiece(fen, move));
+            if (score > highScore+delta) {
+                highScore = score;
+                goodMoves.add(0,move);
+            } else if (score < highScore+delta && score > highScore-delta) {
+                goodMoves.add(0,move);
+            }
+        }
+        // evaluate further maximum 10 candidate moves
+        if (goodMoves.size() > 10) {
+            goodMoves.subList(10, goodMoves.size()).clear();
+        }
+
+        return goodMoves.get(0);
+    }
 }

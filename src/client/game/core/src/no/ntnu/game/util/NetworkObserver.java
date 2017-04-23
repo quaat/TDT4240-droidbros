@@ -12,10 +12,10 @@ public interface NetworkObserver {
     // http
     public void onRegister();
     public void onLogin(User user);
-    public void onGetUser(User user);
+    public void onGetUser(String token, User user);
     public void onGetGames(/* something */);
     public void onChangedPassword();
-    public void onChangedFen();
+    public void onChangedFen(String token, String fen);
     public void onDeletedUser();
 
     // socket
@@ -24,6 +24,7 @@ public interface NetworkObserver {
     public void onStartGame(JsonValue response);
     public void onNewMove(String fen);
     public void onGameOver(JsonValue gameInfo);
+    public void onReconnect(JsonValue gameInfo);
     public void onDisconnected();
 
     // error

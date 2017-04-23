@@ -29,6 +29,12 @@ public class Move {
         this.to = to;
     }
 
+    public boolean equals(Move other) {
+        return (this.to.col() == other.to.col()
+                && this.to.row() == other.to.row()
+                && this.from.col() == other.from.col()
+                && this.from.row() == other.from.row());
+    }
     /**
      * Define a starting move, but leave the destination undefined. Use with
      * setDestination(Square dest)

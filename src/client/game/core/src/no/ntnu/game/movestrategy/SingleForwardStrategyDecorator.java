@@ -23,34 +23,34 @@ public class SingleForwardStrategyDecorator implements MoveStrategy {
     }
 
     @Override
-    public List<Function<Square, List<Move>>> legalMoves() {
-        List<Function<Square, List<Move>>> moves = new ArrayList<>();
-        moves.add(square -> {
-            ArrayList<Move> movesArray = new ArrayList<Move>();
-            Board b = square.board();
-            final int rank = square.row();
-            final int col = square.col();
-            int forward = square.piece().color() == Piece.Color.BLACK ? -1 : 1;
-            Square dest = b.square(col, rank+forward);
-            if (dest != null && dest.piece() == null) {
-                movesArray.add(new Move(square, dest));
-            }
+    public List<Move> legalMoves(Square square)
+    {
+        List<Move> moves = new ArrayList<>();
+        if (square.piece() == null) return null;
 
-            // take opponent pieces to the upper left and upper right
-            dest = b.square(col-1, rank+forward);
-            if (dest != null && dest.piece() != null && dest.piece().color() != square.piece().color()) {
-                movesArray.add(new Move(square, dest));
-            }
+        Board b = square.board();
+        final int rank = square.row();
+        final int col = square.col();
+        int forward = square.piece().color() == Piece.Color.BLACK ? -1 : 1;
+        Square dest = b.square(col, rank + forward);
+        if (dest != null && dest.piece() == null) {
+            moves.add(new Move(square, dest));
+        }
 
-            dest = b.square(col+1, rank+forward);
-            if (dest != null && dest.piece() != null && dest.piece().color() != square.piece().color()) {
-                movesArray.add(new Move(square, dest));
-            }
+        // take opponent pieces to the upper left and upper right
+        dest = b.square(col - 1, rank + forward);
+        if (dest != null && dest.piece() != null && dest.piece().color() != square.piece().color()) {
+            moves.add(new Move(square, dest));
+        }
 
-            return movesArray;
-        });
+        dest = b.square(col + 1, rank + forward);
+        if (dest != null && dest.piece() != null && dest.piece().color() != square.piece().color()) {
+            moves.add(new Move(square, dest));
+        }
+
         if (this.moveStrategy != null)
-            moves.addAll(this.moveStrategy.legalMoves());
+            moves.addAll(this.moveStrategy.legalMoves(square));
         return moves;
     }
+
 }

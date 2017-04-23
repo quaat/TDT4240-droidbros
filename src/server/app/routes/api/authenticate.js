@@ -36,6 +36,8 @@ module.exports = (req, res) => {
             name: user.name,
             email: user.email,
             level: user.level,
+            games: user.games,
+            wins: user.wins,
             fen: user.fen
           }
         });
